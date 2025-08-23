@@ -56,7 +56,7 @@ The JobPilot backend follows a clean, layered architecture:
   - [x] Company → JobListing relationship mapping
   - [x] Enum field storage and retrieval
   - [x] Index and constraint validation
-  - [ ] Model conversion utilities (pydantic_to_sqlalchemy, sqlalchemy_to_pydantic)
+  - [x] Model conversion utilities (pydantic_to_sqlalchemy, sqlalchemy_to_pydantic)
 
 #### Integration Tests
 - ⏳ **Database Schema Integration**
