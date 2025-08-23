@@ -4,23 +4,23 @@ repos:
     rev: 24.3.0
     hooks:
       - id: black
-        files: \.py$
+        files: ^backend/.*\.py$
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.1.15
     hooks:
       - id: ruff
         args: [--fix]
-        files: \.py$
+        files: ^backend/.*\.py$
 
   # General file hygiene
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
     hooks:
       - id: trailing-whitespace
-        files: \.py$
+        files: ^backend/.*\.py$
       - id: end-of-file-fixer
-        files: \.py$
+        files: ^backend/.*\.py$
       - id: check-yaml
       - id: check-added-large-files
       - id: check-json

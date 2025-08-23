@@ -118,7 +118,7 @@ line-ending = "auto"
 "**/tests/**/*.py" = ["E402", "F841", "ARG001", "ARG002"]
 
 [tool.ruff.isort]
-known-first-party = ["app"]
+known-first-party = ["backend"]
 force-single-line = false
 force-sort-within-sections = false
 single-line-exclusions = ["typing"]

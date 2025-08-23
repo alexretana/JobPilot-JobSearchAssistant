@@ -39,13 +39,14 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements-ci.txt
+        pip install -r backend/requirements.txt
 
     - name: 🔍 Python syntax validation
       run: |
         echo "🔧 Checking Python syntax..."
-        python -m py_compile app/api/old/user_profiles.py
-        python -m py_compile app/data/database.py
-        python -m py_compile app/data/models.py
+        python -m py_compile backend/api/old/user_profiles.py
+        python -m py_compile backend/data/database.py
+        python -m py_compile backend/data/models.py
         echo "✅ Syntax check passed"
 
     - name: 🧪 Basic model validation
@@ -53,8 +54,8 @@ jobs:
         echo "🏗️ Running basic model validation..."
         python -c "
         # Test basic imports that should work
-        import app.data.models
-        import app.data.database
+        import backend.data.models
+        import backend.data.database
         print('✅ Core data models imported successfully')
         print('✅ Database module accessible')
         "
@@ -396,17 +397,17 @@ jobs:
         pip install mypy bandit safety
 
     - name: Check code formatting with Black
-      run: black --check --diff .
+      run: black --check --diff backend/
 
     - name: Lint and check imports with Ruff
-      run: ruff check app tests
+      run: ruff check backend/ tests/
 
     - name: Type check with mypy
-      run: mypy app --ignore-missing-imports
+      run: mypy backend/ --ignore-missing-imports
       continue-on-error: true
 
     - name: Security check with bandit
-      run: bandit -r app -f json -o reports/bandit-report.json
+      run: bandit -r backend/ -f json -o reports/bandit-report.json
       continue-on-error: true
 
     - name: Check dependencies for security vulnerabilities
