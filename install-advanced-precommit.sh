@@ -4,20 +4,15 @@
 
 echo "🔧 Installing advanced pre-commit hook..."
 
-# First, ensure pre-commit is installed normally
-if ! pre-commit install; then
-    echo "❌ Failed to install pre-commit. Make sure pre-commit is available."
+# Ensure pre-commit is available
+if ! command -v pre-commit >/dev/null 2>&1; then
+    echo "❌ pre-commit command not found. Please install pre-commit first."
+    echo "   pip install pre-commit"
     exit 1
 fi
 
-# Backup the original hook
-if [ -f ".git/hooks/pre-commit" ]; then
-    cp ".git/hooks/pre-commit" ".git/hooks/pre-commit-original"
-    echo "✅ Backed up original pre-commit hook to pre-commit-original"
-else
-    echo "❌ No pre-commit hook found. Run 'pre-commit install' first."
-    exit 1
-fi
+# Note: We don't need to backup the original hook since we'll call pre-commit directly
+echo "✅ pre-commit command found, proceeding with advanced wrapper installation"
 
 # Create our advanced wrapper
 cat > .git/hooks/pre-commit << 'EOF'
@@ -127,8 +122,9 @@ while [ $COUNT -le $MAX_RETRIES ]
 do
     echo "${BLUE}🚀 Running pre-commit (attempt $((COUNT+1))/$(($MAX_RETRIES+1)))...${NC}"
     
-    # Run the original pre-commit hook and capture output
-    if .git/hooks/pre-commit-original 2>&1 | tee "$TEMP_LOG"; then
+    # Run pre-commit and capture output while showing it to user
+    echo "${BLUE}📋 Running pre-commit checks...${NC}"
+    if pre-commit run --hook-stage pre-commit 2>&1 | tee "$TEMP_LOG"; then
         echo "${GREEN}✅ Pre-commit checks passed on attempt $((COUNT+1))!${NC}"
         # Cleanup temp files
         rm -f "$TEMP_LOG" "$FAILED_FILES" 2>/dev/null || true
@@ -213,7 +209,8 @@ echo "🔍 Features:"
 echo "  • Retries pre-commit up to 3 times (auto-fixes formatting issues)"
 echo "  • Intelligently unstages only problematic files if all retries fail"
 echo "  • Colorized output with helpful guidance"
+echo "  • Shows all pre-commit output in real-time during retries"
 echo "  • Preserves files that pass validation for commit"
 echo ""
-echo "💡 To restore the original pre-commit hook:"
-echo "   cp .git/hooks/pre-commit-original .git/hooks/pre-commit"
+echo "💡 To restore standard pre-commit behavior:"
+echo "   pre-commit install  # This will overwrite the advanced wrapper"
