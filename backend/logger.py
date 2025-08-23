@@ -1,9 +1,11 @@
 import sys
 from datetime import datetime
+from pathlib import Path
 
 from loguru import logger as _logger
 
-from backend.config import PROJECT_ROOT
+# Get project root (parent of backend directory)
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 _print_level = "INFO"
 
