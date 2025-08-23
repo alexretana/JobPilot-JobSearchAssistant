@@ -43,12 +43,12 @@ The JobPilot backend follows a clean, layered architecture:
 
 #### Unit Tests
 - ⏳ **Pydantic Model Validation**
-  - [ ] JobListing model validation and field constraints
-  - [ ] UserProfile model validation and enum handling
-  - [ ] JobApplication status transitions and date validation
-  - [ ] CompanyInfo model validation and normalization
-  - [ ] Model serialization/deserialization (to_dict, from_dict)
-  - [ ] Custom validators (salary ranges, date consistency)
+  - [x] JobListing model validation and field constraints
+  - [x] UserProfile model validation and enum handling
+  - [x] JobApplication status transitions and date validation
+  - [x] CompanyInfo model validation and normalization
+  - [x] Model serialization/deserialization (to_dict, from_dict)
+  - [x] Custom validators (salary ranges, date consistency)
 
 - ⏳ **SQLAlchemy Model Tests**
   - [ ] Database model creation and schema validation
