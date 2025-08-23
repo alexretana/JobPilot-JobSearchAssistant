@@ -51,11 +51,11 @@ The JobPilot backend follows a clean, layered architecture:
   - [x] Custom validators (salary ranges, date consistency)
 
 - ⏳ **SQLAlchemy Model Tests**
-  - [ ] Database model creation and schema validation
-  - [ ] Foreign key relationships (UserProfile → JobApplication)
-  - [ ] Company → JobListing relationship mapping
-  - [ ] Enum field storage and retrieval
-  - [ ] Index and constraint validation
+  - [x] Database model creation and schema validation
+  - [x] Foreign key relationships (UserProfile → JobApplication)
+  - [x] Company → JobListing relationship mapping
+  - [x] Enum field storage and retrieval
+  - [x] Index and constraint validation
   - [ ] Model conversion utilities (pydantic_to_sqlalchemy, sqlalchemy_to_pydantic)
 
 #### Integration Tests

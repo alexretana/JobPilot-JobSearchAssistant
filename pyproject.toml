@@ -9,6 +9,10 @@ description = "JobPilot - Clean and Maintainable Career Assistant"
 readme = "README.md"
 requires-python = ">=3.12"
 
+[tool.setuptools.packages.find]
+include = ["backend*"]
+exclude = ["tests*", "logs*"]
+
 [tool.black]
 # No line length limit - let developers decide
 target-version = ["py311"]
