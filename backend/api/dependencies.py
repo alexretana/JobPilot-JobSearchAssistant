@@ -1,5 +1,7 @@
 from typing import Generator
+
 from backend.data.database import DatabaseManager, get_database_manager
+
 
 def get_db() -> Generator[DatabaseManager, None, None]:
     """Dependency for database manager"""

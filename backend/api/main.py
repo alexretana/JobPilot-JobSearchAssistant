@@ -1,10 +1,12 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import logging
+
 from backend.api.config import settings
 
 # Import routers
-from backend.api.routers import jobs, users, companies, applications, resumes
+from backend.api.routers import applications, companies, jobs, resumes, users
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -25,6 +27,7 @@ app.add_middleware(
     allow_headers=settings.CORS_HEADERS,
 )
 
+
 # Add custom middleware for logging
 @app.middleware("http")
 async def log_requests(request, call_next):
@@ -33,6 +36,7 @@ async def log_requests(request, call_next):
     logger.info(f"Response status: {response.status_code}")
     return response
 
+
 # Include routers
 app.include_router(jobs.router)
 app.include_router(users.router)
@@ -40,15 +44,19 @@ app.include_router(companies.router)
 app.include_router(applications.router)
 app.include_router(resumes.router)
 
+
 @app.get("/")
 async def root():
     return {"message": "Welcome to the JobPilot API"}
+
 
 # Health check endpoint
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
 
+
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)
