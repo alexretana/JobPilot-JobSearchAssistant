@@ -19,22 +19,23 @@ This checklist outlines the steps required to implement a complete backend API h
 - [x] Implement role-based access control (RBAC) if needed
 - [x] Add authentication endpoints (login, logout, refresh token)
 - [x] Implement API key authentication for external integrations
+- [ ] TODO: Implement AWS Cognito integration (configurable auth provider)
 
 ## Data Model Implementation
 
 ### Job Listings API
 
-- [ ] Create job listing request/response models
-  - [ ] `JobListingCreate` - For creating new job listings
-  - [ ] `JobListingUpdate` - For updating existing job listings
-  - [ ] `JobListingResponse` - For returning job listing data
-  - [ ] `JobListResponse` - For returning paginated job lists
-- [ ] Implement CRUD endpoints for job listings
-  - [ ] `POST /api/jobs` - Create a new job listing
-  - [ ] `GET /api/jobs` - List job listings with filtering/pagination
-  - [ ] `GET /api/jobs/{job_id}` - Get a specific job listing
-  - [ ] `PUT /api/jobs/{job_id}` - Update a job listing
-  - [ ] `DELETE /api/jobs/{job_id}` - Delete a job listing
+- [x] Create job listing request/response models
+  - [x] `JobListingCreate` - For creating new job listings
+  - [x] `JobListingUpdate` - For updating existing job listings
+  - [x] `JobListingResponse` - For returning job listing data
+  - [x] `JobListResponse` - For returning paginated job lists
+- [x] Implement CRUD endpoints for job listings
+  - [x] `POST /api/jobs` - Create a new job listing
+  - [x] `GET /api/jobs` - List job listings with filtering/pagination
+  - [x] `GET /api/jobs/{job_id}` - Get a specific job listing
+  - [x] `PUT /api/jobs/{job_id}` - Update a job listing
+  - [x] `DELETE /api/jobs/{job_id}` - Delete a job listing
 - [ ] Implement job search endpoint with advanced filtering
   - [ ] Text search across title, company, description
   - [ ] Filter by job type, remote type, experience level

@@ -1,10 +1,9 @@
+from datetime import datetime, timedelta
+from typing import Optional, Union
 import base64
 import json
-from datetime import datetime, timedelta
-from typing import Optional
-
-from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi import HTTPException, status, Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 # Secret key for JWT token signing (in production, this should be stored securely)
 SECRET_KEY = "your-secret-key-here-change-in-production"
@@ -13,6 +12,14 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 # Security scheme for Swagger UI
 security = HTTPBearer()
+
+# TODO: Implement AWS Cognito integration
+# Future enhancement: Add configuration to switch between local auth and AWS Cognito
+# This would involve:
+# 1. Adding AWS Cognito client configuration
+# 2. Implementing OAuth 2.0 flows for Cognito
+# 3. Creating user mappings between Cognito and local user system
+# 4. Adding config file to choose between local auth or Cognito auth
 
 
 def get_password_hash(password: str) -> str:
