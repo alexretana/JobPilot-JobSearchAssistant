@@ -47,17 +47,17 @@ This checklist outlines the steps required to implement a complete backend API h
 
 ### User Profiles API
 
-- [ ] Create user profile request/response models
-  - [ ] `UserProfileCreate` - For creating new user profiles
-  - [ ] `UserProfileUpdate` - For updating existing user profiles
-  - [ ] `UserProfileResponse` - For returning user profile data
-  - [ ] `UserListResponse` - For returning paginated user lists
-- [ ] Implement CRUD endpoints for user profiles
-  - [ ] `POST /api/users` - Create a new user profile
-  - [ ] `GET /api/users` - List user profiles with pagination
-  - [ ] `GET /api/users/{user_id}` - Get a specific user profile
-  - [ ] `PUT /api/users/{user_id}` - Update a user profile
-  - [ ] `DELETE /api/users/{user_id}` - Delete a user profile
+- [x] Create user profile request/response models
+  - [x] `UserProfileCreate` - For creating new user profiles
+  - [x] `UserProfileUpdate` - For updating existing user profiles
+  - [x] `UserProfileResponse` - For returning user profile data
+  - [x] `UserListResponse` - For returning paginated user lists
+- [x] Implement CRUD endpoints for user profiles
+  - [x] `POST /api/users` - Create a new user profile
+  - [x] `GET /api/users` - List user profiles with pagination
+  - [x] `GET /api/users/{user_id}` - Get a specific user profile
+  - [x] `PUT /api/users/{user_id}` - Update a user profile
+  - [x] `DELETE /api/users/{user_id}` - Delete a user profile
 - [ ] Implement user search endpoint by email
 - [ ] Implement default user profile endpoint for single-user mode
 

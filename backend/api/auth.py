@@ -1,9 +1,10 @@
-from datetime import datetime, timedelta
-from typing import Optional, Union
 import base64
 import json
-from fastapi import HTTPException, status, Depends
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from datetime import datetime, timedelta
+from typing import Optional
+
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 # Secret key for JWT token signing (in production, this should be stored securely)
 SECRET_KEY = "your-secret-key-here-change-in-production"
