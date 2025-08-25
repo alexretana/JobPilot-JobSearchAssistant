@@ -1,9 +1,10 @@
-from datetime import datetime, timedelta
-from typing import Optional, Union
 import base64
 import json
-from fastapi import HTTPException, status, Depends
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from datetime import datetime, timedelta
+from typing import Optional
+
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 # Secret key for JWT token signing (in production, this should be stored securely)
 SECRET_KEY = "your-secret-key-here-change-in-production"
@@ -13,11 +14,13 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 # Security scheme for Swagger UI
 security = HTTPBearer()
 
+
 def get_password_hash(password: str) -> str:
     """Hash a password (simplified for testing)"""
     # In a real implementation, we would use bcrypt or similar
     # For now, we'll just base64 encode it as a placeholder
     return base64.b64encode(password.encode()).decode()
+
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a plain password against a hashed password"""
@@ -28,22 +31,24 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     except:
         return False
 
+
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     """Create a JWT-like access token (simplified for testing)"""
     to_encode = data.copy()
-    
+
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
         expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    
+
     to_encode.update({"exp": expire.timestamp()})
-    
+
     # Simple base64 encoding for testing purposes
     # In a real implementation, we would use proper JWT encoding
     token_data = json.dumps(to_encode)
     encoded_token = base64.b64encode(token_data.encode()).decode()
     return encoded_token
+
 
 def validate_token(token: str) -> str:
     """Validate a token and return the user ID"""
@@ -53,12 +58,12 @@ def validate_token(token: str) -> str:
             detail="Not authenticated",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     try:
         # Decode the base64 token
         decoded_data = base64.b64decode(token.encode()).decode()
         payload = json.loads(decoded_data)
-        
+
         # Check if token has expired
         exp = payload.get("exp")
         if exp and datetime.utcnow().timestamp() > exp:
@@ -67,7 +72,7 @@ def validate_token(token: str) -> str:
                 detail="Token has expired",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-            
+
         user_id = payload.get("sub")
         if not user_id:
             raise HTTPException(
@@ -83,7 +88,10 @@ def validate_token(token: str) -> str:
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> str:
+
+def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+) -> str:
     """Get current user from token (for use as FastAPI dependency)"""
     token = credentials.credentials
     return validate_token(token)
