@@ -308,3 +308,7 @@ secrets.json
 config/secrets/
 
 WARP.md
+.claude/
+.qwen/
+.bmad-core/
+web-bundles/
