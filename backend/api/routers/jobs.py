@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter, Depends
 
 from backend.api.auth import get_current_user
