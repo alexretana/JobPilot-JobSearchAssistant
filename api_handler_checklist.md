@@ -172,16 +172,22 @@ This checklist outlines the steps required to implement a complete backend API h
 - [x] Implement batch deduplication endpoint
   - [x] `POST /api/jobs/deduplicate-batch` - Find duplicates in a batch of jobs
 
-## Analytics & Reporting
+### Analytics & Reporting API
 
-- [ ] Implement general statistics endpoint
-  - [ ] `GET /api/stats` - Get general statistics
-- [ ] Implement job statistics endpoint
-  - [ ] `GET /api/stats/jobs` - Get job-related statistics
-- [ ] Implement user statistics endpoint
-  - [ ] `GET /api/stats/users` - Get user-related statistics
-- [ ] Implement application statistics endpoint
-  - [ ] `GET /api/stats/applications` - Get application-related statistics
+- [x] Implement general statistics endpoint
+  - [x] `GET /api/stats/general` - Get general platform statistics
+- [x] Implement job statistics endpoint
+  - [x] `GET /api/stats/jobs` - Get job-related statistics
+- [x] Implement user statistics endpoint
+  - [x] `GET /api/stats/users` - Get user-related statistics
+- [x] Implement application statistics endpoint
+  - [x] `GET /api/stats/applications` - Get application-related statistics
+- [x] Implement resume statistics endpoint
+  - [x] `GET /api/stats/resumes` - Get resume-related statistics
+- [x] Implement skill bank statistics endpoint
+  - [x] `GET /api/stats/skill-banks` - Get skill bank-related statistics
+- [x] Implement job source statistics endpoint
+  - [x] `GET /api/stats/job-sources` - Get job source-related statistics
 
 ## Error Handling
 
