@@ -5,10 +5,8 @@ from fastapi import APIRouter, Depends, Query
 
 from backend.api.auth import get_current_user
 from backend.api.models.semantic_search.models import (
-    HybridSearchRequest,
     HybridSearchResponse,
     HybridSearchResult,
-    SemanticSearchRequest,
     SemanticSearchResponse,
     SemanticSearchResult,
 )
@@ -19,10 +17,16 @@ router = APIRouter(prefix="/search", tags=["search"])
 @router.get("/semantic", response_model=SemanticSearchResponse)
 async def semantic_search(
     query: str = Query(..., description="Semantic search query"),
-    limit: int = Query(20, description="Maximum number of results to return", ge=1, le=100),
+    limit: int = Query(
+        20, description="Maximum number of results to return", ge=1, le=100
+    ),
     job_types: Optional[List[str]] = Query(None, description="Filter by job types"),
-    remote_types: Optional[List[str]] = Query(None, description="Filter by remote types"),
-    experience_levels: Optional[List[str]] = Query(None, description="Filter by experience levels"),
+    remote_types: Optional[List[str]] = Query(
+        None, description="Filter by remote types"
+    ),
+    experience_levels: Optional[List[str]] = Query(
+        None, description="Filter by experience levels"
+    ),
     min_salary: Optional[int] = Query(None, description="Minimum salary filter"),
     max_salary: Optional[int] = Query(None, description="Maximum salary filter"),
     location: Optional[str] = Query(None, description="Location filter"),
@@ -37,7 +41,7 @@ async def semantic_search(
         # 3. Calculate semantic similarity scores
         # 4. Apply filters if provided
         # 5. Return results sorted by semantic similarity
-        
+
         # Mock implementation for now
         mock_results = [
             SemanticSearchResult(
@@ -51,7 +55,7 @@ async def semantic_search(
                 salary_min=120000,
                 salary_max=160000,
                 description="Looking for an experienced Python developer with Django and FastAPI experience",
-                score=0.95
+                score=0.95,
             ),
             SemanticSearchResult(
                 job_id="job-456",
@@ -64,19 +68,19 @@ async def semantic_search(
                 salary_min=100000,
                 salary_max=140000,
                 description="Build scalable backend services using Python and cloud technologies",
-                score=0.87
-            )
+                score=0.87,
+            ),
         ]
-        
+
         # Apply limit to mock results
         limited_results = mock_results[:limit]
-        
+
         return SemanticSearchResponse(
             query=query,
             results=limited_results,
             total=len(mock_results),
             limit=limit,
-            processed_at=datetime.utcnow().isoformat()
+            processed_at=datetime.utcnow().isoformat(),
         )
     except Exception as e:
         raise Exception(f"Error performing semantic search: {str(e)}")
@@ -85,16 +89,26 @@ async def semantic_search(
 @router.get("/hybrid", response_model=HybridSearchResponse)
 async def hybrid_search(
     query: str = Query(..., description="Hybrid search query"),
-    limit: int = Query(20, description="Maximum number of results to return", ge=1, le=100),
+    limit: int = Query(
+        20, description="Maximum number of results to return", ge=1, le=100
+    ),
     job_types: Optional[List[str]] = Query(None, description="Filter by job types"),
-    remote_types: Optional[List[str]] = Query(None, description="Filter by remote types"),
-    experience_levels: Optional[List[str]] = Query(None, description="Filter by experience levels"),
+    remote_types: Optional[List[str]] = Query(
+        None, description="Filter by remote types"
+    ),
+    experience_levels: Optional[List[str]] = Query(
+        None, description="Filter by experience levels"
+    ),
     min_salary: Optional[int] = Query(None, description="Minimum salary filter"),
     max_salary: Optional[int] = Query(None, description="Maximum salary filter"),
     location: Optional[str] = Query(None, description="Location filter"),
     company: Optional[str] = Query(None, description="Company filter"),
-    keyword_weight: float = Query(0.5, description="Weight for keyword matching (0.0 to 1.0)", ge=0.0, le=1.0),
-    semantic_weight: float = Query(0.5, description="Weight for semantic matching (0.0 to 1.0)", ge=0.0, le=1.0),
+    keyword_weight: float = Query(
+        0.5, description="Weight for keyword matching (0.0 to 1.0)", ge=0.0, le=1.0
+    ),
+    semantic_weight: float = Query(
+        0.5, description="Weight for semantic matching (0.0 to 1.0)", ge=0.0, le=1.0
+    ),
     current_user=Depends(get_current_user),
 ):
     """Perform hybrid search on job listings (semantic + keyword) (requires authentication)"""
@@ -105,7 +119,7 @@ async def hybrid_search(
         # 3. Combine the scores using the provided weights
         # 4. Apply filters if provided
         # 5. Return results sorted by combined score
-        
+
         # Mock implementation for now
         mock_results = [
             HybridSearchResult(
@@ -121,7 +135,7 @@ async def hybrid_search(
                 description="Looking for an experienced Python developer with Django and FastAPI experience",
                 keyword_score=0.85,
                 semantic_score=0.95,
-                combined_score=0.90
+                combined_score=0.90,
             ),
             HybridSearchResult(
                 job_id="job-456",
@@ -136,13 +150,13 @@ async def hybrid_search(
                 description="Build scalable backend services using Python and cloud technologies",
                 keyword_score=0.75,
                 semantic_score=0.87,
-                combined_score=0.81
-            )
+                combined_score=0.81,
+            ),
         ]
-        
+
         # Apply limit to mock results
         limited_results = mock_results[:limit]
-        
+
         return HybridSearchResponse(
             query=query,
             results=limited_results,
@@ -150,7 +164,7 @@ async def hybrid_search(
             limit=limit,
             keyword_weight=keyword_weight,
             semantic_weight=semantic_weight,
-            processed_at=datetime.utcnow().isoformat()
+            processed_at=datetime.utcnow().isoformat(),
         )
     except Exception as e:
         raise Exception(f"Error performing hybrid search: {str(e)}")
