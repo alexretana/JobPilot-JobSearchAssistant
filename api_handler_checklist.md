@@ -36,14 +36,14 @@ This checklist outlines the steps required to implement a complete backend API h
   - [x] `GET /api/jobs/{job_id}` - Get a specific job listing
   - [x] `PUT /api/jobs/{job_id}` - Update a job listing
   - [x] `DELETE /api/jobs/{job_id}` - Delete a job listing
-- [ ] Implement job search endpoint with advanced filtering
-  - [ ] Text search across title, company, description
-  - [ ] Filter by job type, remote type, experience level
-  - [ ] Filter by salary range
-  - [ ] Filter by location
-  - [ ] Filter by company
-  - [ ] Filter by posted date range
-- [ ] Implement job listing statistics endpoint
+- [x] Implement job search endpoint with advanced filtering
+  - [x] Text search across title, company, description
+  - [x] Filter by job type, remote type, experience level
+  - [x] Filter by salary range
+  - [x] Filter by location
+  - [x] Filter by company
+  - [x] Filter by posted date range
+- [x] Implement job listing statistics endpoint
 
 ### User Profiles API
 
