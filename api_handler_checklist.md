@@ -167,9 +167,10 @@ This checklist outlines the steps required to implement a complete backend API h
 
 ### Job Deduplication API
 
-- [ ] Implement job deduplication endpoints
-  - [ ] `POST /api/jobs/deduplicate` - Check if two jobs are duplicates
-  - [ ] `POST /api/jobs/deduplicate-batch` - Find duplicates in a batch of jobs
+- [x] Implement job deduplication endpoint
+  - [x] `POST /api/jobs/deduplicate` - Check if two jobs are duplicates
+- [x] Implement batch deduplication endpoint
+  - [x] `POST /api/jobs/deduplicate-batch` - Find duplicates in a batch of jobs
 
 ## Analytics & Reporting
 
