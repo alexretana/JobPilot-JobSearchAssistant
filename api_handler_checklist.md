@@ -130,18 +130,18 @@ This checklist outlines the steps required to implement a complete backend API h
 
 ### Timeline Events API
 
-- [ ] Create timeline event request/response models
-  - [ ] `TimelineEventCreate` - For creating new timeline events
-  - [ ] `TimelineEventUpdate` - For updating existing timeline events
-  - [ ] `TimelineEventResponse` - For returning timeline event data
-  - [ ] `TimelineEventListResponse` - For returning paginated timeline event lists
-- [ ] Implement CRUD endpoints for timeline events
-  - [ ] `POST /api/timeline` - Create a new timeline event
-  - [ ] `GET /api/timeline` - List timeline events with filtering/pagination
-  - [ ] `GET /api/timeline/{event_id}` - Get a specific timeline event
-  - [ ] `PUT /api/timeline/{event_id}` - Update a timeline event
-  - [ ] `DELETE /api/timeline/{event_id}` - Delete a timeline event
-- [ ] Implement filtering by user, job, event type
+- [x] Create timeline event request/response models
+  - [x] `TimelineEventCreate` - For creating new timeline events
+  - [x] `TimelineEventUpdate` - For updating existing timeline events
+  - [x] `TimelineEventResponse` - For returning timeline event data
+  - [x] `TimelineEventListResponse` - For returning paginated timeline event lists
+- [x] Implement CRUD endpoints for timeline events
+  - [x] `POST /api/timeline` - Create a new timeline event
+  - [x] `GET /api/timeline` - List timeline events with filtering/pagination
+  - [x] `GET /api/timeline/{event_id}` - Get a specific timeline event
+  - [x] `PUT /api/timeline/{event_id}` - Update a timeline event
+  - [x] `DELETE /api/timeline/{event_id}` - Delete a timeline event
+- [x] Implement filtering by user, job, event type
 
 ## Advanced Features
 
