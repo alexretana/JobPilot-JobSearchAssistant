@@ -58,24 +58,24 @@ This checklist outlines the steps required to implement a complete backend API h
   - [x] `GET /api/users/{user_id}` - Get a specific user profile
   - [x] `PUT /api/users/{user_id}` - Update a user profile
   - [x] `DELETE /api/users/{user_id}` - Delete a user profile
-- [ ] Implement user search endpoint by email
-- [ ] Implement default user profile endpoint for single-user mode
+- [x] Implement user search endpoint by email
+- [x] Implement default user profile endpoint for single-user mode
 
 ### Companies API
 
-- [ ] Create company request/response models
-  - [ ] `CompanyCreate` - For creating new companies
-  - [ ] `CompanyUpdate` - For updating existing companies
-  - [ ] `CompanyResponse` - For returning company data
-  - [ ] `CompanyListResponse` - For returning paginated company lists
-- [ ] Implement CRUD endpoints for companies
-  - [ ] `POST /api/companies` - Create a new company
-  - [ ] `GET /api/companies` - List companies with pagination
-  - [ ] `GET /api/companies/{company_id}` - Get a specific company
-  - [ ] `PUT /api/companies/{company_id}` - Update a company
-  - [ ] `DELETE /api/companies/{company_id}` - Delete a company
-- [ ] Implement company search endpoint
-- [ ] Implement endpoint to get jobs by company
+- [x] Create company request/response models
+  - [x] `CompanyCreate` - For creating new companies
+  - [x] `CompanyUpdate` - For updating existing companies
+  - [x] `CompanyResponse` - For returning company data
+  - [x] `CompanyListResponse` - For returning paginated company lists
+- [x] Implement CRUD endpoints for companies
+  - [x] `POST /api/companies` - Create a new company
+  - [x] `GET /api/companies` - List companies with pagination
+  - [x] `GET /api/companies/{company_id}` - Get a specific company
+  - [x] `PUT /api/companies/{company_id}` - Update a company
+  - [x] `DELETE /api/companies/{company_id}` - Delete a company
+- [x] Implement company search endpoint
+- [x] Implement endpoint to get jobs by company
 
 ### Job Applications API
 
