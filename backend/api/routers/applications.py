@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
@@ -21,7 +20,9 @@ router = APIRouter(prefix="/applications", tags=["applications"])
 
 @router.get("/", response_model=JobApplicationListResponse)
 async def list_applications(
-    status: Optional[ApplicationStatus] = Query(None, description="Filter by application status"),
+    status: Optional[ApplicationStatus] = Query(
+        None, description="Filter by application status"
+    ),
     limit: int = Query(50, description="Number of applications to return", le=100),
     offset: int = Query(0, description="Number of applications to skip"),
     current_user=Depends(get_current_user),
@@ -36,7 +37,7 @@ async def list_applications(
             limit=limit,
             offset=offset,
         )
-        
+
         # Convert to response models
         app_responses = []
         for app in applications:
@@ -57,7 +58,7 @@ async def list_applications(
                     updated_at=app.updated_at,
                 )
             )
-        
+
         return JobApplicationListResponse(
             applications=app_responses,
             total=total,
@@ -82,20 +83,20 @@ async def get_application(
     try:
         interaction_repo = get_interaction_repository()
         application = interaction_repo.get_application(application_id)
-        
+
         if not application:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Application not found",
             )
-        
+
         # Check if the application belongs to the current user
         if str(application.user_profile_id) != current_user:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Not authorized to access this application",
             )
-        
+
         return JobApplicationResponse(
             id=application.id,
             job_id=application.job_id,
@@ -114,7 +115,9 @@ async def get_application(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error getting application {application_id} for user {current_user}: {e}")
+        logger.error(
+            f"Error getting application {application_id} for user {current_user}: {e}"
+        )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get application",
@@ -135,29 +138,45 @@ async def create_application(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Not authorized to create application for another user",
             )
-        
+
         interaction_repo = get_interaction_repository()
         interaction = interaction_repo.apply_to_job(
             user_id=str(application_data.user_profile_id),
             job_id=str(application_data.job_id),
             resume_version=application_data.resume_version,
             cover_letter=application_data.cover_letter,
-            interaction_data={"notes": application_data.notes} if application_data.notes else None,
+            interaction_data=(
+                {"notes": application_data.notes} if application_data.notes else None
+            ),
         )
-        
+
         # If notes were provided, we need to update the interaction to store them in the notes field
         if application_data.notes:
             # Update the interaction to store notes in the proper field
             update_dict = {"notes": application_data.notes}
-            updated_interaction = interaction_repo.update_application(interaction.id, update_dict)
+            updated_interaction = interaction_repo.update_application(
+                interaction.id, update_dict
+            )
             if updated_interaction:
                 interaction = updated_interaction
-        
+
         # Convert interaction to application response
         return JobApplicationResponse(
-            id=UUID(str(interaction.id)) if not isinstance(interaction.id, UUID) else interaction.id,
-            job_id=UUID(str(interaction.job_id)) if not isinstance(interaction.job_id, UUID) else interaction.job_id,
-            user_profile_id=UUID(str(interaction.user_profile_id)) if not isinstance(interaction.user_profile_id, UUID) else interaction.user_profile_id,
+            id=(
+                UUID(str(interaction.id))
+                if not isinstance(interaction.id, UUID)
+                else interaction.id
+            ),
+            job_id=(
+                UUID(str(interaction.job_id))
+                if not isinstance(interaction.job_id, UUID)
+                else interaction.job_id
+            ),
+            user_profile_id=(
+                UUID(str(interaction.user_profile_id))
+                if not isinstance(interaction.user_profile_id, UUID)
+                else interaction.user_profile_id
+            ),
             status=interaction.status,
             applied_date=interaction.applied_date,
             response_date=interaction.response_date,
@@ -190,36 +209,38 @@ async def update_application(
     try:
         interaction_repo = get_interaction_repository()
         application = interaction_repo.get_application(application_id)
-        
+
         if not application:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Application not found",
             )
-        
+
         # Check if the application belongs to the current user
         if str(application.user_profile_id) != current_user:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Not authorized to update this application",
             )
-        
+
         # Update the application
         update_dict = update_data.dict(exclude_unset=True)
-        updated_application = interaction_repo.update_application(application_id, update_dict)
-        
+        updated_application = interaction_repo.update_application(
+            application_id, update_dict
+        )
+
         if not updated_application:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Application not found after update",
             )
-        
+
         # Refresh the application data to ensure we have the latest values
         # This is a workaround for potential caching issues
         refreshed_application = interaction_repo.get_application(application_id)
         if refreshed_application:
             updated_application = refreshed_application
-        
+
         return JobApplicationResponse(
             id=updated_application.id,
             job_id=updated_application.job_id,
@@ -238,7 +259,9 @@ async def update_application(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error updating application {application_id} for user {current_user}: {e}")
+        logger.error(
+            f"Error updating application {application_id} for user {current_user}: {e}"
+        )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to update application",
@@ -255,33 +278,35 @@ async def delete_application(
     try:
         interaction_repo = get_interaction_repository()
         application = interaction_repo.get_application(application_id)
-        
+
         if not application:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Application not found",
             )
-        
+
         # Check if the application belongs to the current user
         if str(application.user_profile_id) != current_user:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Not authorized to delete this application",
             )
-        
+
         success = interaction_repo.delete_application(application_id)
-        
+
         if not success:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Failed to delete application",
             )
-        
+
         return {"message": "Application deleted successfully"}
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error deleting application {application_id} for user {current_user}: {e}")
+        logger.error(
+            f"Error deleting application {application_id} for user {current_user}: {e}"
+        )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to delete application",
