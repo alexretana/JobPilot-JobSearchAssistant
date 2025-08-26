@@ -1,0 +1,1 @@
+"""Resume API models package"""

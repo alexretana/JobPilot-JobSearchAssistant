@@ -94,19 +94,19 @@ This checklist outlines the steps required to implement a complete backend API h
 
 ### Resumes API
 
-- [ ] Create resume request/response models
-  - [ ] `ResumeCreate` - For creating new resumes
-  - [ ] `ResumeUpdate` - For updating existing resumes
-  - [ ] `ResumeResponse` - For returning resume data
-  - [ ] `ResumeListResponse` - For returning paginated resume lists
-- [ ] Implement CRUD endpoints for resumes
-  - [ ] `POST /api/resumes` - Create a new resume
-  - [ ] `GET /api/resumes` - List resumes with filtering/pagination
-  - [ ] `GET /api/resumes/{resume_id}` - Get a specific resume
-  - [ ] `PUT /api/resumes/{resume_id}` - Update a resume
-  - [ ] `DELETE /api/resumes/{resume_id}` - Delete a resume
-- [ ] Implement filtering by user, status, type
-- [ ] Implement endpoint to get user's resumes
+- [x] Create resume request/response models
+  - [x] `ResumeCreate` - For creating new resumes
+  - [x] `ResumeUpdate` - For updating existing resumes
+  - [x] `ResumeResponse` - For returning resume data
+  - [x] `ResumeListResponse` - For returning paginated resume lists
+- [x] Implement CRUD endpoints for resumes
+  - [x] `POST /api/resumes` - Create a new resume
+  - [x] `GET /api/resumes` - List resumes with filtering/pagination
+  - [x] `GET /api/resumes/{resume_id}` - Get a specific resume
+  - [x] `PUT /api/resumes/{resume_id}` - Update a resume
+  - [x] `DELETE /api/resumes/{resume_id}` - Delete a resume
+- [x] Implement filtering by user, status, type
+- [x] Implement endpoint to get user's resumes
 
 ### Skill Bank API
 
