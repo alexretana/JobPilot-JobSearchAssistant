@@ -797,15 +797,17 @@ user_repo = None
 resume_repo = None
 interaction_repo = None
 company_repo = None
+skill_bank_repo = None
 
 
 def initialize_database(database_url: str = None):
     """Initialize global database instances."""
-    global db_manager, job_repo, user_repo, resume_repo, interaction_repo, company_repo
+    global db_manager, job_repo, user_repo, resume_repo, interaction_repo, company_repo, skill_bank_repo
 
     # Import here to avoid circular imports
     from backend.data.company_repository import CompanyRepository
     from backend.data.interaction_repository import JobUserInteractionRepository
+    from backend.data.skill_bank_repository import SkillBankRepository
 
     db_manager = DatabaseManager(database_url)
     job_repo = JobRepository(db_manager)
@@ -813,6 +815,7 @@ def initialize_database(database_url: str = None):
     resume_repo = ResumeRepository(db_manager)
     interaction_repo = JobUserInteractionRepository(db_manager)
     company_repo = CompanyRepository(db_manager)
+    skill_bank_repo = SkillBankRepository(db_manager)
 
     logger.info("Database repositories initialized")
 
@@ -869,3 +872,10 @@ def get_application_repository():
     """Get or create application repository (legacy compatibility - uses interaction repository)."""
     # Legacy compatibility: applications are now handled by the interaction repository
     return get_interaction_repository()
+  
+def get_skill_bank_repository():  
+    # Get or create skill bank repository
+    global skill_bank_repo
+    if skill_bank_repo is None:
+        initialize_database() 
+    return skill_bank_repo

@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.api.config import settings
 
 # Import routers
-from backend.api.routers import applications, auth, companies, jobs, resumes, users
+from backend.api.routers import applications, auth, companies, jobs, resumes, skill_banks, users
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -43,6 +43,7 @@ app.include_router(users.router)
 app.include_router(companies.router)
 app.include_router(applications.router)
 app.include_router(resumes.router)
+app.include_router(skill_banks.router)
 app.include_router(auth.router)
 
 

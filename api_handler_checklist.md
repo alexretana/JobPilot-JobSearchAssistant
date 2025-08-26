@@ -110,23 +110,23 @@ This checklist outlines the steps required to implement a complete backend API h
 
 ### Skill Bank API
 
-- [ ] Create skill bank request/response models
-  - [ ] `SkillBankCreate` - For creating new skill banks
-  - [ ] `SkillBankUpdate` - For updating existing skill banks
-  - [ ] `SkillBankResponse` - For returning skill bank data
-- [ ] Implement CRUD endpoints for skill banks
-  - [ ] `POST /api/skill-banks` - Create a new skill bank
-  - [ ] `GET /api/skill-banks/{user_id}` - Get a user's skill bank
-  - [ ] `PUT /api/skill-banks/{user_id}` - Update a user's skill bank
-  - [ ] `DELETE /api/skill-banks/{user_id}` - Delete a user's skill bank
-- [ ] Implement skill management endpoints
-  - [ ] `POST /api/skill-banks/{user_id}/skills` - Add a skill
-  - [ ] `PUT /api/skill-banks/{user_id}/skills/{skill_id}` - Update a skill
-  - [ ] `DELETE /api/skill-banks/{user_id}/skills/{skill_id}` - Delete a skill
-- [ ] Implement experience management endpoints
-  - [ ] `POST /api/skill-banks/{user_id}/experiences` - Add an experience
-  - [ ] `PUT /api/skill-banks/{user_id}/experiences/{experience_id}` - Update an experience
-  - [ ] `DELETE /api/skill-banks/{user_id}/experiences/{experience_id}` - Delete an experience
+- [x] Create skill bank request/response models
+  - [x] `SkillBankCreate` - For creating new skill banks
+  - [x] `SkillBankUpdate` - For updating existing skill banks
+  - [x] `SkillBankResponse` - For returning skill bank data
+- [x] Implement CRUD endpoints for skill banks
+  - [x] `POST /api/skill-banks` - Create a new skill bank
+  - [x] `GET /api/skill-banks/{user_id}` - Get a user's skill bank
+  - [x] `PUT /api/skill-banks/{user_id}` - Update a user's skill bank
+  - [x] `DELETE /api/skill-banks/{user_id}` - Delete a user's skill bank
+- [x] Implement skill management endpoints
+  - [x] `POST /api/skill-banks/{user_id}/skills` - Add a skill
+  - [x] `PUT /api/skill-banks/{user_id}/skills/{skill_id}` - Update a skill
+  - [x] `DELETE /api/skill-banks/{user_id}/skills/{skill_id}` - Delete a skill
+- [x] Implement experience management endpoints
+  - [x] `POST /api/skill-banks/{user_id}/experiences` - Add an experience
+  - [x] `PUT /api/skill-banks/{user_id}/experiences/{experience_id}` - Update an experience
+  - [x] `DELETE /api/skill-banks/{user_id}/experiences/{experience_id}` - Delete an experience
 
 ### Timeline Events API
 
