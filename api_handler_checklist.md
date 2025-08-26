@@ -79,18 +79,18 @@ This checklist outlines the steps required to implement a complete backend API h
 
 ### Job Applications API
 
-- [ ] Create job application request/response models
-  - [ ] `JobApplicationCreate` - For creating new job applications
-  - [ ] `JobApplicationUpdate` - For updating existing job applications
-  - [ ] `JobApplicationResponse` - For returning job application data
-  - [ ] `JobApplicationListResponse` - For returning paginated job application lists
-- [ ] Implement CRUD endpoints for job applications
-  - [ ] `POST /api/applications` - Create a new job application
-  - [ ] `GET /api/applications` - List job applications with filtering/pagination
-  - [ ] `GET /api/applications/{application_id}` - Get a specific job application
-  - [ ] `PUT /api/applications/{application_id}` - Update a job application
-  - [ ] `DELETE /api/applications/{application_id}` - Delete a job application
-- [ ] Implement filtering by status, user, job
+- [x] Create job application request/response models
+  - [x] `JobApplicationCreate` - For creating new job applications
+  - [x] `JobApplicationUpdate` - For updating existing job applications
+  - [x] `JobApplicationResponse` - For returning job application data
+  - [x] `JobApplicationListResponse` - For returning paginated job application lists
+- [x] Implement CRUD endpoints for job applications
+  - [x] `POST /api/applications` - Create a new job application
+  - [x] `GET /api/applications` - List job applications with filtering/pagination
+  - [x] `GET /api/applications/{application_id}` - Get a specific job application
+  - [x] `PUT /api/applications/{application_id}` - Update a job application
+  - [x] `DELETE /api/applications/{application_id}` - Delete a job application
+- [x] Implement filtering by status, user, job
 
 ### Resumes API
 
