@@ -3,7 +3,6 @@ Skill Bank API Router
 FastAPI router for skill bank management endpoints
 """
 
-from typing import Dict, List, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -39,7 +38,7 @@ async def create_skill_bank(
 ):
     """
     Create a new skill bank for a user.
-    
+
     Requires authentication. Users can only create skill banks for themselves.
     """
     try:
@@ -49,10 +48,10 @@ async def create_skill_bank(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Not authorized to create skill bank for another user",
             )
-        
+
         # Get skill bank repository
         skill_bank_repo = get_skill_bank_repository()
-        
+
         # Check if skill bank already exists
         existing_skill_bank = await skill_bank_repo.get_skill_bank(current_user)
         if existing_skill_bank:
@@ -60,28 +59,30 @@ async def create_skill_bank(
                 status_code=status.HTTP_409_CONFLICT,
                 detail="Skill bank already exists for this user",
             )
-        
+
         # Create new skill bank
         skill_bank = await skill_bank_repo.create_skill_bank(current_user)
-        
+
         # Add initial skills if provided
         if skill_bank_data.initial_skills:
             for skill in skill_bank_data.initial_skills:
                 await skill_bank_repo.add_skill(current_user, skill)
-            
+
             # Refresh skill bank to include added skills
             skill_bank = await skill_bank_repo.get_skill_bank(current_user)
-        
+
         # Set default summary if provided
         if skill_bank_data.default_summary:
             update_data = {"default_summary": skill_bank_data.default_summary}
-            skill_bank = await skill_bank_repo.update_skill_bank(current_user, update_data)
-        
+            skill_bank = await skill_bank_repo.update_skill_bank(
+                current_user, update_data
+            )
+
         logger.info(f"Created skill bank for user: {current_user}")
-        
+
         # Convert to response model
         return _convert_skill_bank_to_response(skill_bank)
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -100,7 +101,7 @@ async def get_skill_bank(
 ):
     """
     Get a user's skill bank.
-    
+
     Requires authentication. Users can only access their own skill banks.
     """
     try:
@@ -110,21 +111,21 @@ async def get_skill_bank(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Not authorized to access another user's skill bank",
             )
-        
+
         # Get skill bank repository
         skill_bank_repo = get_skill_bank_repository()
-        
+
         # Get skill bank
         skill_bank = await skill_bank_repo.get_skill_bank(user_id)
         if not skill_bank:
             # Create a new skill bank if it doesn't exist
             skill_bank = await skill_bank_repo.create_skill_bank(user_id)
-        
+
         logger.info(f"Retrieved skill bank for user: {user_id}")
-        
+
         # Convert to response model
         return _convert_skill_bank_to_response(skill_bank)
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -144,7 +145,7 @@ async def update_skill_bank(
 ):
     """
     Update a user's skill bank.
-    
+
     Requires authentication. Users can only update their own skill banks.
     """
     try:
@@ -154,10 +155,10 @@ async def update_skill_bank(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Not authorized to update another user's skill bank",
             )
-        
+
         # Get skill bank repository
         skill_bank_repo = get_skill_bank_repository()
-        
+
         # Check if skill bank exists
         existing_skill_bank = await skill_bank_repo.get_skill_bank(user_id)
         if not existing_skill_bank:
@@ -165,18 +166,20 @@ async def update_skill_bank(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Skill bank not found",
             )
-        
+
         # Prepare update data
         update_dict = update_data.dict(exclude_unset=True)
-        
+
         # Update skill bank
-        updated_skill_bank = await skill_bank_repo.update_skill_bank(user_id, update_dict)
-        
+        updated_skill_bank = await skill_bank_repo.update_skill_bank(
+            user_id, update_dict
+        )
+
         logger.info(f"Updated skill bank for user: {user_id}")
-        
+
         # Convert to response model
         return _convert_skill_bank_to_response(updated_skill_bank)
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -195,7 +198,7 @@ async def delete_skill_bank(
 ):
     """
     Delete a user's skill bank.
-    
+
     Requires authentication. Users can only delete their own skill banks.
     """
     try:
@@ -205,10 +208,10 @@ async def delete_skill_bank(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Not authorized to delete another user's skill bank",
             )
-        
+
         # Get skill bank repository
         skill_bank_repo = get_skill_bank_repository()
-        
+
         # Check if skill bank exists
         existing_skill_bank = await skill_bank_repo.get_skill_bank(user_id)
         if not existing_skill_bank:
@@ -216,13 +219,15 @@ async def delete_skill_bank(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Skill bank not found",
             )
-        
+
         # For now, we won't actually delete the skill bank to preserve user data
         # In a real implementation, this would delete the skill bank
-        logger.info(f"Skill bank deletion requested for user: {user_id} (not actually deleted)")
-        
+        logger.info(
+            f"Skill bank deletion requested for user: {user_id} (not actually deleted)"
+        )
+
         return {"message": "Skill bank archived successfully"}
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -242,7 +247,7 @@ async def add_skill(
 ):
     """
     Add a skill to a user's skill bank.
-    
+
     Requires authentication. Users can only add skills to their own skill banks.
     """
     try:
@@ -252,10 +257,10 @@ async def add_skill(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Not authorized to add skills to another user's skill bank",
             )
-        
+
         # Get skill bank repository
         skill_bank_repo = get_skill_bank_repository()
-        
+
         # Create EnhancedSkill from SkillCreate
         enhanced_skill = EnhancedSkill(
             name=skill_data.name,
@@ -269,18 +274,20 @@ async def add_skill(
             is_featured=skill_data.is_featured,
             display_order=skill_data.display_order,
         )
-        
+
         # Add skill to skill bank
         added_skill = await skill_bank_repo.add_skill(user_id, enhanced_skill)
-        
+
         # Get updated skill bank
         skill_bank = await skill_bank_repo.get_skill_bank(user_id)
-        
-        logger.info(f"Added skill '{skill_data.name}' to skill bank for user: {user_id}")
-        
+
+        logger.info(
+            f"Added skill '{skill_data.name}' to skill bank for user: {user_id}"
+        )
+
         # Convert to response model
         return _convert_skill_bank_to_response(skill_bank)
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -301,7 +308,7 @@ async def update_skill(
 ):
     """
     Update a skill in a user's skill bank.
-    
+
     Requires authentication. Users can only update skills in their own skill banks.
     """
     try:
@@ -311,24 +318,26 @@ async def update_skill(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Not authorized to update skills in another user's skill bank",
             )
-        
+
         # Get skill bank repository
         skill_bank_repo = get_skill_bank_repository()
-        
+
         # Prepare update data
         update_dict = update_data.dict(exclude_unset=True)
-        
+
         # Update skill
-        updated_skill = await skill_bank_repo.update_skill(user_id, skill_id, update_dict)
-        
+        updated_skill = await skill_bank_repo.update_skill(
+            user_id, skill_id, update_dict
+        )
+
         # Get updated skill bank
         skill_bank = await skill_bank_repo.get_skill_bank(user_id)
-        
+
         logger.info(f"Updated skill '{skill_id}' in skill bank for user: {user_id}")
-        
+
         # Convert to response model
         return _convert_skill_bank_to_response(skill_bank)
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -348,7 +357,7 @@ async def delete_skill(
 ):
     """
     Delete a skill from a user's skill bank.
-    
+
     Requires authentication. Users can only delete skills from their own skill banks.
     """
     try:
@@ -358,10 +367,10 @@ async def delete_skill(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Not authorized to delete skills from another user's skill bank",
             )
-        
+
         # Get skill bank repository
         skill_bank_repo = get_skill_bank_repository()
-        
+
         # Delete skill
         success = await skill_bank_repo.delete_skill(user_id, skill_id)
         if not success:
@@ -369,15 +378,15 @@ async def delete_skill(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Skill not found",
             )
-        
+
         # Get updated skill bank
         skill_bank = await skill_bank_repo.get_skill_bank(user_id)
-        
+
         logger.info(f"Deleted skill '{skill_id}' from skill bank for user: {user_id}")
-        
+
         # Convert to response model
         return _convert_skill_bank_to_response(skill_bank)
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -397,7 +406,7 @@ async def add_experience(
 ):
     """
     Add a work experience to a user's skill bank.
-    
+
     Requires authentication. Users can only add experiences to their own skill banks.
     """
     try:
@@ -407,10 +416,10 @@ async def add_experience(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Not authorized to add experiences to another user's skill bank",
             )
-        
+
         # Get skill bank repository
         skill_bank_repo = get_skill_bank_repository()
-        
+
         # Create ExperienceEntry from ExperienceCreate
         experience_entry = ExperienceEntry(
             company=experience_data.company,
@@ -424,18 +433,22 @@ async def add_experience(
             skills_used=experience_data.skills_used,
             technologies=experience_data.technologies,
         )
-        
+
         # Add experience to skill bank
-        added_experience = await skill_bank_repo.add_experience(user_id, experience_entry)
-        
+        added_experience = await skill_bank_repo.add_experience(
+            user_id, experience_entry
+        )
+
         # Get updated skill bank
         skill_bank = await skill_bank_repo.get_skill_bank(user_id)
-        
-        logger.info(f"Added experience at '{experience_data.company}' to skill bank for user: {user_id}")
-        
+
+        logger.info(
+            f"Added experience at '{experience_data.company}' to skill bank for user: {user_id}"
+        )
+
         # Convert to response model
         return _convert_skill_bank_to_response(skill_bank)
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -456,7 +469,7 @@ async def update_experience(
 ):
     """
     Update a work experience in a user's skill bank.
-    
+
     Requires authentication. Users can only update experiences in their own skill banks.
     """
     try:
@@ -466,24 +479,28 @@ async def update_experience(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Not authorized to update experiences in another user's skill bank",
             )
-        
+
         # Get skill bank repository
         skill_bank_repo = get_skill_bank_repository()
-        
+
         # Prepare update data
         update_dict = update_data.dict(exclude_unset=True)
-        
+
         # Update experience
-        updated_experience = await skill_bank_repo.update_experience(user_id, experience_id, update_dict)
-        
+        updated_experience = await skill_bank_repo.update_experience(
+            user_id, experience_id, update_dict
+        )
+
         # Get updated skill bank
         skill_bank = await skill_bank_repo.get_skill_bank(user_id)
-        
-        logger.info(f"Updated experience '{experience_id}' in skill bank for user: {user_id}")
-        
+
+        logger.info(
+            f"Updated experience '{experience_id}' in skill bank for user: {user_id}"
+        )
+
         # Convert to response model
         return _convert_skill_bank_to_response(skill_bank)
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -503,7 +520,7 @@ async def delete_experience(
 ):
     """
     Delete a work experience from a user's skill bank.
-    
+
     Requires authentication. Users can only delete experiences from their own skill banks.
     """
     try:
@@ -513,10 +530,10 @@ async def delete_experience(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Not authorized to delete experiences from another user's skill bank",
             )
-        
+
         # Get skill bank repository
         skill_bank_repo = get_skill_bank_repository()
-        
+
         # Delete experience
         success = await skill_bank_repo.delete_experience(user_id, experience_id)
         if not success:
@@ -524,19 +541,23 @@ async def delete_experience(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Experience not found",
             )
-        
+
         # Get updated skill bank
         skill_bank = await skill_bank_repo.get_skill_bank(user_id)
-        
-        logger.info(f"Deleted experience '{experience_id}' from skill bank for user: {user_id}")
-        
+
+        logger.info(
+            f"Deleted experience '{experience_id}' from skill bank for user: {user_id}"
+        )
+
         # Convert to response model
         return _convert_skill_bank_to_response(skill_bank)
-        
+
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error deleting experience from skill bank for user {user_id}: {e}")
+        logger.error(
+            f"Error deleting experience from skill bank for user {user_id}: {e}"
+        )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to delete experience from skill bank",
@@ -548,8 +569,16 @@ def _convert_skill_bank_to_response(skill_bank: SkillBank) -> SkillBankResponse:
     Convert a SkillBank model to a SkillBankResponse model.
     """
     return SkillBankResponse(
-        id=UUID(skill_bank.id) if not isinstance(skill_bank.id, UUID) else skill_bank.id,
-        user_id=UUID(skill_bank.user_id) if not isinstance(skill_bank.user_id, UUID) else skill_bank.user_id,
+        id=(
+            UUID(skill_bank.id)
+            if not isinstance(skill_bank.id, UUID)
+            else skill_bank.id
+        ),
+        user_id=(
+            UUID(skill_bank.user_id)
+            if not isinstance(skill_bank.user_id, UUID)
+            else skill_bank.user_id
+        ),
         skills=skill_bank.skills,
         skill_categories=skill_bank.skill_categories,
         default_summary=skill_bank.default_summary,

@@ -872,10 +872,11 @@ def get_application_repository():
     """Get or create application repository (legacy compatibility - uses interaction repository)."""
     # Legacy compatibility: applications are now handled by the interaction repository
     return get_interaction_repository()
-  
-def get_skill_bank_repository():  
+
+
+def get_skill_bank_repository():
     # Get or create skill bank repository
     global skill_bank_repo
     if skill_bank_repo is None:
-        initialize_database() 
+        initialize_database()
     return skill_bank_repo
