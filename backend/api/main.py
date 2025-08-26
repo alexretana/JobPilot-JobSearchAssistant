@@ -10,14 +10,14 @@ from backend.api.routers import (
     applications,
     auth,
     companies,
+    job_deduplication,
+    job_sources,
     jobs,
     resumes,
-    skill_banks,
-    users,
-    timeline,
-    job_sources,
     search,
-    job_deduplication,
+    skill_banks,
+    timeline,
+    users,
 )
 
 # Setup logging
