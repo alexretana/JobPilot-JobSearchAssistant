@@ -160,10 +160,10 @@ This checklist outlines the steps required to implement a complete backend API h
 
 ### Semantic Search API
 
-- [ ] Implement semantic search endpoint
-  - [ ] `GET /api/search/semantic` - Perform semantic search on job listings
-- [ ] Implement hybrid search endpoint (semantic + keyword)
-  - [ ] `GET /api/search/hybrid` - Perform hybrid search on job listings
+- [x] Implement semantic search endpoint
+  - [x] `GET /api/search/semantic` - Perform semantic search on job listings
+- [x] Implement hybrid search endpoint (semantic + keyword)
+  - [x] `GET /api/search/hybrid` - Perform hybrid search on job listings
 
 ### Job Deduplication API
 
