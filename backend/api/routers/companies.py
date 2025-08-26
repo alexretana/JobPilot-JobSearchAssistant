@@ -1,5 +1,7 @@
-from fastapi import APIRouter, Depends, Query, HTTPException
-from typing import List, Optional
+from typing import Optional
+
+from fastapi import APIRouter, Depends, Query
+
 from backend.api.auth import get_current_user
 
 router = APIRouter(prefix="/companies", tags=["companies"])
@@ -16,13 +18,13 @@ async def search_companies(
     query: Optional[str] = Query(None, description="Search query"),
     location: Optional[str] = Query(None, description="Filter by location"),
     industry: Optional[str] = Query(None, description="Filter by industry"),
-    current_user=Depends(get_current_user)
+    current_user=Depends(get_current_user),
 ):
     """Search companies with filtering (requires authentication)"""
     # In a real implementation, this would:
     # 1. Search companies in the database with the provided filters
     # 2. Return paginated results
-    
+
     filters_applied = {}
     if query:
         filters_applied["query"] = query
@@ -30,7 +32,7 @@ async def search_companies(
         filters_applied["location"] = location
     if industry:
         filters_applied["industry"] = industry
-    
+
     return {
         "message": "Company search results",
         "user_id": current_user,
@@ -42,12 +44,12 @@ async def search_companies(
                 "location": "San Francisco, CA",
                 "industry": "Technology",
                 "description": "Leading technology company",
-                "website": "https://techcorp.com"
+                "website": "https://techcorp.com",
             }
         ],
         "total_results": 1,
         "page": 1,
-        "page_size": 20
+        "page_size": 20,
     }
 
 
@@ -55,13 +57,13 @@ async def search_companies(
 async def get_company(company_id: str, current_user=Depends(get_current_user)):
     """Get a specific company by ID (requires authentication)"""
     return {
-        "company_id": company_id, 
+        "company_id": company_id,
         "name": "Tech Corp",
         "location": "San Francisco, CA",
         "industry": "Technology",
         "description": "Leading technology company",
         "website": "https://techcorp.com",
-        "user_id": current_user
+        "user_id": current_user,
     }
 
 
@@ -88,15 +90,17 @@ async def get_company_jobs(
     company_id: str,
     job_type: Optional[str] = Query(None, description="Filter by job type"),
     remote_type: Optional[str] = Query(None, description="Filter by remote type"),
-    experience_level: Optional[str] = Query(None, description="Filter by experience level"),
-    current_user=Depends(get_current_user)
+    experience_level: Optional[str] = Query(
+        None, description="Filter by experience level"
+    ),
+    current_user=Depends(get_current_user),
 ):
     """Get jobs for a specific company (requires authentication)"""
     # In a real implementation, this would:
     # 1. Query the database for jobs associated with the company
     # 2. Apply filters if provided
     # 3. Return paginated results
-    
+
     filters_applied = {}
     if job_type:
         filters_applied["job_type"] = job_type
@@ -104,7 +108,7 @@ async def get_company_jobs(
         filters_applied["remote_type"] = remote_type
     if experience_level:
         filters_applied["experience_level"] = experience_level
-    
+
     return {
         "message": f"Jobs for company {company_id}",
         "company_id": company_id,
@@ -121,8 +125,8 @@ async def get_company_jobs(
                 "experience_level": "Mid-level",
                 "salary_min": 100000,
                 "salary_max": 150000,
-                "posted_date": "2023-01-15T10:30:00Z"
+                "posted_date": "2023-01-15T10:30:00Z",
             }
         ],
-        "total_jobs": 1
+        "total_jobs": 1,
     }

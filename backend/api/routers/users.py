@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends, Query, HTTPException
-from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from backend.api.auth import get_current_user
 
@@ -13,16 +13,16 @@ router = APIRouter(prefix="/users", tags=["users"])
 @router.get("/search/by-email")
 async def search_user_by_email(
     email: str = Query(..., description="Email address to search for"),
-    current_user=Depends(get_current_user)
+    current_user=Depends(get_current_user),
 ):
     """Search for a user by email address (requires authentication)"""
     # In a real implementation, this would:
     # 1. Search the database for a user with the given email
     # 2. Return the user if found, or 404 if not found
-    
+
     # For now, we'll return a mock response
     # In a real implementation, you would validate the email format and search the database
-    
+
     # Mock implementation - in reality this would look up the user in the database
     if email:
         return {
@@ -30,7 +30,7 @@ async def search_user_by_email(
             "user_id": "user-found-by-email",
             "email": email,
             "name": "Found User",
-            "requester_id": current_user
+            "requester_id": current_user,
         }
     else:
         raise HTTPException(status_code=404, detail="User not found")
@@ -43,7 +43,7 @@ async def get_default_user(current_user=Depends(get_current_user)):
     # 1. Check if there's a designated default user in single-user mode
     # 2. Or create/get a default user profile for the requesting user
     # 3. Return that user profile
-    
+
     # For now, we'll return a mock default user profile
     return {
         "message": "Default user profile for single-user mode",
@@ -51,7 +51,7 @@ async def get_default_user(current_user=Depends(get_current_user)):
         "email": "default@example.com",
         "name": "Default User",
         "current_title": "Job Seeker",
-        "requester_id": current_user
+        "requester_id": current_user,
     }
 
 
