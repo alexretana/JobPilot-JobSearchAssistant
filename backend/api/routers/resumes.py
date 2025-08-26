@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -23,7 +23,9 @@ router = APIRouter(prefix="/resumes", tags=["resumes"])
 @router.get("/", response_model=ResumeListResponse)
 async def list_resumes(
     status: Optional[ResumeStatus] = Query(None, description="Filter by resume status"),
-    resume_type: Optional[ResumeType] = Query(None, description="Filter by resume type"),
+    resume_type: Optional[ResumeType] = Query(
+        None, description="Filter by resume type"
+    ),
     limit: int = Query(50, description="Number of resumes to return", le=100),
     offset: int = Query(0, description="Number of resumes to skip"),
     current_user=Depends(get_current_user),
@@ -32,17 +34,16 @@ async def list_resumes(
     """List all resumes for the current user with optional filtering and pagination"""
     try:
         resume_repo = get_resume_repository()
-        
+
         # Get user's resumes with filtering
         resumes = await resume_repo.get_user_resumes(
-            user_id=current_user,
-            status=status
+            user_id=current_user, status=status
         )
-        
+
         # Apply pagination
         total_resumes = len(resumes)
-        paginated_resumes = resumes[offset:offset + limit]
-        
+        paginated_resumes = resumes[offset : offset + limit]
+
         # Convert to response models
         resume_responses = []
         for resume in paginated_resumes:
@@ -50,14 +51,19 @@ async def list_resumes(
             target_job = None
             if resume.job_id:
                 from backend.data.database import get_job_repository
+
                 job_repo = get_job_repository()
                 job = job_repo.get_job(str(resume.job_id))
                 if job:
                     target_job = job
-            
+
             resume_response = ResumeResponse(
                 id=UUID(resume.id) if not isinstance(resume.id, UUID) else resume.id,
-                user_id=UUID(resume.user_id) if not isinstance(resume.user_id, UUID) else resume.user_id,
+                user_id=(
+                    UUID(resume.user_id)
+                    if not isinstance(resume.user_id, UUID)
+                    else resume.user_id
+                ),
                 title=resume.title,
                 resume_type=resume.resume_type,
                 status=resume.status,
@@ -68,16 +74,25 @@ async def list_resumes(
                 skills=resume.skills,
                 projects=resume.projects,
                 certifications=resume.certifications,
-                template_id=UUID(resume.template_id) if resume.template_id and not isinstance(resume.template_id, UUID) else resume.template_id,
-                parent_resume_id=UUID(resume.based_on_resume_id) if resume.based_on_resume_id and not isinstance(resume.based_on_resume_id, UUID) else resume.based_on_resume_id,
+                template_id=(
+                    UUID(resume.template_id)
+                    if resume.template_id and not isinstance(resume.template_id, UUID)
+                    else resume.template_id
+                ),
+                parent_resume_id=(
+                    UUID(resume.based_on_resume_id)
+                    if resume.based_on_resume_id
+                    and not isinstance(resume.based_on_resume_id, UUID)
+                    else resume.based_on_resume_id
+                ),
                 target_job=target_job,
                 version=resume.version,
                 created_at=resume.created_at or datetime.utcnow(),
                 updated_at=resume.updated_at or datetime.utcnow(),
-                last_generated_at=resume.last_generated_at
+                last_generated_at=resume.last_generated_at,
             )
             resume_responses.append(resume_response)
-        
+
         return ResumeListResponse(
             resumes=resume_responses,
             total=total_resumes,
@@ -102,25 +117,30 @@ async def get_resume(
     try:
         resume_repo = get_resume_repository()
         resume = await resume_repo.get_resume(resume_id, current_user)
-        
+
         if not resume:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Resume not found",
             )
-        
+
         # Get target job details if resume is tailored
         target_job = None
         if resume.job_id:
             from backend.data.database import get_job_repository
+
             job_repo = get_job_repository()
             job = job_repo.get_job(str(resume.job_id))
             if job:
                 target_job = job
-        
+
         return ResumeResponse(
             id=UUID(resume.id) if not isinstance(resume.id, UUID) else resume.id,
-            user_id=UUID(resume.user_id) if not isinstance(resume.user_id, UUID) else resume.user_id,
+            user_id=(
+                UUID(resume.user_id)
+                if not isinstance(resume.user_id, UUID)
+                else resume.user_id
+            ),
             title=resume.title,
             resume_type=resume.resume_type,
             status=resume.status,
@@ -131,13 +151,22 @@ async def get_resume(
             skills=resume.skills,
             projects=resume.projects,
             certifications=resume.certifications,
-            template_id=UUID(resume.template_id) if resume.template_id and not isinstance(resume.template_id, UUID) else resume.template_id,
-            parent_resume_id=UUID(resume.based_on_resume_id) if resume.based_on_resume_id and not isinstance(resume.based_on_resume_id, UUID) else resume.based_on_resume_id,
+            template_id=(
+                UUID(resume.template_id)
+                if resume.template_id and not isinstance(resume.template_id, UUID)
+                else resume.template_id
+            ),
+            parent_resume_id=(
+                UUID(resume.based_on_resume_id)
+                if resume.based_on_resume_id
+                and not isinstance(resume.based_on_resume_id, UUID)
+                else resume.based_on_resume_id
+            ),
             target_job=target_job,
             version=resume.version,
             created_at=resume.created_at or datetime.utcnow(),
             updated_at=resume.updated_at or datetime.utcnow(),
-            last_generated_at=resume.last_generated_at
+            last_generated_at=resume.last_generated_at,
         )
     except HTTPException:
         raise
@@ -163,31 +192,36 @@ async def create_resume(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Not authorized to create resume for another user",
             )
-        
+
         resume_repo = get_resume_repository()
         resume_db = await resume_repo.create_resume(resume_data)
-        
+
         if not resume_db:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Failed to create resume",
             )
-        
+
         # Convert back to Pydantic model
         resume = resume_repo._db_to_pydantic(resume_db)
-        
+
         # Get target job details if resume is tailored
         target_job = None
         if resume.job_id:
             from backend.data.database import get_job_repository
+
             job_repo = get_job_repository()
             job = job_repo.get_job(str(resume.job_id))
             if job:
                 target_job = job
-        
+
         return ResumeResponse(
             id=UUID(resume.id) if not isinstance(resume.id, UUID) else resume.id,
-            user_id=UUID(resume.user_id) if not isinstance(resume.user_id, UUID) else resume.user_id,
+            user_id=(
+                UUID(resume.user_id)
+                if not isinstance(resume.user_id, UUID)
+                else resume.user_id
+            ),
             title=resume.title,
             resume_type=resume.resume_type,
             status=resume.status,
@@ -198,13 +232,22 @@ async def create_resume(
             skills=resume.skills,
             projects=resume.projects,
             certifications=resume.certifications,
-            template_id=UUID(resume.template_id) if resume.template_id and not isinstance(resume.template_id, UUID) else resume.template_id,
-            parent_resume_id=UUID(resume.based_on_resume_id) if resume.based_on_resume_id and not isinstance(resume.based_on_resume_id, UUID) else resume.based_on_resume_id,
+            template_id=(
+                UUID(resume.template_id)
+                if resume.template_id and not isinstance(resume.template_id, UUID)
+                else resume.template_id
+            ),
+            parent_resume_id=(
+                UUID(resume.based_on_resume_id)
+                if resume.based_on_resume_id
+                and not isinstance(resume.based_on_resume_id, UUID)
+                else resume.based_on_resume_id
+            ),
             target_job=target_job,
             version=resume.version,
             created_at=resume.created_at or datetime.utcnow(),
             updated_at=resume.updated_at or datetime.utcnow(),
-            last_generated_at=resume.last_generated_at
+            last_generated_at=resume.last_generated_at,
         )
     except HTTPException:
         raise
@@ -226,7 +269,7 @@ async def update_resume(
     """Update an existing resume"""
     try:
         resume_repo = get_resume_repository()
-        
+
         # Check if resume exists and belongs to user
         existing_resume = await resume_repo.get_resume(resume_id, current_user)
         if not existing_resume:
@@ -234,31 +277,42 @@ async def update_resume(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Resume not found",
             )
-        
+
         # Prepare update data
         update_dict = update_data.dict(exclude_unset=True)
-        
+
         # Update the resume
-        updated_resume = await resume_repo.update_resume(resume_id, current_user, update_dict)
-        
+        updated_resume = await resume_repo.update_resume(
+            resume_id, current_user, update_dict
+        )
+
         if not updated_resume:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Failed to update resume",
             )
-        
+
         # Get target job details if resume is tailored
         target_job = None
         if updated_resume.job_id:
             from backend.data.database import get_job_repository
+
             job_repo = get_job_repository()
             job = job_repo.get_job(str(updated_resume.job_id))
             if job:
                 target_job = job
-        
+
         return ResumeResponse(
-            id=UUID(updated_resume.id) if not isinstance(updated_resume.id, UUID) else updated_resume.id,
-            user_id=UUID(updated_resume.user_id) if not isinstance(updated_resume.user_id, UUID) else updated_resume.user_id,
+            id=(
+                UUID(updated_resume.id)
+                if not isinstance(updated_resume.id, UUID)
+                else updated_resume.id
+            ),
+            user_id=(
+                UUID(updated_resume.user_id)
+                if not isinstance(updated_resume.user_id, UUID)
+                else updated_resume.user_id
+            ),
             title=updated_resume.title,
             resume_type=updated_resume.resume_type,
             status=updated_resume.status,
@@ -269,13 +323,23 @@ async def update_resume(
             skills=updated_resume.skills,
             projects=updated_resume.projects,
             certifications=updated_resume.certifications,
-            template_id=UUID(updated_resume.template_id) if updated_resume.template_id and not isinstance(updated_resume.template_id, UUID) else updated_resume.template_id,
-            parent_resume_id=UUID(updated_resume.based_on_resume_id) if updated_resume.based_on_resume_id and not isinstance(updated_resume.based_on_resume_id, UUID) else updated_resume.based_on_resume_id,
+            template_id=(
+                UUID(updated_resume.template_id)
+                if updated_resume.template_id
+                and not isinstance(updated_resume.template_id, UUID)
+                else updated_resume.template_id
+            ),
+            parent_resume_id=(
+                UUID(updated_resume.based_on_resume_id)
+                if updated_resume.based_on_resume_id
+                and not isinstance(updated_resume.based_on_resume_id, UUID)
+                else updated_resume.based_on_resume_id
+            ),
             target_job=target_job,
             version=updated_resume.version,
             created_at=updated_resume.created_at or datetime.utcnow(),
             updated_at=updated_resume.updated_at or datetime.utcnow(),
-            last_generated_at=updated_resume.last_generated_at
+            last_generated_at=updated_resume.last_generated_at,
         )
     except HTTPException:
         raise
@@ -296,7 +360,7 @@ async def delete_resume(
     """Delete a resume"""
     try:
         resume_repo = get_resume_repository()
-        
+
         # Check if resume exists and belongs to user
         existing_resume = await resume_repo.get_resume(resume_id, current_user)
         if not existing_resume:
@@ -304,16 +368,16 @@ async def delete_resume(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Resume not found",
             )
-        
+
         # Delete the resume
         success = await resume_repo.delete_resume(resume_id, current_user)
-        
+
         if not success:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Failed to delete resume",
             )
-        
+
         return {"message": "Resume deleted successfully"}
     except HTTPException:
         raise
