@@ -13,8 +13,9 @@ from backend.api.routers import (
     jobs,
     resumes,
     skill_banks,
-    timeline,
     users,
+    timeline,
+    job_sources,
 )
 
 # Setup logging
@@ -55,6 +56,7 @@ app.include_router(resumes.router)
 app.include_router(skill_banks.router)
 app.include_router(auth.router)
 app.include_router(timeline.router)
+app.include_router(job_sources.router)
 
 
 @app.get("/")

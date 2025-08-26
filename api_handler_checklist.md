@@ -147,16 +147,16 @@ This checklist outlines the steps required to implement a complete backend API h
 
 ### Job Sources API
 
-- [ ] Create job source request/response models
-  - [ ] `JobSourceCreate` - For creating new job sources
-  - [ ] `JobSourceUpdate` - For updating existing job sources
-  - [ ] `JobSourceResponse` - For returning job source data
-- [ ] Implement CRUD endpoints for job sources
-  - [ ] `POST /api/job-sources` - Create a new job source
-  - [ ] `GET /api/job-sources` - List job sources
-  - [ ] `GET /api/job-sources/{source_id}` - Get a specific job source
-  - [ ] `PUT /api/job-sources/{source_id}` - Update a job source
-  - [ ] `DELETE /api/job-sources/{source_id}` - Delete a job source
+- [x] Create job source request/response models
+  - [x] `JobSourceCreate` - For creating new job sources
+  - [x] `JobSourceUpdate` - For updating existing job sources
+  - [x] `JobSourceResponse` - For returning job source data
+- [x] Implement CRUD endpoints for job sources
+  - [x] `POST /api/job-sources` - Create a new job source
+  - [x] `GET /api/job-sources` - List job sources
+  - [x] `GET /api/job-sources/{source_id}` - Get a specific job source
+  - [x] `PUT /api/job-sources/{source_id}` - Update a job source
+  - [x] `DELETE /api/job-sources/{source_id}` - Delete a job source
 
 ### Semantic Search API
 
