@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'backend'
 def test_job_application_models():
     """Test that job application models work correctly"""
     try:
-        from backend.api.models.application_models import (
+        from backend.api.models.applications.models import (
             JobApplicationCreate,
             JobApplicationUpdate,
             JobApplicationResponse,

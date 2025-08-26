@@ -13,7 +13,7 @@ def test_job_application_api_functional():
     try:
         from backend.api.main import app
         from backend.api.auth import create_access_token
-        from backend.api.models.application_models import (
+        from backend.api.models.applications.models import (
             JobApplicationCreate,
             JobApplicationUpdate,
             JobApplicationResponse,

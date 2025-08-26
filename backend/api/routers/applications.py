@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from backend.api.auth import get_current_user
 from backend.api.dependencies import get_db
-from backend.api.models.application_models import (
+from backend.api.models.applications.models import (
     JobApplicationCreate,
     JobApplicationListResponse,
     JobApplicationResponse,
