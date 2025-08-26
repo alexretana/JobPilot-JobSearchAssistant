@@ -13,8 +13,8 @@ from backend.api.routers import (
     jobs,
     resumes,
     skill_banks,
-    users,
     timeline,
+    users,
 )
 
 # Setup logging
