@@ -1,5 +1,4 @@
-from typing import Any, Dict, List, Optional
-from uuid import UUID
+from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
@@ -10,8 +9,7 @@ from backend.api.models.job_sources.models import (
     JobSourceResponse,
     JobSourceUpdate,
 )
-from backend.data.database import get_database_manager, get_job_repository
-from backend.data.models import JobSourceDB
+from backend.data.database import get_database_manager
 from backend.logger import logger
 
 router = APIRouter(prefix="/job-sources", tags=["job-sources"])
@@ -28,7 +26,9 @@ def get_database_session():
 @router.get("/", response_model=Dict[str, Any])
 async def list_job_sources(
     is_active: Optional[bool] = Query(None, description="Filter by active status"),
-    api_available: Optional[bool] = Query(None, description="Filter by API availability"),
+    api_available: Optional[bool] = Query(
+        None, description="Filter by API availability"
+    ),
     limit: int = Query(50, description="Number of job sources to return", le=100),
     offset: int = Query(0, description="Number of job sources to skip"),
     current_user=Depends(get_current_user),
@@ -40,13 +40,13 @@ async def list_job_sources(
         # 1. Query the database for job sources with the provided filters
         # 2. Apply pagination
         # 3. Return paginated results
-        
+
         filters_applied = {}
         if is_active is not None:
             filters_applied["is_active"] = is_active
         if api_available is not None:
             filters_applied["api_available"] = api_available
-        
+
         # Mock implementation for now
         mock_sources = [
             {
@@ -68,12 +68,12 @@ async def list_job_sources(
                 "is_active": True,
                 "created_at": "2023-01-10T09:15:00Z",
                 "updated_at": "2023-01-18T11:30:00Z",
-            }
+            },
         ]
-        
+
         # Apply pagination to mock data
-        paginated_sources = mock_sources[offset:offset + limit]
-        
+        paginated_sources = mock_sources[offset : offset + limit]
+
         return {
             "message": "List of job sources",
             "user_id": current_user,
@@ -102,7 +102,7 @@ async def get_job_source(
         # In a real implementation, this would:
         # 1. Query the database for the job source with the given ID
         # 2. Return the job source if found, or 404 if not found
-        
+
         # For testing, let's simulate a real implementation that would return 404 for non-existent sources
         # In a real app, we would check if the source exists in the database
         # For now, we'll just return a mock response for any ID except a special test ID
@@ -111,7 +111,7 @@ async def get_job_source(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Job source not found",
             )
-        
+
         # Mock implementation for other IDs
         mock_source = {
             "id": source_id,
@@ -126,7 +126,7 @@ async def get_job_source(
             "created_at": "2023-01-15T10:30:00Z",
             "updated_at": "2023-01-20T14:45:00Z",
         }
-        
+
         return JobSourceResponse(**mock_source)
     except HTTPException:
         raise
@@ -150,7 +150,7 @@ async def create_job_source(
         # 1. Validate the source data
         # 2. Create a new job source in the database
         # 3. Return the created job source
-        
+
         # Mock implementation for now
         mock_source = {
             "id": "new-source-id",
@@ -164,7 +164,7 @@ async def create_job_source(
             "created_at": "2023-01-25T10:00:00Z",
             "updated_at": "2023-01-25T10:00:00Z",
         }
-        
+
         return JobSourceResponse(**mock_source)
     except Exception as e:
         logger.error(f"Error creating job source: {e}")
@@ -187,22 +187,28 @@ async def update_job_source(
         # 1. Query the database for the job source with the given ID
         # 2. Update the job source with the provided data
         # 3. Return the updated job source
-        
+
         # Mock implementation for now
         mock_source = {
             "id": source_id,
             "name": update_data.name or "linkedin",
             "display_name": update_data.display_name or "LinkedIn Jobs",
             "base_url": update_data.base_url or "https://linkedin.com/jobs",
-            "api_available": update_data.api_available if update_data.api_available is not None else True,
+            "api_available": (
+                update_data.api_available
+                if update_data.api_available is not None
+                else True
+            ),
             "scraping_rules": update_data.scraping_rules,
             "rate_limit_config": update_data.rate_limit_config,
             "last_scraped": update_data.last_scraped,
-            "is_active": update_data.is_active if update_data.is_active is not None else True,
+            "is_active": (
+                update_data.is_active if update_data.is_active is not None else True
+            ),
             "created_at": "2023-01-15T10:30:00Z",
             "updated_at": "2023-01-25T11:00:00Z",
         }
-        
+
         return JobSourceResponse(**mock_source)
     except Exception as e:
         logger.error(f"Error updating job source {source_id}: {e}")
@@ -224,9 +230,12 @@ async def delete_job_source(
         # 1. Query the database for the job source with the given ID
         # 2. Delete the job source if found
         # 3. Return success message
-        
+
         # Mock implementation for now
-        return {"message": f"Job source {source_id} deleted successfully", "user_id": current_user}
+        return {
+            "message": f"Job source {source_id} deleted successfully",
+            "user_id": current_user,
+        }
     except Exception as e:
         logger.error(f"Error deleting job source {source_id}: {e}")
         raise HTTPException(
