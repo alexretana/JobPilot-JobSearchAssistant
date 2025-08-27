@@ -1,20 +1,15 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { ResumeService } from '../services/ResumeService';
-import { ApiService } from '../services/ApiService';
+import { ResumeService } from '../../src/services/ResumeService';
+import { ApiService } from '../../src/services/ApiService';
 
-// Mock ApiService
-const mockApiService = {
-  get: vi.fn(),
-  post: vi.fn(),
-  put: vi.fn(),
-  delete: vi.fn(),
-};
+// Mock the global fetch function
+const mockFetch = vi.fn();
 
-vi.mock('../services/ApiService', () => {
-  return {
-    ApiService: vi.fn().mockImplementation(() => mockApiService),
-  };
-});
+// Set up the global fetch mock before importing anything
+global.fetch = mockFetch;
+
+// Import the service after setting up the mock
+import { ResumeService } from '../../src/services/ResumeService';
 
 describe('ResumeService', () => {
   let resumeService: ResumeService;
@@ -56,13 +51,21 @@ describe('ResumeService', () => {
         page_size: limit,
       };
       
-      mockApiService.get.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await resumeService.listResumes(status, limit, offset);
 
       // Assert
-      expect(mockApiService.get).toHaveBeenCalledWith(`/resumes?status=${status}&limit=${limit}&offset=${offset}`);
+      expect(mockFetch).toHaveBeenCalledWith(`/api/resumes?status=${status}&limit=${limit}&offset=${offset}`, expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      }));
       expect(result).toEqual(mockResponse);
     });
 
@@ -77,13 +80,21 @@ describe('ResumeService', () => {
         page_size: limit,
       };
       
-      mockApiService.get.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await resumeService.listResumes(undefined, limit, offset);
 
       // Assert
-      expect(mockApiService.get).toHaveBeenCalledWith(`/resumes?limit=${limit}&offset=${offset}`);
+      expect(mockFetch).toHaveBeenCalledWith(`/api/resumes?limit=${limit}&offset=${offset}`, expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });
@@ -103,13 +114,21 @@ describe('ResumeService', () => {
         version: 1,
       };
       
-      mockApiService.get.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await resumeService.getResume(resumeId);
 
       // Assert
-      expect(mockApiService.get).toHaveBeenCalledWith(`/resumes/${resumeId}`);
+      expect(mockFetch).toHaveBeenCalledWith(`/api/resumes/${resumeId}`, expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });
@@ -136,13 +155,22 @@ describe('ResumeService', () => {
         version: 1,
       };
       
-      mockApiService.post.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await resumeService.createResume(resumeData);
 
       // Assert
-      expect(mockApiService.post).toHaveBeenCalledWith('/resumes', resumeData);
+      expect(mockFetch).toHaveBeenCalledWith('/api/resumes', expect.objectContaining({
+        method: 'POST',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+        body: JSON.stringify(resumeData),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });
@@ -167,13 +195,22 @@ describe('ResumeService', () => {
         version: 2,
       };
       
-      mockApiService.put.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await resumeService.updateResume(resumeId, updateData);
 
       // Assert
-      expect(mockApiService.put).toHaveBeenCalledWith(`/resumes/${resumeId}`, updateData);
+      expect(mockFetch).toHaveBeenCalledWith(`/api/resumes/${resumeId}`, expect.objectContaining({
+        method: 'PUT',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+        body: JSON.stringify(updateData),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });
@@ -186,13 +223,21 @@ describe('ResumeService', () => {
         message: 'Resume deleted successfully'
       };
       
-      mockApiService.delete.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await resumeService.deleteResume(resumeId);
 
       // Assert
-      expect(mockApiService.delete).toHaveBeenCalledWith(`/resumes/${resumeId}`);
+      expect(mockFetch).toHaveBeenCalledWith(`/api/resumes/${resumeId}`, expect.objectContaining({
+        method: 'DELETE',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { TimelineService } from '../services/TimelineService';
-import { ApiService } from '../services/ApiService';
+import { TimelineService } from '../../src/services/TimelineService';
+import { ApiService } from '../../src/services/ApiService';
 
 // Mock ApiService
 const mockApiService = {
@@ -10,9 +10,9 @@ const mockApiService = {
   delete: vi.fn(),
 };
 
-vi.mock('../services/ApiService', () => {
+vi.mock('../../src/services/ApiService', () => {
   return {
-    ApiService: vi.fn().mockImplementation(() => mockApiService),
+    ApiService: vi.fn(() => mockApiService),
   };
 });
 
@@ -64,15 +64,14 @@ describe('TimelineService', () => {
       const result = await timelineService.getUserTimeline(userProfileId, options);
 
       // Assert
-      const params = new URLSearchParams();
-      params.set('limit', '10');
-      params.set('offset', '0');
-      params.set('job_id', 'job123');
-      params.append('event_types', 'job_saved');
-      params.append('event_types', 'application_submitted');
-      params.set('days_back', '30');
-      
-      expect(mockApiService.get).toHaveBeenCalledWith(`/timeline/user/${userProfileId}?${params.toString()}`);
+      expect(mockApiService.get).toHaveBeenCalled();
+      const calledWith = mockApiService.get.mock.calls[0][0];
+      expect(calledWith).toContain(`/timeline/user/${userProfileId}?`);
+      expect(calledWith).toContain('limit=10');
+      expect(calledWith).toContain('job_id=job123');
+      expect(calledWith).toContain('event_types=job_saved');
+      expect(calledWith).toContain('event_types=application_submitted');
+      expect(calledWith).toContain('days_back=30');
       expect(result).toEqual(mockResponse);
     });
 

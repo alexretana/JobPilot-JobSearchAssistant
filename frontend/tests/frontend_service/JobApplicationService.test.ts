@@ -1,20 +1,15 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { JobApplicationService } from '../services/JobApplicationService';
-import { ApiService } from '../services/ApiService';
+import { JobApplicationService } from '../../src/services/JobApplicationService';
+import { ApiService } from '../../src/services/ApiService';
 
-// Mock ApiService
-const mockApiService = {
-  get: vi.fn(),
-  post: vi.fn(),
-  put: vi.fn(),
-  delete: vi.fn(),
-};
+// Mock the global fetch function
+const mockFetch = vi.fn();
 
-vi.mock('../services/ApiService', () => {
-  return {
-    ApiService: vi.fn().mockImplementation(() => mockApiService),
-  };
-});
+// Set up the global fetch mock before importing anything
+global.fetch = mockFetch;
+
+// Import the service after setting up the mock
+import { JobApplicationService } from '../../src/services/JobApplicationService';
 
 describe('JobApplicationService', () => {
   let jobApplicationService: JobApplicationService;
@@ -60,13 +55,21 @@ describe('JobApplicationService', () => {
         page_size: limit,
       };
       
-      mockApiService.get.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await jobApplicationService.listApplications(status, limit, offset);
 
       // Assert
-      expect(mockApiService.get).toHaveBeenCalledWith(`/applications?status=${status}&limit=${limit}&offset=${offset}`);
+      expect(mockFetch).toHaveBeenCalledWith(`/api/applications?status=${status}&limit=${limit}&offset=${offset}`, expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      }));
       expect(result).toEqual(mockResponse);
     });
 
@@ -81,13 +84,21 @@ describe('JobApplicationService', () => {
         page_size: limit,
       };
       
-      mockApiService.get.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await jobApplicationService.listApplications(undefined, limit, offset);
 
       // Assert
-      expect(mockApiService.get).toHaveBeenCalledWith(`/applications?limit=${limit}&offset=${offset}`);
+      expect(mockFetch).toHaveBeenCalledWith(`/api/applications?limit=${limit}&offset=${offset}`, expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });
@@ -111,13 +122,21 @@ describe('JobApplicationService', () => {
         updated_at: '2023-01-15T10:30:00Z',
       };
       
-      mockApiService.get.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await jobApplicationService.getApplication(applicationId);
 
       // Assert
-      expect(mockApiService.get).toHaveBeenCalledWith(`/applications/${applicationId}`);
+      expect(mockFetch).toHaveBeenCalledWith(`/api/applications/${applicationId}`, expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });
@@ -144,13 +163,22 @@ describe('JobApplicationService', () => {
         updated_at: '2023-01-15T10:30:00Z',
       };
       
-      mockApiService.post.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await jobApplicationService.createApplication(applicationData);
 
       // Assert
-      expect(mockApiService.post).toHaveBeenCalledWith('/applications', applicationData);
+      expect(mockFetch).toHaveBeenCalledWith('/api/applications', expect.objectContaining({
+        method: 'POST',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+        body: JSON.stringify(applicationData),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });
@@ -181,13 +209,22 @@ describe('JobApplicationService', () => {
         updated_at: '2023-01-22T10:30:00Z',
       };
       
-      mockApiService.put.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await jobApplicationService.updateApplication(applicationId, updateData);
 
       // Assert
-      expect(mockApiService.put).toHaveBeenCalledWith(`/applications/${applicationId}`, updateData);
+      expect(mockFetch).toHaveBeenCalledWith(`/api/applications/${applicationId}`, expect.objectContaining({
+        method: 'PUT',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+        body: JSON.stringify(updateData),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });
@@ -200,13 +237,21 @@ describe('JobApplicationService', () => {
         message: 'Application deleted successfully'
       };
       
-      mockApiService.delete.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await jobApplicationService.deleteApplication(applicationId);
 
       // Assert
-      expect(mockApiService.delete).toHaveBeenCalledWith(`/applications/${applicationId}`);
+      expect(mockFetch).toHaveBeenCalledWith(`/api/applications/${applicationId}`, expect.objectContaining({
+        method: 'DELETE',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });

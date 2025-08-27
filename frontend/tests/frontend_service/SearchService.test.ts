@@ -1,17 +1,15 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { SearchService } from '../services/SearchService';
-import { ApiService } from '../services/ApiService';
+import { SearchService } from '../../src/services/SearchService';
+import { ApiService } from '../../src/services/ApiService';
 
-// Mock ApiService
-const mockApiService = {
-  get: vi.fn(),
-};
+// Mock the global fetch function
+const mockFetch = vi.fn();
 
-vi.mock('../services/ApiService', () => {
-  return {
-    ApiService: vi.fn().mockImplementation(() => mockApiService),
-  };
-});
+// Set up the global fetch mock before importing anything
+global.fetch = mockFetch;
+
+// Import the service after setting up the mock
+import { SearchService } from '../../src/services/SearchService';
 
 describe('SearchService', () => {
   let searchService: SearchService;
@@ -47,13 +45,21 @@ describe('SearchService', () => {
         total_results: 1,
       };
       
-      mockApiService.get.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await searchService.semanticSearch(query, limit);
 
       // Assert
-      expect(mockApiService.get).toHaveBeenCalledWith(`/search/semantic?query=${query}&limit=${limit}`);
+      expect(mockFetch).toHaveBeenCalledWith(`/api/search/semantic?query=${query}&limit=${limit}`, expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      }));
       expect(result).toEqual(mockResponse);
     });
 
@@ -66,13 +72,21 @@ describe('SearchService', () => {
         total_results: 0,
       };
       
-      mockApiService.get.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await searchService.semanticSearch(query);
 
       // Assert
-      expect(mockApiService.get).toHaveBeenCalledWith(`/search/semantic?query=${query}&limit=20`);
+      expect(mockFetch).toHaveBeenCalledWith(`/api/search/semantic?query=${query}&limit=20`, expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });
@@ -97,13 +111,21 @@ describe('SearchService', () => {
         total_results: 1,
       };
       
-      mockApiService.get.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await searchService.hybridSearch(query, limit);
 
       // Assert
-      expect(mockApiService.get).toHaveBeenCalledWith(`/search/hybrid?query=${query}&limit=${limit}`);
+      expect(mockFetch).toHaveBeenCalledWith(`/api/search/hybrid?query=${query}&limit=${limit}`, expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      }));
       expect(result).toEqual(mockResponse);
     });
 
@@ -116,13 +138,21 @@ describe('SearchService', () => {
         total_results: 0,
       };
       
-      mockApiService.get.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await searchService.hybridSearch(query);
 
       // Assert
-      expect(mockApiService.get).toHaveBeenCalledWith(`/search/hybrid?query=${query}&limit=20`);
+      expect(mockFetch).toHaveBeenCalledWith(`/api/search/hybrid?query=${query}&limit=20`, expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { ApiService } from '../services/ApiService';
+import { ApiService } from '../../src/services/ApiService';
 
 // Mock fetch globally
 const mockFetch = vi.fn();

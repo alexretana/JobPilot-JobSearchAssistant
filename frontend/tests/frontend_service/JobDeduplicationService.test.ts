@@ -1,17 +1,15 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { JobDeduplicationService } from '../services/JobDeduplicationService';
-import { ApiService } from '../services/ApiService';
+import { JobDeduplicationService } from '../../src/services/JobDeduplicationService';
+import { ApiService } from '../../src/services/ApiService';
 
-// Mock ApiService
-const mockApiService = {
-  post: vi.fn(),
-};
+// Mock the global fetch function
+const mockFetch = vi.fn();
 
-vi.mock('../services/ApiService', () => {
-  return {
-    ApiService: vi.fn().mockImplementation(() => mockApiService),
-  };
-});
+// Set up the global fetch mock before importing anything
+global.fetch = mockFetch;
+
+// Import the service after setting up the mock
+import { JobDeduplicationService } from '../../src/services/JobDeduplicationService';
 
 describe('JobDeduplicationService', () => {
   let jobDeduplicationService: JobDeduplicationService;
@@ -35,7 +33,7 @@ describe('JobDeduplicationService', () => {
       const jobData = {
         title: 'Software Engineer',
         company: 'Tech Corp',
-        description: 'Develop web applications',
+        description: 'Develop web applications using modern technologies',
       };
       
       const mockResponse = {
@@ -44,13 +42,22 @@ describe('JobDeduplicationService', () => {
         similarity_score: 0.95,
       };
       
-      mockApiService.post.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await jobDeduplicationService.deduplicateJob(jobData);
 
       // Assert
-      expect(mockApiService.post).toHaveBeenCalledWith('/job-deduplication/deduplicate', jobData);
+      expect(mockFetch).toHaveBeenCalledWith('/api/job-deduplication/deduplicate', expect.objectContaining({
+        method: 'POST',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+        body: JSON.stringify(jobData),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });
@@ -63,7 +70,7 @@ describe('JobDeduplicationService', () => {
           id: 'job123',
           title: 'Software Engineer',
           company: 'Tech Corp',
-          description: 'Develop web applications',
+          description: 'Develop web applications using modern technologies',
         },
         {
           id: 'job456',
@@ -84,13 +91,22 @@ describe('JobDeduplicationService', () => {
         ],
       };
       
-      mockApiService.post.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await jobDeduplicationService.deduplicateBatch(jobs);
 
       // Assert
-      expect(mockApiService.post).toHaveBeenCalledWith('/job-deduplication/deduplicate-batch', { jobs });
+      expect(mockFetch).toHaveBeenCalledWith('/api/job-deduplication/deduplicate-batch', expect.objectContaining({
+        method: 'POST',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+        body: JSON.stringify({ jobs }),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });

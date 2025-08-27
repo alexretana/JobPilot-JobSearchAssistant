@@ -1,17 +1,15 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { AnalyticsService } from '../services/AnalyticsService';
-import { ApiService } from '../services/ApiService';
+import { AnalyticsService } from '../../src/services/AnalyticsService';
+import { ApiService } from '../../src/services/ApiService';
 
-// Mock ApiService
-const mockApiService = {
-  get: vi.fn(),
-};
+// Mock the global fetch function
+const mockFetch = vi.fn();
 
-vi.mock('../services/ApiService', () => {
-  return {
-    ApiService: vi.fn().mockImplementation(() => mockApiService),
-  };
-});
+// Set up the global fetch mock before importing anything
+global.fetch = mockFetch;
+
+// Import the service after setting up the mock
+import { AnalyticsService } from '../../src/services/AnalyticsService';
 
 describe('AnalyticsService', () => {
   let analyticsService: AnalyticsService;
@@ -39,13 +37,21 @@ describe('AnalyticsService', () => {
         total_companies: 500,
       };
       
-      mockApiService.get.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await analyticsService.getGeneralStats();
 
       // Assert
-      expect(mockApiService.get).toHaveBeenCalledWith('/stats/general');
+      expect(mockFetch).toHaveBeenCalledWith('/api/stats/general', expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });
@@ -67,13 +73,21 @@ describe('AnalyticsService', () => {
         },
       };
       
-      mockApiService.get.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await analyticsService.getJobStats();
 
       // Assert
-      expect(mockApiService.get).toHaveBeenCalledWith('/stats/jobs');
+      expect(mockFetch).toHaveBeenCalledWith('/api/stats/jobs', expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });
@@ -93,13 +107,21 @@ describe('AnalyticsService', () => {
         },
       };
       
-      mockApiService.get.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await analyticsService.getUserStats();
 
       // Assert
-      expect(mockApiService.get).toHaveBeenCalledWith('/stats/users');
+      expect(mockFetch).toHaveBeenCalledWith('/api/stats/users', expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });
@@ -120,13 +142,21 @@ describe('AnalyticsService', () => {
         },
       };
       
-      mockApiService.get.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await analyticsService.getApplicationStats();
 
       // Assert
-      expect(mockApiService.get).toHaveBeenCalledWith('/stats/applications');
+      expect(mockFetch).toHaveBeenCalledWith('/api/stats/applications', expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });
@@ -147,13 +177,21 @@ describe('AnalyticsService', () => {
         },
       };
       
-      mockApiService.get.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await analyticsService.getResumeStats();
 
       // Assert
-      expect(mockApiService.get).toHaveBeenCalledWith('/stats/resumes');
+      expect(mockFetch).toHaveBeenCalledWith('/api/stats/resumes', expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });
@@ -171,13 +209,21 @@ describe('AnalyticsService', () => {
         ],
       };
       
-      mockApiService.get.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await analyticsService.getSkillBankStats();
 
       // Assert
-      expect(mockApiService.get).toHaveBeenCalledWith('/stats/skill-banks');
+      expect(mockFetch).toHaveBeenCalledWith('/api/stats/skill-banks', expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });
@@ -195,13 +241,21 @@ describe('AnalyticsService', () => {
         ],
       };
       
-      mockApiService.get.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await analyticsService.getJobSourceStats();
 
       // Assert
-      expect(mockApiService.get).toHaveBeenCalledWith('/stats/job-sources');
+      expect(mockFetch).toHaveBeenCalledWith('/api/stats/job-sources', expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });

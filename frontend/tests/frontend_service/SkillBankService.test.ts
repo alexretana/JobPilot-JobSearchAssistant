@@ -1,20 +1,15 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { SkillBankService } from '../services/SkillBankService';
-import { ApiService } from '../services/ApiService';
+import { SkillBankService } from '../../src/services/SkillBankService';
+import { ApiService } from '../../src/services/ApiService';
 
-// Mock ApiService
-const mockApiService = {
-  get: vi.fn(),
-  post: vi.fn(),
-  put: vi.fn(),
-  delete: vi.fn(),
-};
+// Mock the global fetch function
+const mockFetch = vi.fn();
 
-vi.mock('../services/ApiService', () => {
-  return {
-    ApiService: vi.fn().mockImplementation(() => mockApiService),
-  };
-});
+// Set up the global fetch mock before importing anything
+global.fetch = mockFetch;
+
+// Import the service after setting up the mock
+import { SkillBankService } from '../../src/services/SkillBankService';
 
 describe('SkillBankService', () => {
   let skillBankService: SkillBankService;
@@ -50,13 +45,22 @@ describe('SkillBankService', () => {
         updated_at: '2023-01-15T10:30:00Z',
       };
       
-      mockApiService.post.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await skillBankService.createSkillBank(skillBankData);
 
       // Assert
-      expect(mockApiService.post).toHaveBeenCalledWith('/skill-banks', skillBankData);
+      expect(mockFetch).toHaveBeenCalledWith('/api/skill-banks', expect.objectContaining({
+        method: 'POST',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+        body: JSON.stringify(skillBankData),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });
@@ -74,13 +78,21 @@ describe('SkillBankService', () => {
         updated_at: '2023-01-15T10:30:00Z',
       };
       
-      mockApiService.get.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await skillBankService.getSkillBank(userId);
 
       // Assert
-      expect(mockApiService.get).toHaveBeenCalledWith(`/skill-banks/${userId}`);
+      expect(mockFetch).toHaveBeenCalledWith(`/api/skill-banks/${userId}`, expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });
@@ -102,13 +114,22 @@ describe('SkillBankService', () => {
         updated_at: '2023-01-22T10:30:00Z',
       };
       
-      mockApiService.put.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await skillBankService.updateSkillBank(userId, updateData);
 
       // Assert
-      expect(mockApiService.put).toHaveBeenCalledWith(`/skill-banks/${userId}`, updateData);
+      expect(mockFetch).toHaveBeenCalledWith(`/api/skill-banks/${userId}`, expect.objectContaining({
+        method: 'PUT',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+        body: JSON.stringify(updateData),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });
@@ -121,13 +142,21 @@ describe('SkillBankService', () => {
         message: 'Skill bank archived successfully'
       };
       
-      mockApiService.delete.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await skillBankService.deleteSkillBank(userId);
 
       // Assert
-      expect(mockApiService.delete).toHaveBeenCalledWith(`/skill-banks/${userId}`);
+      expect(mockFetch).toHaveBeenCalledWith(`/api/skill-banks/${userId}`, expect.objectContaining({
+        method: 'DELETE',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });
@@ -154,13 +183,22 @@ describe('SkillBankService', () => {
         updated_at: '2023-01-22T10:30:00Z',
       };
       
-      mockApiService.post.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await skillBankService.addSkill(userId, skillData);
 
       // Assert
-      expect(mockApiService.post).toHaveBeenCalledWith(`/skill-banks/${userId}/skills`, skillData);
+      expect(mockFetch).toHaveBeenCalledWith(`/api/skill-banks/${userId}/skills`, expect.objectContaining({
+        method: 'POST',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+        body: JSON.stringify(skillData),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });
@@ -192,13 +230,22 @@ describe('SkillBankService', () => {
         updated_at: '2023-01-22T10:30:00Z',
       };
       
-      mockApiService.put.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await skillBankService.updateSkill(userId, skillId, updateData);
 
       // Assert
-      expect(mockApiService.put).toHaveBeenCalledWith(`/skill-banks/${userId}/skills/${skillId}`, updateData);
+      expect(mockFetch).toHaveBeenCalledWith(`/api/skill-banks/${userId}/skills/${skillId}`, expect.objectContaining({
+        method: 'PUT',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+        body: JSON.stringify(updateData),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });
@@ -219,13 +266,21 @@ describe('SkillBankService', () => {
         updated_at: '2023-01-22T10:30:00Z',
       };
       
-      mockApiService.delete.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await skillBankService.deleteSkill(userId, skillId);
 
       // Assert
-      expect(mockApiService.delete).toHaveBeenCalledWith(`/skill-banks/${userId}/skills/${skillId}`);
+      expect(mockFetch).toHaveBeenCalledWith(`/api/skill-banks/${userId}/skills/${skillId}`, expect.objectContaining({
+        method: 'DELETE',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });
@@ -256,13 +311,22 @@ describe('SkillBankService', () => {
         updated_at: '2023-01-22T10:30:00Z',
       };
       
-      mockApiService.post.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await skillBankService.addExperience(userId, experienceData);
 
       // Assert
-      expect(mockApiService.post).toHaveBeenCalledWith(`/skill-banks/${userId}/experiences`, experienceData);
+      expect(mockFetch).toHaveBeenCalledWith(`/api/skill-banks/${userId}/experiences`, expect.objectContaining({
+        method: 'POST',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+        body: JSON.stringify(experienceData),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });
@@ -300,13 +364,22 @@ describe('SkillBankService', () => {
         updated_at: '2023-01-22T10:30:00Z',
       };
       
-      mockApiService.put.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await skillBankService.updateExperience(userId, experienceId, updateData);
 
       // Assert
-      expect(mockApiService.put).toHaveBeenCalledWith(`/skill-banks/${userId}/experiences/${experienceId}`, updateData);
+      expect(mockFetch).toHaveBeenCalledWith(`/api/skill-banks/${userId}/experiences/${experienceId}`, expect.objectContaining({
+        method: 'PUT',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+        body: JSON.stringify(updateData),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });
@@ -326,13 +399,21 @@ describe('SkillBankService', () => {
         updated_at: '2023-01-22T10:30:00Z',
       };
       
-      mockApiService.delete.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await skillBankService.deleteExperience(userId, experienceId);
 
       // Assert
-      expect(mockApiService.delete).toHaveBeenCalledWith(`/skill-banks/${userId}/experiences/${experienceId}`);
+      expect(mockFetch).toHaveBeenCalledWith(`/api/skill-banks/${userId}/experiences/${experienceId}`, expect.objectContaining({
+        method: 'DELETE',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      }));
       expect(result).toEqual(mockResponse);
     });
   });

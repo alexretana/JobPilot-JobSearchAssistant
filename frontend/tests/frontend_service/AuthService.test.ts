@@ -1,17 +1,15 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { AuthService } from '../services/AuthService';
-import { ApiService } from '../services/ApiService';
+import { AuthService } from '../../src/services/AuthService';
+import { ApiService } from '../../src/services/ApiService';
 
-// Mock ApiService
-const mockApiService = {
-  post: vi.fn(),
-};
+// Mock the global fetch function
+const mockFetch = vi.fn();
 
-vi.mock('../services/ApiService', () => {
-  return {
-    ApiService: vi.fn().mockImplementation(() => mockApiService),
-  };
-});
+// Set up the global fetch mock before importing anything
+global.fetch = mockFetch;
+
+// Import the service after setting up the mock
+import { AuthService } from '../../src/services/AuthService';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -39,26 +37,45 @@ describe('AuthService', () => {
         token_type: 'bearer' 
       };
       
-      mockApiService.post.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await authService.login(credentials);
 
       // Assert
-      expect(mockApiService.post).toHaveBeenCalledWith('/auth/login', credentials);
+      expect(mockFetch).toHaveBeenCalledWith('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(credentials),
+      });
       expect(result).toEqual(mockResponse);
     });
 
     it('should throw an error when login fails', async () => {
       // Arrange
       const credentials = { email: 'test@example.com', password: 'wrongpassword' };
-      const mockError = new Error('Invalid credentials');
       
-      mockApiService.post.mockRejectedValueOnce(mockError);
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 401,
+        statusText: 'Unauthorized',
+        json: () => Promise.resolve({ detail: 'Invalid credentials' }),
+      });
 
       // Act & Assert
-      await expect(authService.login(credentials)).rejects.toThrow('Invalid credentials');
-      expect(mockApiService.post).toHaveBeenCalledWith('/auth/login', credentials);
+      await expect(authService.login(credentials)).rejects.toThrow('API Error: 401 Unauthorized');
+      expect(mockFetch).toHaveBeenCalledWith('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(credentials),
+      });
     });
   });
 
@@ -75,13 +92,22 @@ describe('AuthService', () => {
         user: { id: '2', email: 'newuser@example.com', first_name: 'New', last_name: 'User' }
       };
       
-      mockApiService.post.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await authService.register(userData);
 
       // Assert
-      expect(mockApiService.post).toHaveBeenCalledWith('/auth/register', userData);
+      expect(mockFetch).toHaveBeenCalledWith('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
       expect(result).toEqual(mockResponse);
     });
   });
@@ -89,13 +115,22 @@ describe('AuthService', () => {
   describe('logout', () => {
     it('should call apiService.post with correct parameters', async () => {
       // Arrange
-      mockApiService.post.mockResolvedValueOnce({ message: 'Logged out successfully' });
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ message: 'Logged out successfully' }),
+      });
 
       // Act
       const result = await authService.logout();
 
       // Assert
-      expect(mockApiService.post).toHaveBeenCalledWith('/auth/logout', {});
+      expect(mockFetch).toHaveBeenCalledWith('/api/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({}),
+      });
       expect(result).toEqual({ message: 'Logged out successfully' });
     });
   });
@@ -108,13 +143,22 @@ describe('AuthService', () => {
         token_type: 'bearer' 
       };
       
-      mockApiService.post.mockResolvedValueOnce(mockResponse);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
 
       // Act
       const result = await authService.refreshToken();
 
       // Assert
-      expect(mockApiService.post).toHaveBeenCalledWith('/auth/refresh', {});
+      expect(mockFetch).toHaveBeenCalledWith('/api/auth/refresh', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({}),
+      });
       expect(result).toEqual(mockResponse);
     });
   });
