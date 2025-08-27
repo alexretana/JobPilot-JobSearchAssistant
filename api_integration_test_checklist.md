@@ -215,63 +215,70 @@ Integration tests should:
 - [x] Verify skill bank operations work end-to-end
 
 ### 8. Timeline API Integration
-- [ ] Create timeline integration test suite
-  - [ ] `getUserTimeline` - Test retrieving user timeline events
-  - [ ] `getUserMilestones` - Test retrieving user milestones
-  - [ ] `getUpcomingEvents` - Test retrieving upcoming events
-  - [ ] `getJobTimeline` - Test retrieving job-specific timeline
-  - [ ] `getApplicationTimeline` - Test retrieving application timeline
-  - [ ] `createTimelineEvent` - Test creating new timeline events
-  - [ ] `createCustomEvent` - Test creating custom timeline events
-  - [ ] `updateTimelineEvent` - Test updating timeline events
-  - [ ] `deleteTimelineEvent` - Test deleting timeline events
-  - [ ] `logJobSaved` - Test logging job save events
-  - [ ] `logApplicationSubmitted` - Test logging application submission events
-  - [ ] `logInterviewScheduled` - Test logging interview scheduling events
-  - [ ] `logStatusChange` - Test logging status change events
-- [ ] Implement timeline service integration
-- [ ] Run timeline integration tests
-- [ ] Verify timeline operations work end-to-end
+- [x] Create timeline integration test suite
+  - [x] `listTimelineEvents` - Test listing timeline events with filtering and pagination
+  - [x] `getTimelineEvent` - Test retrieving specific timeline event by ID
+  - [x] `createTimelineEvent` - Test creating new timeline events
+  - [x] `updateTimelineEvent` - Test updating timeline events
+  - [x] `deleteTimelineEvent` - Test deleting timeline events
+  - [x] `logJobSaved` - Test logging job saved events
+  - [x] `logApplicationSubmitted` - Test logging application submitted events
+  - [x] `logInterviewScheduled` - Test logging interview scheduled events
+  - [x] `logStatusChange` - Test logging status change events
+- [x] Implement timeline service integration
+- [x] Run timeline integration tests
+- [x] Verify timeline operations work end-to-end
 
 ### 9. Job Source API Integration
-- [ ] Create job source integration test suite
-  - [ ] `listJobSources` - Test listing all job sources
-  - [ ] `getJobSource` - Test retrieving specific job source by ID
-  - [ ] `createJobSource` - Test creating new job sources
-  - [ ] `updateJobSource` - Test updating job sources
-  - [ ] `deleteJobSource` - Test deleting job sources
-- [ ] Implement job source service integration
-- [ ] Run job source integration tests
-- [ ] Verify job source operations work end-to-end
+- [x] Create job source integration test suite
+  - [x] `listJobSources` - Test listing job sources with filtering and pagination
+  - [x] `getJobSource` - Test retrieving specific job source by ID
+  - [x] `createJobSource` - Test creating new job sources
+  - [x] `updateJobSource` - Test updating job sources
+  - [x] `deleteJobSource` - Test deleting job sources
+- [x] Implement job source service integration
+- [x] Run job source integration tests
+- [x] Verify job source operations work end-to-end
 
 ### 10. Search API Integration
-- [ ] Create search integration test suite
-  - [ ] `semanticSearch` - Test semantic search functionality
-  - [ ] `hybridSearch` - Test hybrid search functionality
-- [ ] Implement search service integration
-- [ ] Run search integration tests
-- [ ] Verify search operations work end-to-end
+- [x] Create search integration test suite
+  - [x] `semanticSearch` - Test semantic search functionality
+  - [x] `hybridSearch` - Test hybrid search functionality (semantic + keyword)
+  - [x] `semanticSearchWithFilters` - Test semantic search with advanced filtering
+  - [x] `hybridSearchWithFilters` - Test hybrid search with advanced filtering
+  - [x] `searchWithInvalidParameters` - Test search with invalid parameters
+  - [x] `searchWithoutAuthentication` - Test search without authentication
+- [x] Implement search service integration
+- [x] Run search integration tests
+- [x] Verify search operations work end-to-end
 
 ### 11. Job Deduplication API Integration
-- [ ] Create job deduplication integration test suite
-  - [ ] `deduplicateJob` - Test single job deduplication
-  - [ ] `deduplicateBatch` - Test batch job deduplication
-- [ ] Implement job deduplication service integration
-- [ ] Run job deduplication integration tests
-- [ ] Verify job deduplication operations work end-to-end
+- [x] Create job deduplication integration test suite
+  - [x] `checkJobDuplicates` - Test checking if two jobs are duplicates
+  - [x] `batchJobDeduplication` - Test finding duplicates in a batch of jobs
+  - [x] `checkJobDuplicatesWithInvalidData` - Test checking job duplicates with invalid data
+  - [x] `batchJobDeduplicationWithInvalidData` - Test batch job deduplication with invalid data
+  - [x] `jobDeduplicationWithoutAuthentication` - Test job deduplication without authentication
+  - [x] `jobDeduplicationWithNonexistentJobs` - Test job deduplication with nonexistent jobs
+- [x] Implement job deduplication service integration
+- [x] Run job deduplication integration tests
+- [x] Verify job deduplication operations work end-to-end
 
-### 12. Analytics API Integration
-- [ ] Create analytics integration test suite
-  - [ ] `getGeneralStats` - Test general platform statistics
-  - [ ] `getJobStats` - Test job-related statistics
-  - [ ] `getUserStats` - Test user-related statistics
-  - [ ] `getApplicationStats` - Test application-related statistics
-  - [ ] `getResumeStats` - Test resume-related statistics
-  - [ ] `getSkillBankStats` - Test skill bank-related statistics
-  - [ ] `getJobSourceStats` - Test job source-related statistics
-- [ ] Implement analytics service integration
-- [ ] Run analytics integration tests
-- [ ] Verify analytics operations work end-to-end
+### 12. Stats API Integration
+- [x] Create stats integration test suite
+  - [x] `getGeneralStatistics` - Test getting general system statistics
+  - [x] `getJobStatistics` - Test getting job-related statistics
+  - [x] `getUserStatistics` - Test getting user-related statistics
+  - [x] `getApplicationStatistics` - Test getting application-related statistics
+  - [x] `getResumeStatistics` - Test getting resume-related statistics
+  - [x] `getSkillBankStatistics` - Test getting skill bank-related statistics
+  - [x] `getJobSourceStatistics` - Test getting job source-related statistics
+  - [x] `statsWithoutAuthentication` - Test accessing stats without authentication
+  - [x] `invalidStatsEndpoint` - Test accessing invalid stats endpoint
+  - [x] `statsWithDifferentUserRoles` - Test accessing stats with different user roles
+- [x] Implement stats service integration
+- [x] Run stats integration tests
+- [x] Verify stats operations work end-to-end
 
 ## Integration Test Infrastructure Setup
 - [x] Create shared test utilities for starting/stopping backend servers
