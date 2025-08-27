@@ -10,6 +10,113 @@ This checklist outlines the steps required to implement comprehensive integratio
 5. **Update this checklist** after each completed step
 6. **Stop after each step** for review
 
+## Test Structure and Organization
+
+### Directory Structure
+Integration tests should be organized in the following structure:
+```
+tests/
+└── frontend_backend_integration/     # Integration tests between frontend services and backend API
+    ├── auth/                         # Authentication integration tests
+    ├── user_profiles/                # User profile integration tests
+    ├── jobs/                         # Job API integration tests
+    ├── companies/                    # Company API integration tests
+    ├── applications/                 # Job application integration tests
+    ├── resumes/                      # Resume API integration tests
+    ├── skill_banks/                  # Skill bank API integration tests
+    ├── timeline/                     # Timeline API integration tests
+    ├── job_sources/                  # Job source API integration tests
+    ├── search/                       # Search API integration tests
+    ├── job_deduplication/            # Job deduplication API integration tests
+    ├── analytics/                    # Analytics API integration tests
+    ├── fixtures/                     # Shared test fixtures and utilities
+    └── conftest.py                   # Shared pytest configuration for integration tests
+```
+
+### Test File Naming Convention
+- Integration test files should be named following the pattern: `test_[feature]_integration.py`
+- Example: `test_auth_integration.py`, `test_job_api_integration.py`
+
+### Test Organization Within Files
+Each integration test file should:
+1. Import required modules and services
+2. Use pytest fixtures for setup/teardown
+3. Group related tests within logical `describe` or `context` blocks
+4. Follow the AAA pattern (Arrange, Act, Assert)
+5. Clean up resources after each test
+
+## Integration Test Infrastructure Setup
+
+### Backend Test Server
+Integration tests require a running backend server. The test infrastructure should:
+1. Start a FastAPI test server using `TestClient` or a real server instance
+2. Configure the server with test-specific settings (in-memory database, etc.)
+3. Provide authentication tokens when needed
+4. Clean up resources after tests complete
+
+### Frontend Service Integration
+Frontend services should be tested against the real backend API:
+1. Configure frontend services to point to the test backend server
+2. Make actual HTTP requests through the service layer
+3. Verify responses match expected API behavior
+4. Test both success and error scenarios
+
+### Test Data Management
+1. Use factories or fixtures to create consistent test data
+2. Ensure test data isolation between test cases
+3. Clean up test data after each test
+4. Use predictable, deterministic test data when possible
+
+## Running Integration Tests
+
+### Individual Test Execution
+```bash
+# Run a specific integration test file
+pytest tests/frontend_backend_integration/auth/test_auth_integration.py
+
+# Run tests with verbose output
+pytest tests/frontend_backend_integration/ -v
+
+# Run tests matching a pattern
+pytest tests/frontend_backend_integration/ -k "auth"
+```
+
+### Full Integration Test Suite
+```bash
+# Run all integration tests
+pytest tests/frontend_backend_integration/
+
+# Run all integration tests with coverage
+pytest tests/frontend_backend_integration/ --cov=backend --cov-report=html
+```
+
+### Using Test Scripts
+The project provides centralized test scripts:
+```bash
+# Run integration tests using the master test script
+tests/run_all_tests.bat --integration-only
+tests/run_all_tests.sh --integration-only
+
+# Run both unit and integration tests
+tests/run_all_tests.bat
+tests/run_all_tests.sh
+```
+
+## Integration Test Environment
+
+### Environment Variables
+Integration tests may require specific environment variables:
+- `TEST_MODE=true` - Enable test mode
+- `DATABASE_URL=sqlite:///:memory:` - Use in-memory database
+- `INTEGRATION_TEST=true` - Enable integration test specific behavior
+
+### Test Configuration
+Integration tests should:
+1. Use a separate test database
+2. Run on isolated ports to avoid conflicts
+3. Have timeouts configured to prevent hanging tests
+4. Log detailed information for debugging
+
 ## Integration Test Structure Guidelines
 - Each integration test should:
   - Start a backend API server (using existing backend test infrastructure)
@@ -21,14 +128,14 @@ This checklist outlines the steps required to implement comprehensive integratio
 ## Integration Test Categories
 
 ### 1. Authentication API Integration
-- [ ] Create authentication integration test suite
-  - [ ] `login` - Test user login flow with valid credentials
-  - [ ] `register` - Test user registration flow
-  - [ ] `logout` - Test user logout functionality
-  - [ ] `refreshToken` - Test token refresh mechanism
-- [ ] Implement authentication service integration
-- [ ] Run authentication integration tests
-- [ ] Verify authentication flows work end-to-end
+- [x] Create authentication integration test suite
+  - [x] `login` - Test user login flow with valid credentials
+  - [x] `register` - Test user registration flow
+  - [x] `logout` - Test user logout functionality
+  - [x] `refreshToken` - Test token refresh mechanism
+- [x] Implement authentication service integration
+- [x] Run authentication integration tests
+- [x] Verify authentication flows work end-to-end
 
 ### 2. User Profile API Integration
 - [ ] Create user profile integration test suite
@@ -167,16 +274,16 @@ This checklist outlines the steps required to implement comprehensive integratio
 - [ ] Verify analytics operations work end-to-end
 
 ## Integration Test Infrastructure Setup
-- [ ] Create shared test utilities for starting/stopping backend servers
-- [ ] Create test database setup/teardown utilities
-- [ ] Create test data factories for consistent test data
-- [ ] Implement test configuration management
-- [ ] Set up test environment variables
-- [ ] Create base integration test class/template
+- [x] Create shared test utilities for starting/stopping backend servers
+- [x] Create test database setup/teardown utilities
+- [x] Create test data factories for consistent test data
+- [x] Implement test configuration management
+- [x] Set up test environment variables
+- [x] Create base integration test class/template
 
 ## Integration Test Execution
-- [ ] Configure test runner for integration tests
-- [ ] Set up test parallelization strategy
+- [x] Configure test runner for integration tests
+- [x] Set up test parallelization strategy
 - [ ] Implement test reporting and logging
 - [ ] Configure CI/CD pipeline for integration tests
 - [ ] Set up test coverage reporting for integration tests
