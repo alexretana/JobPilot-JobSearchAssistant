@@ -37,7 +37,7 @@ class TestDatabaseIndexes:
         inspector = inspect(database_engine)
         
         # Test CompanyInfoDB indexes
-        company_indexes = inspector.get_indexes('company_info')
+        company_indexes = inspector.get_indexes('companies')
         company_index_columns = {tuple(idx['column_names']) for idx in company_indexes}
         
         # Should have indexes on commonly queried columns
@@ -52,7 +52,7 @@ class TestDatabaseIndexes:
         assert len(company_indexes) > 0, "CompanyInfoDB should have indexes"
         
         # Test JobListingDB indexes
-        job_indexes = inspector.get_indexes('job_listing')
+        job_indexes = inspector.get_indexes('job_listings')
         job_index_columns = {tuple(idx['column_names']) for idx in job_indexes}
         
         expected_job_indexes = {
@@ -65,12 +65,12 @@ class TestDatabaseIndexes:
         assert len(job_indexes) > 0, "JobListingDB should have indexes"
         
         # Test UserProfileDB indexes
-        user_indexes = inspector.get_indexes('user_profile')
+        user_indexes = inspector.get_indexes('user_profiles')
         
         assert len(user_indexes) > 0, "UserProfileDB should have indexes"
         
         # Test JobUserInteractionDB indexes
-        interaction_indexes = inspector.get_indexes('job_user_interaction')
+        interaction_indexes = inspector.get_indexes('job_user_interactions')
         
         assert len(interaction_indexes) > 0, "JobUserInteractionDB should have indexes"
 
@@ -79,7 +79,7 @@ class TestDatabaseIndexes:
         inspector = inspect(database_engine)
         
         # Test CompanyInfoDB unique constraints
-        company_constraints = inspector.get_unique_constraints('company_info')
+        company_constraints = inspector.get_unique_constraints('companies')
         company_unique_columns = {tuple(constraint['column_names']) for constraint in company_constraints}
         
         # Should have unique constraint on domain
@@ -87,7 +87,7 @@ class TestDatabaseIndexes:
         assert domain_unique_exists, "CompanyInfoDB should have unique constraint on domain"
         
         # Test UserProfileDB unique constraints
-        user_constraints = inspector.get_unique_constraints('user_profile')
+        user_constraints = inspector.get_unique_constraints('user_profiles')
         user_unique_columns = {tuple(constraint['column_names']) for constraint in user_constraints}
         
         # Should have unique constraint on email
@@ -99,25 +99,25 @@ class TestDatabaseIndexes:
         inspector = inspect(database_engine)
         
         # Test JobListingDB foreign key constraints
-        job_fks = inspector.get_foreign_keys('job_listing')
+        job_fks = inspector.get_foreign_keys('job_listings')
         
-        # Should have foreign key to company_info
+        # Should have foreign key to companies
         company_fk_exists = any(
-            fk['referred_table'] == 'company_info' and 'company_id' in fk['constrained_columns']
+            fk['referred_table'] == 'companies' and 'company_id' in fk['constrained_columns']
             for fk in job_fks
         )
         assert company_fk_exists, "JobListingDB should have foreign key to CompanyInfoDB"
         
         # Test JobUserInteractionDB foreign key constraints
-        interaction_fks = inspector.get_foreign_keys('job_user_interaction')
+        interaction_fks = inspector.get_foreign_keys('job_user_interactions')
         
-        # Should have foreign keys to both user_profile and job_listing
+        # Should have foreign keys to both user_profiles and job_listings
         user_fk_exists = any(
-            fk['referred_table'] == 'user_profile' and 'user_id' in fk['constrained_columns']
+            fk['referred_table'] == 'user_profiles' and 'user_id' in fk['constrained_columns']
             for fk in interaction_fks
         )
         job_fk_exists = any(
-            fk['referred_table'] == 'job_listing' and 'job_id' in fk['constrained_columns']
+            fk['referred_table'] == 'job_listings' and 'job_id' in fk['constrained_columns']
             for fk in interaction_fks
         )
         
@@ -129,7 +129,7 @@ class TestDatabaseIndexes:
         inspector = inspect(database_engine)
         
         # Test JobListingDB check constraints
-        job_checks = inspector.get_check_constraints('job_listing')
+        job_checks = inspector.get_check_constraints('job_listings')
         
         # Note: Check constraints may not be fully supported in SQLite,
         # but we can test that the table structure allows valid data
@@ -198,18 +198,18 @@ class TestComplexConstraints:
         valid_interactions = [
             {
                 'interaction_type': InteractionType.APPLIED,
-                'application_date': now,
+                'applied_date': now,
                 'application_status': ApplicationStatus.APPLIED
             },
             {
                 'interaction_type': InteractionType.APPLIED,
-                'application_date': yesterday,
+                'applied_date': yesterday,
                 'application_status': ApplicationStatus.APPLIED
             },
             {
                 'interaction_type': InteractionType.SAVED,
                 'saved_date': now,
-                'application_date': None  # No application yet
+                'applied_date': None  # No application yet
             },
         ]
         
@@ -230,6 +230,7 @@ class TestComplexConstraints:
         # Valid lengths
         valid_company = CompanyInfoDB(
             name="A" * 100,  # Reasonable length
+            normalized_name="a" * 100,  # Required field
             domain="valid-company.com",
             industry="Technology"
         )
