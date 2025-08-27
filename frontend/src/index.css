@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Ensure full height chain */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Line clamp utilities */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+/* Custom styles for JobPilot */
+@layer components {
+  .chat-message {
+    @apply p-2 rounded-lg mb-2 max-w-[80%];
+  }
+
+  .user-message {
+    @apply bg-primary text-primary-content ml-auto;
+  }
+
+  .assistant-message {
+    @apply bg-base-200 border-l-4 border-l-primary;
+  }
+
+  .progress-message {
+    @apply bg-warning/20 border-l-4 border-l-warning text-warning-content;
+  }
+
+  .activity-item {
+    @apply p-2 mb-2 bg-base-100 rounded border-l-4 text-sm;
+  }
+
+  .activity-item.tool {
+    @apply border-l-success;
+  }
+
+  .activity-item.error {
+    @apply border-l-error bg-error/10;
+  }
+
+  .activity-item.browser {
+    @apply border-l-info;
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(163, 163, 163) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgb(163, 163, 163);
+    border-radius: 2px;
+  }
+
+  /* Unified tab button base styling */
+  .tab-uniform {
+    @apply rounded-full px-6 py-2 font-medium transition-all duration-300;
+    @apply flex items-center justify-center;
+    border: 2px solid transparent;
+  }
+
+  .tab-uniform span {
+    @apply leading-none;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Active state for all tabs - adds border and scale */
+  .tab-uniform.active {
+    @apply border-primary scale-105;
+  }
+
+  /* Job Search and Resume Builder neutral styling */
+  .tab-neutral {
+    @apply bg-base-100 text-base-content;
+  }
+
+  .tab-neutral.active {
+    @apply bg-base-200;
+  }
+
+  /* AI Color Gradient - 45 degree angle from primary to accent */
+  .bg-ai-color-gradient {
+    @apply bg-gradient-to-tr from-primary to-accent text-primary-content;
+  }
+
+  /* Text AI Color Gradient - for gradient text effects using Tailwind */
+  .text-ai-gradient {
+    @apply bg-gradient-to-t from-primary to-accent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
