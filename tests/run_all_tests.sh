@@ -10,15 +10,23 @@ echo "========================================"
 # Parse command line arguments
 RUN_BACKEND=1
 RUN_FRONTEND=1
+RUN_E2E=1
 RUN_INTEGRATION=0
 
 if [ "$1" == "--backend-only" ]; then
     RUN_FRONTEND=0
+    RUN_E2E=0
 elif [ "$1" == "--frontend-only" ]; then
     RUN_BACKEND=0
+    RUN_E2E=0
+elif [ "$1" == "--e2e-only" ]; then
+    RUN_BACKEND=0
+    RUN_FRONTEND=0
+    RUN_E2E=1
 elif [ "$1" == "--integration-only" ]; then
     RUN_BACKEND=0
     RUN_FRONTEND=0
+    RUN_E2E=0
     RUN_INTEGRATION=1
 fi
 
@@ -65,17 +73,31 @@ if [ $RUN_BACKEND -eq 1 ]; then
     echo
 fi
 
-# Run frontend tests if requested
+# Run frontend unit tests if requested
 if [ $RUN_FRONTEND -eq 1 ]; then
-    echo "Running frontend tests..."
+    echo "Running frontend unit tests..."
     cd ..
     ./run-frontend-tests.sh
     if [ $? -ne 0 ]; then
-        echo "ERROR: Frontend tests failed"
+        echo "ERROR: Frontend unit tests failed"
         exit 1
     fi
     cd tests
-    echo "Frontend tests completed successfully!"
+    echo "Frontend unit tests completed successfully!"
+    echo
+fi
+
+# Run frontend e2e tests if requested
+if [ $RUN_E2E -eq 1 ]; then
+    echo "Running frontend e2e tests..."
+    cd ..
+    ./tests/frontend_e2e/run_e2e_tests.sh
+    if [ $? -ne 0 ]; then
+        echo "ERROR: Frontend e2e tests failed"
+        exit 1
+    fi
+    cd tests
+    echo "Frontend e2e tests completed successfully!"
     echo
 fi
 

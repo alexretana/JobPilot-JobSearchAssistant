@@ -9,17 +9,26 @@ echo ========================================
 REM Parse command line arguments
 set RUN_BACKEND=1
 set RUN_FRONTEND=1
+set RUN_E2E=1
 set RUN_INTEGRATION=0
 
 if "%1"=="--backend-only" (
     set RUN_FRONTEND=0
+    set RUN_E2E=0
 )
 if "%1"=="--frontend-only" (
     set RUN_BACKEND=0
+    set RUN_E2E=0
+)
+if "%1"=="--e2e-only" (
+    set RUN_BACKEND=0
+    set RUN_FRONTEND=0
+    set RUN_E2E=1
 )
 if "%1"=="--integration-only" (
     set RUN_BACKEND=0
     set RUN_FRONTEND=0
+    set RUN_E2E=0
     set RUN_INTEGRATION=1
 )
 
@@ -68,17 +77,31 @@ if %RUN_BACKEND%==1 (
     echo.
 )
 
-REM Run frontend tests if requested
+REM Run frontend unit tests if requested
 if %RUN_FRONTEND%==1 (
-    echo Running frontend tests...
+    echo Running frontend unit tests...
     cd ..
     call run-frontend-tests.bat
     if errorlevel 1 (
-        echo ERROR: Frontend tests failed
+        echo ERROR: Frontend unit tests failed
         exit /b 1
     )
     cd tests
-    echo Frontend tests completed successfully!
+    echo Frontend unit tests completed successfully!
+    echo.
+)
+
+REM Run frontend e2e tests if requested
+if %RUN_E2E%==1 (
+    echo Running frontend e2e tests...
+    cd ..
+    call tests\frontend_e2e\run_e2e_tests.bat
+    if errorlevel 1 (
+        echo ERROR: Frontend e2e tests failed
+        exit /b 1
+    )
+    cd tests
+    echo Frontend e2e tests completed successfully!
     echo.
 )
 
