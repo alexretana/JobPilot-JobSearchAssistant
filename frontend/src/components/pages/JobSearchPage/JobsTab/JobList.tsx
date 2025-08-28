@@ -5,8 +5,8 @@
 
 import { Component, createSignal, createEffect, For, Show } from 'solid-js';
 import { JobCard } from './JobCard';
-import { jobApi } from '../../../../services/jobApi';
-import type { Job, JobSearchFilters } from '../../../../services/jobApi';
+import { JobService } from '../../../../services/JobService';
+import type { Job, JobSearchFilters } from '../../../../services/JobService';
 
 interface JobListProps {
   filters?: JobSearchFilters;
@@ -15,6 +15,7 @@ interface JobListProps {
 }
 
 export const JobList: Component<JobListProps> = props => {
+  const jobService = new JobService();
   const [jobs, setJobs] = createSignal<Job[]>([]);
   const [loading, setLoading] = createSignal(false);
   const [error, setError] = createSignal<string | null>(null);
@@ -33,15 +34,17 @@ export const JobList: Component<JobListProps> = props => {
       let response;
       if (
         props.filters &&
-        (props.filters.query || props.filters.job_types || props.filters.locations)
+        (props.filters.query || props.filters.job_type || props.filters.location)
       ) {
-        response = await jobApi.searchJobs(props.filters);
+        response = await jobService.searchJobs(props.filters);
+        setJobs(response.results);
+        setTotal(response.total_results);
       } else {
-        response = await jobApi.getRecentJobs(props.filters?.limit || 20);
+        // For now, we'll use searchJobs with empty filters to get recent jobs
+        response = await jobService.searchJobs({ ...props.filters, limit: props.filters?.limit || 20 });
+        setJobs(response.results);
+        setTotal(response.total_results);
       }
-
-      setJobs(response.jobs);
-      setTotal(response.total);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load jobs';
       setError(errorMessage);

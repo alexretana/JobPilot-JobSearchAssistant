@@ -4,8 +4,8 @@
  */
 
 import { Component, Show } from 'solid-js';
-import type { Job } from '../../../../services/jobApi';
-import { jobApi } from '../../../../services/jobApi';
+import type { Job } from '../../../../services/JobService';
+import { JobService } from '../../../../services/JobService';
 
 interface JobCardProps {
   job: Job;
@@ -15,13 +15,15 @@ interface JobCardProps {
 }
 
 export const JobCard: Component<JobCardProps> = props => {
+  const jobService = new JobService();
+  
   const handleViewDetails = () => {
-    props.onViewDetails?.(props.job.id);
+    props.onViewDetails?.(props.job.job_id);
   };
 
   const handleSaveJob = (e: MouseEvent) => {
     e.stopPropagation();
-    props.onSaveJob?.(props.job.id);
+    props.onSaveJob?.(props.job.job_id);
   };
 
   const handleVisitJob = (e: MouseEvent) => {
@@ -70,7 +72,7 @@ export const JobCard: Component<JobCardProps> = props => {
           <span class='font-medium'>{props.job.company}</span>
           <span>•</span>
           <div class='flex items-center gap-1'>
-            <span>{jobApi.getRemoteTypeIcon(props.job.remote_type)}</span>
+            <span>{jobService.getRemoteTypeIcon(props.job.remote_type)}</span>
             <span>{props.job.location}</span>
           </div>
         </div>
@@ -79,25 +81,25 @@ export const JobCard: Component<JobCardProps> = props => {
         <div class='flex flex-wrap items-center gap-3 text-sm text-base-content/60 mb-3'>
           <Show when={props.job.job_type}>
             <div class='badge badge-outline badge-sm'>
-              {jobApi.getJobTypeLabel(props.job.job_type)}
+              {jobService.getJobTypeLabel(props.job.job_type)}
             </div>
           </Show>
 
           <Show when={props.job.remote_type}>
             <div class='badge badge-outline badge-sm'>
-              {jobApi.getRemoteTypeLabel(props.job.remote_type)}
+              {jobService.getRemoteTypeLabel(props.job.remote_type)}
             </div>
           </Show>
 
           <Show when={props.job.posted_date}>
-            <span class='text-xs opacity-60'>{jobApi.formatPostedDate(props.job)}</span>
+            <span class='text-xs opacity-60'>{jobService.formatPostedDate(props.job.posted_date)}</span>
           </Show>
         </div>
 
         {/* Salary */}
         <Show when={props.job.salary_min || props.job.salary_max}>
           <div class='text-sm font-medium text-success mb-3'>
-            💰 {jobApi.formatSalary(props.job)}
+            💰 {jobService.formatSalary(props.job.salary_min, props.job.salary_max)}
           </div>
         </Show>
 
