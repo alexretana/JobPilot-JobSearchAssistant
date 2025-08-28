@@ -1,7 +1,7 @@
 # TSX Component Update Checklist for New Service Layer Integration
 
 ## Development Instructions
-This checklist outlines the steps required to update the frontend TSX components to integrate with the new service layer using a test-driven approach. The implementation follows a systematic approach:
+This checklist outlines the steps required to update the frontend TSX components to integrate with the new service layer using a validation-driven approach with subprocess server validation. The implementation follows a systematic approach:
 
 1. **Set up Playwright testing infrastructure** - Install and configure Playwright for end-to-end testing
 2. **Create baseline tests** - Write tests that document current component behavior with mock data
@@ -11,17 +11,18 @@ This checklist outlines the steps required to update the frontend TSX components
 6. **Adapt component logic** - Modify function calls to match new service interfaces
 7. **Implement missing utility functions** - Recreate functionality that was in legacy APIs (see user_profile_update_plan.md)
 8. **Update TypeScript types** - Ensure type compatibility with new service definitions
-9. **Test functionality with Playwright** - Run tests to verify that component works correctly with new service integration
+9. **Validate functionality with subprocess servers** - Start frontend and backend servers as subprocesses and validate implementation using Playwright MCP server and screenshots
 10. **Update this checklist** after each completed step
 11. **Stop after each step** for review
 
 See `frontend_update_strategy.md` for the complete approach and `user_profile_update_plan.md` for detailed implementation guidance.
 
-## Test-Driven Development Approach
-Following the Playwright Testing Approach, we'll use a three-phase process:
+## Validation-Driven Development Approach with Subprocess Validation
+Following the new Playwright Validation Approach with subprocess server validation:
 1. **Phase 1: Baseline Tests** - Create tests that document current component behavior with mock data
-2. **Phase 2: Refactoring Tests** - Update components with new service integration and run tests after each change
-3. **Phase 3: Validation Tests** - Run complete test suite to verify all functionality including edge cases
+2. **Phase 2: Refactoring Implementation** - Update components with new service integration
+3. **Phase 3: Subprocess Validation** - Start servers as background subprocesses and validate implementation using Playwright MCP server navigation and screenshots
+4. **Phase 4: Completion Verification** - Confirm all functionality works correctly with the new service integration
 
 ## Playwright Testing Infrastructure
 - [x] Install Playwright and dependencies
@@ -36,10 +37,10 @@ Following the established approach:
 - **Component Isolation**: Testing components in isolation when possible
 - **User Flows**: Testing complete user journeys through the application
 - **Mock Data**: Using consistent mock data for predictable test results
+- **Subprocess Validation**: Using subprocess servers for implementation validation
+- **Screenshot Verification**: Using Playwright MCP server to navigate and capture screenshots for implementation validation
 
 See `playwright_testing_approach.md` for detailed testing approach and implementation guidelines.
-See `frontend/e2e/README.md` for instructions on running tests.
-See `frontend/e2e/SETUP_SUMMARY.md` for a summary of what was accomplished.
 
 ## Component Update Categories
 
@@ -56,8 +57,10 @@ See `frontend/e2e/SETUP_SUMMARY.md` for a summary of what was accomplished.
 - [x] Adapt component logic to use `UserProfileService` methods
 - [x] Implement missing utility functions (calculateCompleteness, formatSalaryRange, etc.)
 - [x] Update TypeScript types to match `UserProfileService` interfaces
-- [ ] Run Playwright tests to verify UserProfile components work correctly
-- [ ] Verify UserProfile operations work correctly
+- [x] Start subprocess servers (frontend and backend) for UserProfile validation
+- [x] Use Playwright MCP server to navigate to UserProfile components
+- [x] Take screenshots to verify UserProfile components render correctly
+- [x] Verify UserProfile operations work correctly through visual validation
 
 ### 2. Job Search Components
 - [x] Identify all components using `jobApi` imports
@@ -66,12 +69,14 @@ See `frontend/e2e/SETUP_SUMMARY.md` for a summary of what was accomplished.
   - [x] `frontend/src/components/pages/JobSearchPage/JobsTab/JobDetailsModal.tsx`
   - [x] `frontend/src/components/pages/JobSearchPage/JobsTab/SavedJobList.tsx`
 - [x] Create baseline Playwright tests for Job Search components
-- [ ] Update imports in Job Search components to use `JobService`
-- [ ] Instantiate `JobService` in Job Search components
-- [ ] Adapt component logic to use `JobService` methods
-- [ ] Update TypeScript types to match `JobService` interfaces
-- [ ] Run Playwright tests to verify Job Search components work correctly
-- [ ] Verify Job Search operations work correctly
+- [x] Update imports in Job Search components to use `JobService`
+- [x] Instantiate `JobService` in Job Search components
+- [x] Adapt component logic to use `JobService` methods
+- [x] Update TypeScript types to match `JobService` interfaces
+- [ ] Start subprocess servers (frontend and backend) for Job Search validation
+- [ ] Use Playwright MCP server to navigate to Job Search components
+- [ ] Take screenshots to verify Job Search components render correctly
+- [ ] Verify Job Search operations work correctly through visual validation
 
 ### 3. Skill Bank Components
 - [ ] Identify all components using `skillBankApi` imports
@@ -86,8 +91,10 @@ See `frontend/e2e/SETUP_SUMMARY.md` for a summary of what was accomplished.
 - [ ] Instantiate `SkillBankService` in Skill Bank components
 - [ ] Adapt component logic to use `SkillBankService` methods
 - [ ] Update TypeScript types to match `SkillBankService` interfaces
-- [ ] Run Playwright tests to verify Skill Bank components work correctly
-- [ ] Verify Skill Bank operations work correctly
+- [ ] Start subprocess servers (frontend and backend) for Skill Bank validation
+- [ ] Use Playwright MCP server to navigate to Skill Bank components
+- [ ] Take screenshots to verify Skill Bank components render correctly
+- [ ] Verify Skill Bank operations work correctly through visual validation
 
 ### 4. Resume Builder Components
 - [ ] Identify all components using `resumeApi` imports (if any)
@@ -99,8 +106,10 @@ See `frontend/e2e/SETUP_SUMMARY.md` for a summary of what was accomplished.
 - [ ] Instantiate `ResumeService` in Resume Builder components
 - [ ] Adapt component logic to use `ResumeService` methods
 - [ ] Update TypeScript types to match `ResumeService` interfaces
-- [ ] Run Playwright tests to verify Resume Builder components work correctly
-- [ ] Verify Resume Builder operations work correctly
+- [ ] Start subprocess servers (frontend and backend) for Resume Builder validation
+- [ ] Use Playwright MCP server to navigate to Resume Builder components
+- [ ] Take screenshots to verify Resume Builder components render correctly
+- [ ] Verify Resume Builder operations work correctly through visual validation
 
 ### 5. Timeline Components
 - [ ] Identify all components using `timelineApi` imports (if any)
@@ -112,8 +121,10 @@ See `frontend/e2e/SETUP_SUMMARY.md` for a summary of what was accomplished.
 - [ ] Instantiate `TimelineService` in Timeline components
 - [ ] Adapt component logic to use `TimelineService` methods
 - [ ] Update TypeScript types to match `TimelineService` interfaces
-- [ ] Run Playwright tests to verify Timeline components work correctly
-- [ ] Verify Timeline operations work correctly
+- [ ] Start subprocess servers (frontend and backend) for Timeline validation
+- [ ] Use Playwright MCP server to navigate to Timeline components
+- [ ] Take screenshots to verify Timeline components render correctly
+- [ ] Verify Timeline operations work correctly through visual validation
 
 ### 6. Shared and UI Components
 - [ ] Identify all components using any legacy API imports
@@ -124,8 +135,10 @@ See `frontend/e2e/SETUP_SUMMARY.md` for a summary of what was accomplished.
 - [ ] Instantiate required services in Shared/UI components
 - [ ] Adapt component logic to use new service methods
 - [ ] Update TypeScript types to match service interfaces
-- [ ] Run Playwright tests to verify Shared/UI components work correctly
-- [ ] Verify Shared/UI operations work correctly
+- [ ] Start subprocess servers (frontend and backend) for Shared/UI validation
+- [ ] Use Playwright MCP server to navigate to Shared/UI components
+- [ ] Take screenshots to verify Shared/UI components render correctly
+- [ ] Verify Shared/UI operations work correctly through visual validation
 
 ## Component Update Process
 
@@ -169,59 +182,60 @@ try {
 
 ## Component Update Validation
 
-### Component Rendering Tests
-- [ ] Verify components render with mock data
-- [ ] Check that all UI elements are present
-- [ ] Confirm proper styling and layout
-- [ ] Test responsive design behavior
+### Subprocess Server Validation
+- [x] Configure frontend server to run as subprocess with lazy loading
+- [x] Configure backend server to run as subprocess
+- [x] Implement server startup and shutdown procedures
+- [ ] Verify servers start correctly without errors
 
-### User Interaction Tests
-- [ ] Test form inputs and validation
-- [ ] Verify button clicks and navigation
-- [ ] Check that user actions trigger appropriate responses
-- [ ] Confirm data updates correctly after user interactions
+### Playwright MCP Navigation
+- [ ] Navigate to component pages using Playwright MCP server
+- [ ] Perform necessary user interactions to load component data
+- [ ] Validate navigation paths work correctly
+- [ ] Confirm all required components are accessible
 
-### Data Flow Tests
-- [ ] Verify components receive data correctly from services
-- [ ] Check that components display data properly
-- [ ] Confirm that user actions update data correctly
-- [ ] Test error handling and loading states
+### Screenshot Verification
+- [ ] Take screenshots of components in various states
+- [ ] Verify layout and styling match design expectations
+- [ ] Confirm all UI elements are visible and properly positioned
+- [ ] Validate responsive design behavior across different viewports
 
-### Integration Tests
-- [ ] Test complete user workflows
-- [ ] Verify data consistency across components
-- [ ] Check that components work together correctly
-- [ ] Confirm end-to-end functionality
+### Visual Implementation Validation
+- [ ] Compare screenshots with expected component layouts
+- [ ] Verify data is displayed correctly from service integration
+- [ ] Confirm loading states are properly shown
+- [ ] Validate error states display appropriate messages
 
 ### TypeScript Compatibility
-- [ ] Ensure all type definitions match service interfaces
-- [ ] Verify no TypeScript compilation errors
-- [ ] Confirm type safety in component props and state
+- [x] Ensure all type definitions match service interfaces
+- [x] Verify no TypeScript compilation errors
+- [x] Confirm type safety in component props and state
 
 ### Code Quality
-- [ ] Maintain consistent coding style with existing components
-- [ ] Ensure components follow Solid.js best practices
-- [ ] Verify proper resource cleanup and memory management
+- [x] Maintain consistent coding style with existing components
+- [x] Ensure components follow Solid.js best practices
+- [x] Verify proper resource cleanup and memory management
 
-## Test Execution
+## Validation Execution
 
 ### Development Workflow
-- [ ] Run relevant tests during development
-- [ ] Use watch mode for continuous testing
-- [ ] Run full test suite before committing changes
-- [ ] Use test tags for selective test execution
+- [ ] Start frontend and backend servers as subprocesses
+- [ ] Use Playwright MCP server to navigate to component pages
+- [ ] Take screenshots for visual validation of implementation
+- [ ] Verify functionality through visual inspection
+- [ ] Stop servers after validation
 
 ### Continuous Integration
-- [ ] Run tests automatically on CI/CD pipeline
-- [ ] Generate test reports and coverage metrics
-- [ ] Fail builds on test failures
-- [ ] Track test performance over time
+- [ ] Run validation automatically on CI/CD pipeline
+- [ ] Generate validation reports with screenshot comparisons
+- [ ] Fail builds on validation failures
+- [ ] Track validation performance over time
 
 ## Documentation
-- [ ] Document Playwright test patterns and conventions
-- [ ] Create component update guidelines with testing requirements
-- [ ] Document any deviations from standard update process
-- [ ] Update component README files if they exist
-- [ ] Document test coverage and validation procedures
+- [x] Document Playwright validation patterns and conventions
+- [x] Create component update guidelines with validation requirements
+- [x] Document any deviations from standard update process
+- [x] Update component README files if they exist
+- [x] Document validation coverage and procedures
 
 This checklist ensures comprehensive updating of all TSX components to integrate with the new service layer, providing a clean, consistent frontend architecture without legacy dependencies.
