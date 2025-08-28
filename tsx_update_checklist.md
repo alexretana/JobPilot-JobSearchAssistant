@@ -18,31 +18,26 @@ This checklist outlines the steps required to update the frontend TSX components
 See `frontend_update_strategy.md` for the complete approach and `user_profile_update_plan.md` for detailed implementation guidance.
 
 ## Playwright Testing Infrastructure
-- [ ] Install Playwright and dependencies
-- [ ] Configure Playwright test environment
-- [ ] Set up test utilities and fixtures
-- [ ] Create basic test structure
-- [ ] Run initial test to verify setup works
+- [x] Install Playwright and dependencies
+- [x] Configure Playwright test environment
+- [x] Set up test utilities and fixtures
+- [x] Create basic test structure
+- [x] Run initial test to verify setup works
 
 See `playwright_testing_approach.md` for detailed testing approach and implementation guidelines.
+See `frontend/e2e/README.md` for instructions on running tests.
+See `frontend/e2e/SETUP_SUMMARY.md` for a summary of what was accomplished.
 
 ## Component Update Categories
 
-### 0. Playwright Testing Infrastructure
-- [ ] Install Playwright and dependencies
-- [ ] Configure Playwright test environment
-- [ ] Set up test utilities and fixtures
-- [ ] Create basic test structure
-- [ ] Run initial test to verify setup works
-
 ### 1. UserProfile Components
-- [ ] Identify all components using `userProfileApi` imports
+- [x] Identify all components using `userProfileApi` imports
   - [x] `frontend/src/components/pages/ResumeBuilderPage/UserProfileTab/ProfileDashboard.tsx`
   - [x] `frontend/src/components/pages/ResumeBuilderPage/UserProfileTab/ProfileEditForm.tsx`
   - [x] `frontend/src/components/pages/ResumeBuilderPage/UserProfileTab/ProfileEditModal.tsx`
   - [x] `frontend/src/components/pages/ResumeBuilderPage/UserProfileTab/ProfileCompleteness.tsx`
   - [x] `frontend/src/components/pages/ResumeBuilderPage/SkillBankTab/sections/ContactInfoSection.tsx`
-- [ ] Create baseline Playwright tests for UserProfile components
+- [x] Create baseline Playwright tests for UserProfile components
 - [ ] Update imports in UserProfile components to use `UserProfileService`
 - [ ] Instantiate `UserProfileService` in UserProfile components
 - [ ] Adapt component logic to use `UserProfileService` methods
@@ -52,12 +47,12 @@ See `playwright_testing_approach.md` for detailed testing approach and implement
 - [ ] Verify UserProfile operations work correctly
 
 ### 2. Job Search Components
-- [ ] Identify all components using `jobApi` imports
-  - [ ] `frontend/src/components/pages/JobSearchPage/JobsTab/JobList.tsx`
-  - [ ] `frontend/src/components/pages/JobSearchPage/JobsTab/JobCard.tsx`
-  - [ ] `frontend/src/components/pages/JobSearchPage/JobsTab/JobDetailsModal.tsx`
-  - [ ] `frontend/src/components/pages/JobSearchPage/JobsTab/SavedJobList.tsx`
-- [ ] Create baseline Playwright tests for Job Search components
+- [x] Identify all components using `jobApi` imports
+  - [x] `frontend/src/components/pages/JobSearchPage/JobsTab/JobList.tsx`
+  - [x] `frontend/src/components/pages/JobSearchPage/JobsTab/JobCard.tsx`
+  - [x] `frontend/src/components/pages/JobSearchPage/JobsTab/JobDetailsModal.tsx`
+  - [x] `frontend/src/components/pages/JobSearchPage/JobsTab/SavedJobList.tsx`
+- [x] Create baseline Playwright tests for Job Search components
 - [ ] Update imports in Job Search components to use `JobService`
 - [ ] Instantiate `JobService` in Job Search components
 - [ ] Adapt component logic to use `JobService` methods

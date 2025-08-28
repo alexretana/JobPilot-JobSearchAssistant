@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Job Search - JobPilot-OpenManus</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        #root {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            background-color: #4f46e5;
+            color: white;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .card {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #374151;
+        }
+        .job-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .job-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .job-company {
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+        .job-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .badge-primary {
+            background-color: #dbeafe;
+            color: #2563eb;
+        }
+        .badge-secondary {
+            background-color: #ede9fe;
+            color: #7c3aed;
+        }
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #6b7280;
+        }
+        .error {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+        }
+        .search-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .search-input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+        }
+        .search-button {
+            background-color: #4f46e5;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root">
+        <header class="header">
+            <h1>Job Search - JobPilot-OpenManus</h1>
+        </header>
+        
+        <main class="main-content">
+            <!-- Job Search Page -->
+            <div id="job-search-page">
+                <div class="card">
+                    <h2 class="card-title">Recent Jobs</h2>
+                    
+                    <div class="search-bar">
+                        <input type="text" class="search-input" placeholder="Search jobs..." value="Software Engineer">
+                        <button class="search-button">Search</button>
+                    </div>
+                    
+                    <div class="job-list">
+                        <div class="job-card">
+                            <div class="job-title">Senior Software Engineer</div>
+                            <div class="job-company">Tech Corp</div>
+                            <div class="job-meta">
+                                <span>San Francisco, CA</span>
+                                <span class="badge badge-primary">Full-time</span>
+                                <span class="badge badge-secondary">Remote</span>
+                                <span>$120,000 - $150,000</span>
+                            </div>
+                        </div>
+                        
+                        <div class="job-card">
+                            <div class="job-title">Frontend Developer</div>
+                            <div class="job-company">Web Solutions Inc</div>
+                            <div class="job-meta">
+                                <span>New York, NY</span>
+                                <span class="badge badge-primary">Full-time</span>
+                                <span class="badge badge-secondary">Hybrid</span>
+                                <span>$100,000 - $130,000</span>
+                            </div>
+                        </div>
+                        
+                        <div class="job-card">
+                            <div class="job-title">Backend Engineer</div>
+                            <div class="job-company">Data Systems LLC</div>
+                            <div class="job-meta">
+                                <span>Remote</span>
+                                <span class="badge badge-primary">Contract</span>
+                                <span class="badge badge-secondary">Remote</span>
+                                <span>$80 - $100/hr</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Loading State -->
+            <div id="loading-state" style="display: none;" class="loading">
+                <div>Loading jobs...</div>
+            </div>
+            
+            <!-- Error State -->
+            <div id="error-state" style="display: none;" class="error">
+                <div>Error loading jobs: Failed to fetch data</div>
+                <button class="search-button">Try Again</button>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
