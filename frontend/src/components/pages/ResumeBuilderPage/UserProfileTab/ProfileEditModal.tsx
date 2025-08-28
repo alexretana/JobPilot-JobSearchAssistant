@@ -1,5 +1,5 @@
 import { Component, Show } from 'solid-js';
-import { UserProfile } from '../../../../services/userProfileApi';
+import { UserProfile } from '../../../../services/UserProfileService';
 import ProfileEditForm from './ProfileEditForm';
 
 interface ProfileEditModalProps {

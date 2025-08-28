@@ -1,13 +1,7 @@
 import { Component, createSignal, Show, For, onMount } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import {
-  userProfileApi,
-  UserProfile,
-  UserProfileCreate,
-  UserProfileUpdate,
-  JobType,
-  RemoteType,
-} from '../../../../services/userProfileApi';
+import { UserProfileService, UserProfile, UserProfileCreate, UserProfileUpdate, JobType, RemoteType } from '../../../../services/UserProfileService';
+import { validateProfile, getJobTypes, getRemoteTypes } from '../../../../utils/profileUtils';
 
 interface ProfileEditFormProps {
   profile?: UserProfile; // If editing existing profile
@@ -16,6 +10,7 @@ interface ProfileEditFormProps {
 }
 
 const ProfileEditForm: Component<ProfileEditFormProps> = props => {
+  const userProfileService = new UserProfileService();
   const [isSubmitting, setIsSubmitting] = createSignal(false);
   const [errors, setErrors] = createStore<string[]>([]);
   const [activeTab, setActiveTab] = createSignal<'personal' | 'professional' | 'preferences'>(
@@ -126,7 +121,7 @@ const ProfileEditForm: Component<ProfileEditFormProps> = props => {
 
     try {
       // Validate form data
-      const validationErrors = userProfileApi.validateProfile(formData);
+      const validationErrors = validateProfile(formData);
       if (validationErrors.length > 0) {
         setErrors(validationErrors);
         setIsSubmitting(false);
@@ -138,10 +133,10 @@ const ProfileEditForm: Component<ProfileEditFormProps> = props => {
       if (props.profile) {
         // Update existing profile
         const updates: UserProfileUpdate = { ...formData };
-        savedProfile = await userProfileApi.updateProfile(props.profile.id, updates);
+        savedProfile = await userProfileService.updateProfile(props.profile.id, updates);
       } else {
         // Create new profile
-        savedProfile = await userProfileApi.createProfile(formData);
+        savedProfile = await userProfileService.createProfile(formData);
       }
 
       props.onSave(savedProfile);
@@ -406,14 +401,14 @@ const ProfileEditForm: Component<ProfileEditFormProps> = props => {
               <span class='label-text-alt'>{formData.preferred_job_types.length} selected</span>
             </label>
             <div class='grid grid-cols-2 md:grid-cols-3 gap-2'>
-              <For each={userProfileApi.getJobTypes()}>
+              <For each={getJobTypes()}>
                 {jobType => (
                   <label class='label cursor-pointer justify-start gap-2'>
                     <input
                       type='checkbox'
                       class='checkbox'
-                      checked={formData.preferred_job_types.includes(jobType)}
-                      onChange={() => handleJobTypeToggle(jobType)}
+                      checked={formData.preferred_job_types.includes(jobType as JobType)}
+                      onChange={() => handleJobTypeToggle(jobType as JobType)}
                     />
                     <span class='label-text'>{jobType}</span>
                   </label>
@@ -429,14 +424,14 @@ const ProfileEditForm: Component<ProfileEditFormProps> = props => {
               <span class='label-text-alt'>{formData.preferred_remote_types.length} selected</span>
             </label>
             <div class='grid grid-cols-3 gap-2'>
-              <For each={userProfileApi.getRemoteTypes()}>
+              <For each={getRemoteTypes()}>
                 {remoteType => (
                   <label class='label cursor-pointer justify-start gap-2'>
                     <input
                       type='checkbox'
                       class='checkbox'
-                      checked={formData.preferred_remote_types.includes(remoteType)}
-                      onChange={() => handleRemoteTypeToggle(remoteType)}
+                      checked={formData.preferred_remote_types.includes(remoteType as RemoteType)}
+                      onChange={() => handleRemoteTypeToggle(remoteType as RemoteType)}
                     />
                     <span class='label-text'>{remoteType}</span>
                   </label>

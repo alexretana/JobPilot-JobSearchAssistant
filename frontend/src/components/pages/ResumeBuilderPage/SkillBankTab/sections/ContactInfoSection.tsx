@@ -1,8 +1,8 @@
 import { Component, createSignal, createEffect, Show, createResource } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import type { SkillBankResponse } from '../../../../../types/skillBank';
-import { userProfileApi } from '../../../../../services/userProfileApi';
-import type { UserProfileUpdate } from '../../../../../services/userProfileApi';
+import type { SkillBankResponse } from '../../../../../services/SkillBankService';
+import { UserProfileService } from '../../../../../services/UserProfileService';
+import type { UserProfileUpdate } from '../../../../../services/UserProfileService';
 
 interface ContactInfoSectionProps {
   skillBank: SkillBankResponse;
@@ -40,6 +40,7 @@ const initialFormData: ContactFormData = {
  * Contact information management section
  */
 export const ContactInfoSection: Component<ContactInfoSectionProps> = props => {
+  const userProfileService = new UserProfileService();
   const [formData, setFormData] = createStore<ContactFormData>(initialFormData);
   const [saving, setSaving] = createSignal(false);
   const [hasChanges, setHasChanges] = createSignal(false);
@@ -51,12 +52,12 @@ export const ContactInfoSection: Component<ContactInfoSectionProps> = props => {
       if (!userId) return null;
       try {
         // Try to get the specific user profile
-        return await userProfileApi.getProfile(userId);
+        return await userProfileService.getProfile(userId);
       } catch (error) {
         console.warn('Could not load user profile, trying default:', error);
         try {
           // Fall back to demo user default if specific user not found
-          return await userProfileApi.getProfile('demo-user-123');
+          return await userProfileService.getProfile('demo-user-123');
         } catch (fallbackError) {
           console.error('Could not load any user profile:', fallbackError);
           return null;
@@ -151,7 +152,7 @@ export const ContactInfoSection: Component<ContactInfoSectionProps> = props => {
 
       // Use the user ID from skill bank or fall back to demo user
       const userId = props.skillBank.user_id || 'demo-user-123';
-      await userProfileApi.updateProfile(userId, updateData);
+      await userProfileService.updateProfile(userId, updateData);
 
       console.log('Contact info updated successfully:', updateData);
       setHasChanges(false);

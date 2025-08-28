@@ -1,5 +1,16 @@
 import { Component, For, Show } from 'solid-js';
-import { ProfileCompleteness } from '../../../../services/userProfileApi';
+
+// Define the ProfileCompleteness type locally since it's not in the UserProfileService
+interface ProfileCompleteness {
+  overall_score: number;
+  sections: {
+    personal: number;
+    professional: number;
+    preferences: number;
+  };
+  missing_fields: string[];
+  suggestions: string[];
+}
 
 interface ProfileCompletenessProps {
   completeness: ProfileCompleteness;

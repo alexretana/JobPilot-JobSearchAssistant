@@ -17,12 +17,25 @@ This checklist outlines the steps required to update the frontend TSX components
 
 See `frontend_update_strategy.md` for the complete approach and `user_profile_update_plan.md` for detailed implementation guidance.
 
+## Test-Driven Development Approach
+Following the Playwright Testing Approach, we'll use a three-phase process:
+1. **Phase 1: Baseline Tests** - Create tests that document current component behavior with mock data
+2. **Phase 2: Refactoring Tests** - Update components with new service integration and run tests after each change
+3. **Phase 3: Validation Tests** - Run complete test suite to verify all functionality including edge cases
+
 ## Playwright Testing Infrastructure
 - [x] Install Playwright and dependencies
 - [x] Configure Playwright test environment
 - [x] Set up test utilities and fixtures
 - [x] Create basic test structure
 - [x] Run initial test to verify setup works
+
+Following the established approach:
+- **Page Object Model**: Using page objects for each major page/component
+- **Fixtures**: Using fixtures for test data and setup/teardown
+- **Component Isolation**: Testing components in isolation when possible
+- **User Flows**: Testing complete user journeys through the application
+- **Mock Data**: Using consistent mock data for predictable test results
 
 See `playwright_testing_approach.md` for detailed testing approach and implementation guidelines.
 See `frontend/e2e/README.md` for instructions on running tests.
@@ -38,11 +51,11 @@ See `frontend/e2e/SETUP_SUMMARY.md` for a summary of what was accomplished.
   - [x] `frontend/src/components/pages/ResumeBuilderPage/UserProfileTab/ProfileCompleteness.tsx`
   - [x] `frontend/src/components/pages/ResumeBuilderPage/SkillBankTab/sections/ContactInfoSection.tsx`
 - [x] Create baseline Playwright tests for UserProfile components
-- [ ] Update imports in UserProfile components to use `UserProfileService`
-- [ ] Instantiate `UserProfileService` in UserProfile components
-- [ ] Adapt component logic to use `UserProfileService` methods
-- [ ] Implement missing utility functions (calculateCompleteness, formatSalaryRange, etc.)
-- [ ] Update TypeScript types to match `UserProfileService` interfaces
+- [x] Update imports in UserProfile components to use `UserProfileService`
+- [x] Instantiate `UserProfileService` in UserProfile components
+- [x] Adapt component logic to use `UserProfileService` methods
+- [x] Implement missing utility functions (calculateCompleteness, formatSalaryRange, etc.)
+- [x] Update TypeScript types to match `UserProfileService` interfaces
 - [ ] Run Playwright tests to verify UserProfile components work correctly
 - [ ] Verify UserProfile operations work correctly
 
@@ -156,13 +169,29 @@ try {
 
 ## Component Update Validation
 
-### Functionality Testing
-- [ ] Create baseline Playwright tests before component updates
-- [ ] Run Playwright tests after each component update
-- [ ] Verify all user interactions work correctly
-- [ ] Confirm loading states display correctly
-- [ ] Validate error states handle gracefully
-- [ ] Check that all component features work as expected
+### Component Rendering Tests
+- [ ] Verify components render with mock data
+- [ ] Check that all UI elements are present
+- [ ] Confirm proper styling and layout
+- [ ] Test responsive design behavior
+
+### User Interaction Tests
+- [ ] Test form inputs and validation
+- [ ] Verify button clicks and navigation
+- [ ] Check that user actions trigger appropriate responses
+- [ ] Confirm data updates correctly after user interactions
+
+### Data Flow Tests
+- [ ] Verify components receive data correctly from services
+- [ ] Check that components display data properly
+- [ ] Confirm that user actions update data correctly
+- [ ] Test error handling and loading states
+
+### Integration Tests
+- [ ] Test complete user workflows
+- [ ] Verify data consistency across components
+- [ ] Check that components work together correctly
+- [ ] Confirm end-to-end functionality
 
 ### TypeScript Compatibility
 - [ ] Ensure all type definitions match service interfaces
@@ -173,6 +202,20 @@ try {
 - [ ] Maintain consistent coding style with existing components
 - [ ] Ensure components follow Solid.js best practices
 - [ ] Verify proper resource cleanup and memory management
+
+## Test Execution
+
+### Development Workflow
+- [ ] Run relevant tests during development
+- [ ] Use watch mode for continuous testing
+- [ ] Run full test suite before committing changes
+- [ ] Use test tags for selective test execution
+
+### Continuous Integration
+- [ ] Run tests automatically on CI/CD pipeline
+- [ ] Generate test reports and coverage metrics
+- [ ] Fail builds on test failures
+- [ ] Track test performance over time
 
 ## Documentation
 - [ ] Document Playwright test patterns and conventions

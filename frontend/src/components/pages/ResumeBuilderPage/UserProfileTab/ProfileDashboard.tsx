@@ -1,12 +1,9 @@
 import { Component, createSignal, createResource, Show, For } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import {
-  userProfileApi,
-  UserProfile,
-  ProfileCompleteness,
-} from '../../../../services/userProfileApi';
-import ProfileEditModal from './ProfileEditModal';
+import { UserProfileService, UserProfile } from '../../../../services/UserProfileService';
 import ProfileCompletenessComponent from './ProfileCompleteness';
+import { calculateCompleteness, formatSalaryRange } from '../../../../utils/profileUtils';
+import ProfileEditModal from './ProfileEditModal';
 
 interface ProfileDashboardProps {
   userId?: string; // If not provided, will attempt to get current user
@@ -15,8 +12,9 @@ interface ProfileDashboardProps {
 }
 
 const ProfileDashboard: Component<ProfileDashboardProps> = props => {
+  const userProfileService = new UserProfileService();
   const [showEditModal, setShowEditModal] = createSignal(false);
-  const [completenessData, setCompletenessData] = createStore<ProfileCompleteness>({
+  const [completenessData, setCompletenessData] = createStore({
     overall_score: 0,
     sections: {
       personal: 0,
@@ -34,14 +32,14 @@ const ProfileDashboard: Component<ProfileDashboardProps> = props => {
 
       if (props.userId) {
         // Use specific user ID if provided
-        userProfile = await userProfileApi.getProfile(props.userId);
+        userProfile = await userProfileService.getProfile(props.userId);
       } else {
         // Use default profile for single-user mode
-        userProfile = await userProfileApi.getDefaultProfile();
+        userProfile = await userProfileService.getDefaultProfile();
       }
 
       // Calculate completeness when profile loads
-      const completeness = userProfileApi.calculateCompleteness(userProfile);
+      const completeness = calculateCompleteness(userProfile);
       setCompletenessData(completeness);
       return userProfile;
     } catch (error) {
@@ -52,7 +50,7 @@ const ProfileDashboard: Component<ProfileDashboardProps> = props => {
 
   const handleProfileUpdate = async (updatedProfile: UserProfile) => {
     // Recalculate completeness
-    const completeness = userProfileApi.calculateCompleteness(updatedProfile);
+    const completeness = calculateCompleteness(updatedProfile);
     setCompletenessData(completeness);
 
     // Notify parent component
@@ -338,7 +336,7 @@ const ProfileDashboard: Component<ProfileDashboardProps> = props => {
                 <div>
                   <div class='text-sm font-medium text-base-content/70'>Salary Range</div>
                   <div class='text-base'>
-                    {userProfileApi.formatSalaryRange(
+                    {formatSalaryRange(
                       profile()?.desired_salary_min,
                       profile()?.desired_salary_max
                     )}
