@@ -3,7 +3,7 @@ setlocal
 
 REM Check if --subprocess flag is provided
 set SUBPROCESS_MODE=0
-if "%1"=="--subprocess" (
+if "%1"== "--subprocess" (
     set SUBPROCESS_MODE=1
 )
 
@@ -12,11 +12,11 @@ echo Starting JobPilot servers...
 REM Start backend server
 if %SUBPROCESS_MODE%==1 (
     echo Starting backend server in subprocess mode...
-    start "Backend Server" /min cmd /c "cd backend && python -m api.main"
+    start "Backend Server" /min cmd /c "cd backend && uv run python -m api.main"
 ) else (
     echo Starting backend server in subprocess mode...
     cd backend
-    start "Backend Server" /min cmd /c "python -m api.main"
+    start "Backend Server" /min cmd /c "uv run python -m api.main"
     cd ..
 )
 
