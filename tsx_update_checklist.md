@@ -73,20 +73,20 @@ See `playwright_testing_approach.md` for detailed testing approach and implement
 - [x] Instantiate `JobService` in Job Search components
 - [x] Adapt component logic to use `JobService` methods
 - [x] Update TypeScript types to match `JobService` interfaces
-- [ ] Start subprocess servers (frontend and backend) for Job Search validation
-- [ ] Use Playwright MCP server to navigate to Job Search components
-- [ ] Take screenshots to verify Job Search components render correctly
-- [ ] Verify Job Search operations work correctly through visual validation
+- [x] Start subprocess servers (frontend and backend) for Job Search validation
+- [x] Use Playwright MCP server to navigate to Job Search components
+- [x] Take screenshots to verify Job Search components render correctly
+- [x] Verify Job Search operations work correctly through visual validation
 
 ### 3. Skill Bank Components
-- [ ] Identify all components using `skillBankApi` imports
-  - [ ] `frontend/src/components/SkillBankSelectors.tsx`
-  - [ ] `frontend/src/components/pages/ResumeBuilderPage/SkillBankTab/sections/SkillsSection.tsx`
-  - [ ] `frontend/src/components/pages/ResumeBuilderPage/SkillBankTab/sections/ExperienceSection.tsx`
-  - [ ] `frontend/src/components/pages/ResumeBuilderPage/SkillBankTab/sections/EducationSection.tsx`
-  - [ ] `frontend/src/components/pages/ResumeBuilderPage/SkillBankTab/sections/ProjectsSection.tsx`
-  - [ ] `frontend/src/components/pages/ResumeBuilderPage/SkillBankTab/sections/CertificationsSection.tsx`
-- [ ] Create baseline Playwright tests for Skill Bank components
+- [x] Identify all components using `skillBankApi` imports
+  - [x] `frontend/src/components/SkillBankSelectors.tsx`
+  - [x] `frontend/src/components/pages/ResumeBuilderPage/SkillBankTab/sections/SkillsSection.tsx`
+  - [x] `frontend/src/components/pages/ResumeBuilderPage/SkillBankTab/sections/ExperienceSection.tsx`
+  - [x] `frontend/src/components/pages/ResumeBuilderPage/SkillBankTab/sections/EducationSection.tsx`
+  - [x] `frontend/src/components/pages/ResumeBuilderPage/SkillBankTab/sections/ProjectsSection.tsx`
+  - [x] `frontend/src/components/pages/ResumeBuilderPage/SkillBankTab/sections/CertificationsSection.tsx`
+- [x] Create baseline Playwright tests for Skill Bank components
 - [ ] Update imports in Skill Bank components to use `SkillBankService`
 - [ ] Instantiate `SkillBankService` in Skill Bank components
 - [ ] Adapt component logic to use `SkillBankService` methods

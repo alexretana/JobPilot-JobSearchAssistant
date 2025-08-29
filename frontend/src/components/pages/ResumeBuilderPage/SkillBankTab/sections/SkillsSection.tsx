@@ -1,12 +1,12 @@
 import { Component, createSignal, createMemo, Show, For } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import { skillBankApiService } from '../../../../../services/skillBankApi';
+import { SkillBankService } from '../../../../../services/SkillBankService';
 import type {
   SkillBankResponse,
   EnhancedSkill,
   EnhancedSkillRequest,
 } from '../../../../../types/skillBank';
-import { SkillLevel, SkillCategory, ContentSource } from '../../../../../types/skillBank';
+import { SkillLevel, SkillCategory } from '../../../../../types/skillBank';
 
 // Filter types for skills
 
