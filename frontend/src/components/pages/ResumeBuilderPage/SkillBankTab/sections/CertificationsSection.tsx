@@ -1,14 +1,9 @@
 import { Component, createSignal, createMemo, Show, For } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import { skillBankApiService } from '../../../../../services/skillBankApi';
-import type {
-  SkillBankResponse,
-  Certification,
-  CertificationRequest,
-} from '../../../../../types/skillBank';
+import { SkillBankService, type Certification } from '../../../../../services/SkillBankService';
 
 interface CertificationsSectionProps {
-  skillBank: SkillBankResponse;
+  skillBank: Awaited<ReturnType<SkillBankService['getSkillBank']>>;
   onUpdate: () => void;
   loading: boolean;
 }
@@ -16,21 +11,27 @@ interface CertificationsSectionProps {
 interface CertificationFormData {
   name: string;
   issuer: string;
-  issue_date: string;
+  date_earned: string;
   expiry_date: string;
   credential_id: string;
+  verification_url: string;
+  status: string;
+  issue_date: string;
   url: string;
   description: string;
 }
 
-const skillBankApi = skillBankApiService;
+const skillBankService = new SkillBankService();
 
 const initialFormData: CertificationFormData = {
   name: '',
   issuer: '',
-  issue_date: '',
+  date_earned: '',
   expiry_date: '',
   credential_id: '',
+  verification_url: '',
+  status: '',
+  issue_date: '',
   url: '',
   description: '',
 };
@@ -86,24 +87,24 @@ export const CertificationsSection: Component<CertificationsSectionProps> = prop
 
     setSaving(true);
     try {
-      const certificationRequest: CertificationRequest = {
+      const certificationData = {
         name: formData.name.trim(),
         issuer: formData.issuer.trim(),
-        issue_date: formData.issue_date || null,
-        expiry_date: formData.expiry_date || null,
-        credential_id: formData.credential_id.trim() || null,
-        url: formData.url.trim() || null,
-        description: formData.description.trim() || null,
+        issue_date: formData.issue_date,
+        expiry_date: formData.expiry_date || undefined,
+        credential_id: formData.credential_id.trim() || undefined,
+        url: formData.url.trim() || undefined,
+        description: formData.description.trim() || undefined,
       };
 
       if (editingCertification()) {
-        await skillBankApi.updateCertification(
+        await skillBankService.updateCertification(
           props.skillBank.user_id,
           editingCertification()!.id,
-          certificationRequest
+          certificationData
         );
       } else {
-        await skillBankApi.addCertification(props.skillBank.user_id, certificationRequest);
+        await skillBankService.addCertification(props.skillBank.user_id, certificationData);
       }
 
       props.onUpdate();
@@ -120,7 +121,7 @@ export const CertificationsSection: Component<CertificationsSectionProps> = prop
 
     setSaving(true);
     try {
-      await skillBankApi.deleteCertification(props.skillBank.user_id, certification.id);
+      await skillBankService.deleteCertification(props.skillBank.user_id, certification.id);
       props.onUpdate();
     } catch (error) {
       console.error('Error deleting certification:', error);

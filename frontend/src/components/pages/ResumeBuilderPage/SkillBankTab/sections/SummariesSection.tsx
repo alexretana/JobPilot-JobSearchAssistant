@@ -1,15 +1,10 @@
 import { Component, createSignal, Show, For } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import { skillBankApiService } from '../../../../../services/skillBankApi';
-import type {
-  SkillBankResponse,
-  SummaryVariation,
-  SummaryVariationRequest,
-} from '../../../../../types/skillBank';
+import { SkillBankService, type SummaryVariation } from '../../../../../services/SkillBankService';
 import { ContentFocusType } from '../../../../../types/skillBank';
 
 interface SummariesSectionProps {
-  skillBank: SkillBankResponse;
+  skillBank: Awaited<ReturnType<SkillBankService['getSkillBank']>>;
   onUpdate: () => void;
   loading: boolean;
 }
@@ -19,22 +14,22 @@ interface SummaryFormData {
   content: string;
   tone: string;
   length: string;
-  focus: ContentFocusType;
+  focus: string;
   target_industries: string[];
   target_roles: string[];
   keywords_emphasized: string[];
 }
 
-const skillBankApi = skillBankApiService;
+const skillBankService = new SkillBankService();
 
 const contentFocusOptions = [
-  { value: 'technical' as const, label: 'Technical Focus', color: 'badge-info' },
-  { value: 'leadership' as const, label: 'Leadership Focus', color: 'badge-warning' },
-  { value: 'results' as const, label: 'Results-Oriented', color: 'badge-success' },
-  { value: 'general' as const, label: 'General Overview', color: 'badge-neutral' },
-  { value: 'creative' as const, label: 'Creative Focus', color: 'badge-secondary' },
-  { value: 'concise' as const, label: 'Concise & Direct', color: 'badge-accent' },
-  { value: 'detailed' as const, label: 'Detailed Description', color: 'badge-primary' },
+  { value: 'technical', label: 'Technical Focus', color: 'badge-info' },
+  { value: 'leadership', label: 'Leadership Focus', color: 'badge-warning' },
+  { value: 'results', label: 'Results-Oriented', color: 'badge-success' },
+  { value: 'general', label: 'General Overview', color: 'badge-neutral' },
+  { value: 'creative', label: 'Creative Focus', color: 'badge-secondary' },
+  { value: 'concise', label: 'Concise & Direct', color: 'badge-accent' },
+  { value: 'detailed', label: 'Detailed Description', color: 'badge-primary' },
 ];
 
 const toneOptions = [
@@ -50,19 +45,14 @@ const toneOptions = [
   'Innovative',
 ];
 
-const lengthOptions = [
-  'Brief (2-3 sentences)',
-  'Standard (4-5 sentences)',
-  'Extended (6-8 sentences)',
-  'Detailed (paragraph)',
-];
+const lengthOptions = ['Short (1-2 paragraphs)', 'Medium (2-3 paragraphs)', 'Long (3+ paragraphs)'];
 
 const initialFormData: SummaryFormData = {
   title: '',
   content: '',
-  tone: 'Professional',
-  length: 'Standard (4-5 sentences)',
-  focus: ContentFocusType.GENERAL,
+  tone: '',
+  length: '',
+  focus: '',
   target_industries: [],
   target_roles: [],
   keywords_emphasized: [],
@@ -117,7 +107,7 @@ export const SummariesSection: Component<SummariesSectionProps> = props => {
 
     setSaving(true);
     try {
-      const summaryRequest: SummaryVariationRequest = {
+      const summaryData = {
         title: formData.title.trim(),
         content: formData.content.trim(),
         tone: formData.tone,
@@ -129,13 +119,13 @@ export const SummariesSection: Component<SummariesSectionProps> = props => {
       };
 
       if (editingSummary()) {
-        await skillBankApi.updateSummaryVariation(
+        await skillBankService.updateSummaryVariation(
           props.skillBank.user_id,
           editingSummary()!.id,
-          summaryRequest
+          summaryData
         );
       } else {
-        await skillBankApi.addSummaryVariation(props.skillBank.user_id, summaryRequest);
+        await skillBankService.addSummaryVariation(props.skillBank.user_id, summaryData);
       }
 
       props.onUpdate();
@@ -152,7 +142,7 @@ export const SummariesSection: Component<SummariesSectionProps> = props => {
 
     setSaving(true);
     try {
-      await skillBankApi.deleteSummaryVariation(props.skillBank.user_id, summary.id);
+      await skillBankService.deleteSummaryVariation(props.skillBank.user_id, summary.id);
       props.onUpdate();
     } catch (error) {
       console.error('Error deleting summary:', error);

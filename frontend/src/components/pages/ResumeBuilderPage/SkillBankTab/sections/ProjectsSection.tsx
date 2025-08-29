@@ -1,40 +1,39 @@
 import { Component, createSignal, createMemo, Show, For } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import { skillBankApiService } from '../../../../../services/skillBankApi';
-import type {
-  SkillBankResponse,
-  ProjectEntry,
-  ProjectEntryRequest,
-} from '../../../../../types/skillBank';
+import { SkillBankService, type ProjectEntry } from '../../../../../services/SkillBankService';
 
 interface ProjectsSectionProps {
-  skillBank: SkillBankResponse;
+  skillBank: Awaited<ReturnType<SkillBankService['getSkillBank']>>;
   onUpdate: () => void;
   loading: boolean;
 }
 
 interface ProjectFormData {
   name: string;
+  description: string;
+  technologies: string[];
   url: string;
   github_url: string;
   start_date: string;
   end_date: string;
+  achievements: string[];
   default_description: string;
   default_achievements: string[];
-  technologies: string[];
 }
 
-const skillBankApi = skillBankApiService;
+const skillBankService = new SkillBankService();
 
 const initialFormData: ProjectFormData = {
   name: '',
+  description: '',
+  technologies: [],
   url: '',
   github_url: '',
   start_date: '',
   end_date: '',
+  achievements: [],
   default_description: '',
   default_achievements: [],
-  technologies: [],
 };
 
 /**
@@ -90,25 +89,25 @@ export const ProjectsSection: Component<ProjectsSectionProps> = props => {
 
     setSaving(true);
     try {
-      const projectRequest: ProjectEntryRequest = {
+      const projectData = {
         name: formData.name.trim(),
-        url: formData.url.trim() || null,
-        github_url: formData.github_url.trim() || null,
+        url: formData.url.trim() || undefined,
+        github_url: formData.github_url.trim() || undefined,
         start_date: formData.start_date,
-        end_date: formData.end_date || null,
-        default_description: formData.default_description.trim() || null,
+        end_date: formData.end_date || undefined,
+        default_description: formData.default_description.trim() || undefined,
         default_achievements: formData.default_achievements.filter(a => a.trim()),
         technologies: formData.technologies.filter(t => t.trim()),
       };
 
       if (editingProject()) {
-        await skillBankApi.updateProject(
+        await skillBankService.updateProject(
           props.skillBank.user_id,
           editingProject()!.id,
-          projectRequest
+          projectData
         );
       } else {
-        await skillBankApi.addProject(props.skillBank.user_id, projectRequest);
+        await skillBankService.addProject(props.skillBank.user_id, projectData);
       }
 
       props.onUpdate();
@@ -125,7 +124,7 @@ export const ProjectsSection: Component<ProjectsSectionProps> = props => {
 
     setSaving(true);
     try {
-      await skillBankApi.deleteProject(props.skillBank.user_id, project.id);
+      await skillBankService.deleteProject(props.skillBank.user_id, project.id);
       props.onUpdate();
     } catch (error) {
       console.error('Error deleting project:', error);

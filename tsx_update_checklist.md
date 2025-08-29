@@ -87,10 +87,10 @@ See `playwright_testing_approach.md` for detailed testing approach and implement
   - [x] `frontend/src/components/pages/ResumeBuilderPage/SkillBankTab/sections/ProjectsSection.tsx`
   - [x] `frontend/src/components/pages/ResumeBuilderPage/SkillBankTab/sections/CertificationsSection.tsx`
 - [x] Create baseline Playwright tests for Skill Bank components
-- [ ] Update imports in Skill Bank components to use `SkillBankService`
-- [ ] Instantiate `SkillBankService` in Skill Bank components
-- [ ] Adapt component logic to use `SkillBankService` methods
-- [ ] Update TypeScript types to match `SkillBankService` interfaces
+- [x] Update imports in Skill Bank components to use `SkillBankService`
+- [x] Instantiate `SkillBankService` in Skill Bank components
+- [x] Adapt component logic to use `SkillBankService` methods
+- [x] Update TypeScript types to match `SkillBankService` interfaces
 - [ ] Start subprocess servers (frontend and backend) for Skill Bank validation
 - [ ] Use Playwright MCP server to navigate to Skill Bank components
 - [ ] Take screenshots to verify Skill Bank components render correctly

@@ -32,6 +32,7 @@ export interface ExperienceEntry {
   technologies?: string[];
   created_at?: string;
   updated_at?: string;
+  experience_type?: string;
 }
 
 export interface EducationEntry {
@@ -47,6 +48,8 @@ export interface EducationEntry {
   relevant_coursework?: string[];
   created_at?: string;
   updated_at?: string;
+  end_date?: string;
+  default_description?: string;
 }
 
 export interface ProjectEntry {
@@ -60,6 +63,9 @@ export interface ProjectEntry {
   achievements?: string[];
   created_at?: string;
   updated_at?: string;
+  github_url?: string;
+  default_description?: string;
+  default_achievements?: string[];
 }
 
 export interface Certification {
@@ -73,6 +79,9 @@ export interface Certification {
   status?: string;
   created_at?: string;
   updated_at?: string;
+  issue_date?: string;
+  url?: string;
+  description?: string;
 }
 
 export interface SummaryVariation {
@@ -82,6 +91,12 @@ export interface SummaryVariation {
   is_primary?: boolean;
   created_at?: string;
   updated_at?: string;
+  tone?: string;
+  length?: string;
+  focus?: string;
+  target_industries?: string[];
+  target_roles?: string[];
+  keywords_emphasized?: string[];
 }
 
 export interface ExperienceContentVariation {
@@ -157,6 +172,7 @@ export interface ExperienceCreate {
   default_achievements?: string[];
   skills_used?: string[];
   technologies?: string[];
+  experience_type?: string;
 }
 
 export interface ExperienceUpdate {
@@ -170,6 +186,239 @@ export interface ExperienceUpdate {
   default_achievements?: string[];
   skills_used?: string[];
   technologies?: string[];
+  experience_type?: string;
+}
+
+export interface EducationCreate {
+  institution: string;
+  degree: string;
+  field_of_study?: string;
+  location?: string;
+  start_date?: string;
+  graduation_date?: string;
+  gpa?: string;
+  honors?: string[];
+  relevant_coursework?: string[];
+  end_date?: string;
+  default_description?: string;
+}
+
+export interface EducationUpdate {
+  institution?: string;
+  degree?: string;
+  field_of_study?: string;
+  location?: string;
+  start_date?: string;
+  graduation_date?: string;
+  gpa?: string;
+  honors?: string[];
+  relevant_coursework?: string[];
+  end_date?: string;
+  default_description?: string;
+}
+
+export interface ProjectCreate {
+  name: string;
+  description?: string;
+  technologies?: string[];
+  url?: string;
+  start_date?: string;
+  end_date?: string;
+  achievements?: string[];
+  github_url?: string;
+  default_description?: string;
+  default_achievements?: string[];
+}
+
+export interface ProjectUpdate {
+  name?: string;
+  description?: string;
+  technologies?: string[];
+  url?: string;
+  start_date?: string;
+  end_date?: string;
+  achievements?: string[];
+  github_url?: string;
+  default_description?: string;
+  default_achievements?: string[];
+}
+
+export interface CertificationCreate {
+  name: string;
+  issuer?: string;
+  date_earned?: string;
+  expiry_date?: string;
+  credential_id?: string;
+  verification_url?: string;
+  status?: string;
+  issue_date?: string;
+  url?: string;
+  description?: string;
+}
+
+export interface CertificationUpdate {
+  name?: string;
+  issuer?: string;
+  date_earned?: string;
+  expiry_date?: string;
+  credential_id?: string;
+  verification_url?: string;
+  status?: string;
+  issue_date?: string;
+  url?: string;
+  description?: string;
+}
+
+export interface SummaryVariationCreate {
+  title: string;
+  content: string;
+  is_primary?: boolean;
+  tone?: string;
+  length?: string;
+  focus?: string;
+  target_industries?: string[];
+  target_roles?: string[];
+  keywords_emphasized?: string[];
+}
+
+export interface SummaryVariationUpdate {
+  title?: string;
+  content?: string;
+  is_primary?: boolean;
+  tone?: string;
+  length?: string;
+  focus?: string;
+  target_industries?: string[];
+  target_roles?: string[];
+  keywords_emphasized?: string[];
+}
+
+export interface ExperienceCreate {
+  company: string;
+  position: string;
+  location?: string;
+  start_date: string;
+  end_date?: string;
+  is_current?: boolean;
+  experience_type?: string;
+  default_description?: string;
+  default_achievements?: string[];
+  skills_used?: string[];
+  technologies?: string[];
+}
+
+export interface ExperienceUpdate {
+  company?: string;
+  position?: string;
+  location?: string;
+  start_date?: string;
+  end_date?: string;
+  is_current?: boolean;
+  experience_type?: string;
+  default_description?: string;
+  default_achievements?: string[];
+  skills_used?: string[];
+  technologies?: string[];
+}
+
+export interface EducationCreate {
+  institution: string;
+  degree: string;
+  field_of_study?: string;
+  location?: string;
+  start_date?: string;
+  graduation_date?: string;
+  gpa?: string;
+  honors?: string[];
+  relevant_coursework?: string[];
+}
+
+export interface EducationUpdate {
+  institution?: string;
+  degree?: string;
+  field_of_study?: string;
+  location?: string;
+  start_date?: string;
+  graduation_date?: string;
+  gpa?: string;
+  honors?: string[];
+  relevant_coursework?: string[];
+}
+
+export interface ProjectCreate {
+  name: string;
+  description?: string;
+  technologies?: string[];
+  url?: string;
+  github_url?: string;
+  start_date?: string;
+  end_date?: string;
+  achievements?: string[];
+  default_description?: string;
+  default_achievements?: string[];
+}
+
+export interface ProjectUpdate {
+  name?: string;
+  description?: string;
+  technologies?: string[];
+  url?: string;
+  github_url?: string;
+  start_date?: string;
+  end_date?: string;
+  achievements?: string[];
+  default_description?: string;
+  default_achievements?: string[];
+}
+
+export interface CertificationCreate {
+  name: string;
+  issuer?: string;
+  date_earned?: string;
+  expiry_date?: string;
+  credential_id?: string;
+  verification_url?: string;
+  status?: string;
+  issue_date?: string;
+  url?: string;
+  description?: string;
+}
+
+export interface CertificationUpdate {
+  name?: string;
+  issuer?: string;
+  date_earned?: string;
+  expiry_date?: string;
+  credential_id?: string;
+  verification_url?: string;
+  status?: string;
+  issue_date?: string;
+  url?: string;
+  description?: string;
+}
+
+export interface SummaryVariationCreate {
+  title: string;
+  content: string;
+  is_primary?: boolean;
+  tone?: string;
+  length?: string;
+  focus?: string;
+  target_industries?: string[];
+  target_roles?: string[];
+  keywords_emphasized?: string[];
+}
+
+export interface SummaryVariationUpdate {
+  title?: string;
+  content?: string;
+  is_primary?: boolean;
+  tone?: string;
+  length?: string;
+  focus?: string;
+  target_industries?: string[];
+  target_roles?: string[];
+  keywords_emphasized?: string[];
 }
 
 export interface SkillBankResponse extends SkillBank {}
@@ -219,5 +468,53 @@ export class SkillBankService {
 
   async deleteExperience(userId: string, experienceId: string): Promise<SkillBankResponse> {
     return this.apiService.delete<SkillBankResponse>(`/skill-banks/${userId}/experiences/${experienceId}`);
+  }
+
+  async addEducation(userId: string, educationData: EducationCreate): Promise<SkillBankResponse> {
+    return this.apiService.post<SkillBankResponse>(`/skill-banks/${userId}/education`, educationData);
+  }
+
+  async updateEducation(userId: string, educationId: string, updateData: EducationUpdate): Promise<SkillBankResponse> {
+    return this.apiService.put<SkillBankResponse>(`/skill-banks/${userId}/education/${educationId}`, updateData);
+  }
+
+  async deleteEducation(userId: string, educationId: string): Promise<SkillBankResponse> {
+    return this.apiService.delete<SkillBankResponse>(`/skill-banks/${userId}/education/${educationId}`);
+  }
+
+  async addProject(userId: string, projectData: ProjectCreate): Promise<SkillBankResponse> {
+    return this.apiService.post<SkillBankResponse>(`/skill-banks/${userId}/projects`, projectData);
+  }
+
+  async updateProject(userId: string, projectId: string, updateData: ProjectUpdate): Promise<SkillBankResponse> {
+    return this.apiService.put<SkillBankResponse>(`/skill-banks/${userId}/projects/${projectId}`, updateData);
+  }
+
+  async deleteProject(userId: string, projectId: string): Promise<SkillBankResponse> {
+    return this.apiService.delete<SkillBankResponse>(`/skill-banks/${userId}/projects/${projectId}`);
+  }
+
+  async addCertification(userId: string, certificationData: CertificationCreate): Promise<SkillBankResponse> {
+    return this.apiService.post<SkillBankResponse>(`/skill-banks/${userId}/certifications`, certificationData);
+  }
+
+  async updateCertification(userId: string, certificationId: string, updateData: CertificationUpdate): Promise<SkillBankResponse> {
+    return this.apiService.put<SkillBankResponse>(`/skill-banks/${userId}/certifications/${certificationId}`, updateData);
+  }
+
+  async deleteCertification(userId: string, certificationId: string): Promise<SkillBankResponse> {
+    return this.apiService.delete<SkillBankResponse>(`/skill-banks/${userId}/certifications/${certificationId}`);
+  }
+
+  async addSummaryVariation(userId: string, summaryData: SummaryVariationCreate): Promise<SkillBankResponse> {
+    return this.apiService.post<SkillBankResponse>(`/skill-banks/${userId}/summary-variations`, summaryData);
+  }
+
+  async updateSummaryVariation(userId: string, summaryId: string, updateData: SummaryVariationUpdate): Promise<SkillBankResponse> {
+    return this.apiService.put<SkillBankResponse>(`/skill-banks/${userId}/summary-variations/${summaryId}`, updateData);
+  }
+
+  async deleteSummaryVariation(userId: string, summaryId: string): Promise<SkillBankResponse> {
+    return this.apiService.delete<SkillBankResponse>(`/skill-banks/${userId}/summary-variations/${summaryId}`);
   }
 }

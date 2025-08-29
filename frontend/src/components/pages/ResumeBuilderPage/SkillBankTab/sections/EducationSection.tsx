@@ -1,14 +1,9 @@
 import { Component, createSignal, createMemo, Show, For } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import { skillBankApiService } from '../../../../../services/skillBankApi';
-import type {
-  SkillBankResponse,
-  EducationEntry,
-  EducationEntryRequest,
-} from '../../../../../types/skillBank';
+import { SkillBankService, type EducationEntry } from '../../../../../services/SkillBankService';
 
 interface EducationSectionProps {
-  skillBank: SkillBankResponse;
+  skillBank: Awaited<ReturnType<SkillBankService['getSkillBank']>>;
   onUpdate: () => void;
   loading: boolean;
 }
@@ -20,13 +15,13 @@ interface EducationFormData {
   location: string;
   start_date: string;
   end_date: string;
-  gpa: number | null;
+  gpa: string;
   honors: string[];
   relevant_coursework: string[];
   default_description: string;
 }
 
-const skillBankApi = skillBankApiService;
+const skillBankService = new SkillBankService();
 
 const initialFormData: EducationFormData = {
   institution: '',
@@ -35,7 +30,7 @@ const initialFormData: EducationFormData = {
   location: '',
   start_date: '',
   end_date: '',
-  gpa: null,
+  gpa: '',
   honors: [],
   relevant_coursework: [],
   default_description: '',
@@ -96,27 +91,27 @@ export const EducationSection: Component<EducationSectionProps> = props => {
 
     setSaving(true);
     try {
-      const educationRequest: EducationEntryRequest = {
+      const educationData = {
         institution: formData.institution.trim(),
         degree: formData.degree.trim(),
-        field_of_study: formData.field_of_study.trim() || null,
-        location: formData.location.trim() || null,
+        field_of_study: formData.field_of_study.trim() || undefined,
+        location: formData.location.trim() || undefined,
         start_date: formData.start_date,
-        end_date: formData.end_date || null,
-        gpa: formData.gpa,
+        end_date: formData.end_date || undefined,
+        gpa: formData.gpa || undefined,
         honors: formData.honors.filter(h => h.trim()),
         relevant_coursework: formData.relevant_coursework.filter(c => c.trim()),
-        default_description: formData.default_description.trim() || null,
+        default_description: formData.default_description.trim() || undefined,
       };
 
       if (editingEducation()) {
-        await skillBankApi.updateEducation(
+        await skillBankService.updateEducation(
           props.skillBank.user_id,
           editingEducation()!.id,
-          educationRequest
+          educationData
         );
       } else {
-        await skillBankApi.addEducation(props.skillBank.user_id, educationRequest);
+        await skillBankService.addEducation(props.skillBank.user_id, educationData);
       }
 
       props.onUpdate();
@@ -136,7 +131,7 @@ export const EducationSection: Component<EducationSectionProps> = props => {
 
     setSaving(true);
     try {
-      await skillBankApi.deleteEducation(props.skillBank.user_id, education.id);
+      await skillBankService.deleteEducation(props.skillBank.user_id, education.id);
       props.onUpdate();
     } catch (error) {
       console.error('Error deleting education:', error);

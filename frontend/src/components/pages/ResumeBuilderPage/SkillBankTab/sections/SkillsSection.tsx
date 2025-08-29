@@ -1,25 +1,19 @@
 import { Component, createSignal, createMemo, Show, For } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import { SkillBankService } from '../../../../../services/SkillBankService';
-import type {
-  SkillBankResponse,
-  EnhancedSkill,
-  EnhancedSkillRequest,
-} from '../../../../../types/skillBank';
-import { SkillLevel, SkillCategory } from '../../../../../types/skillBank';
+import { SkillBankService, type EnhancedSkill } from '../../../../../services/SkillBankService';
 
 // Filter types for skills
 
 interface SkillsSectionProps {
-  skillBank: SkillBankResponse;
+  skillBank: Awaited<ReturnType<SkillBankService['getSkillBank']>>;
   onUpdate: () => void;
   loading: boolean;
 }
 
 interface SkillFormData {
   name: string;
-  level: SkillLevel;
-  category: SkillCategory;
+  level: string;
+  category: string;
   subcategory: string;
   years_experience: number | null;
   description: string;
@@ -27,33 +21,33 @@ interface SkillFormData {
   is_featured: boolean;
 }
 
-const skillBankApi = skillBankApiService;
+const skillBankService = new SkillBankService();
 
 const skillLevels = [
-  { value: 'beginner' as const, label: 'Beginner', color: 'badge-secondary' },
-  { value: 'intermediate' as const, label: 'Intermediate', color: 'badge-info' },
-  { value: 'advanced' as const, label: 'Advanced', color: 'badge-warning' },
-  { value: 'expert' as const, label: 'Expert', color: 'badge-success' },
+  { value: 'beginner', label: 'Beginner', color: 'badge-secondary' },
+  { value: 'intermediate', label: 'Intermediate', color: 'badge-info' },
+  { value: 'advanced', label: 'Advanced', color: 'badge-warning' },
+  { value: 'expert', label: 'Expert', color: 'badge-success' },
 ];
 
 const skillCategories = [
-  { value: 'technical' as const, label: 'Technical' },
-  { value: 'soft' as const, label: 'Soft Skills' },
-  { value: 'transferable' as const, label: 'Transferable' },
-  { value: 'industry' as const, label: 'Industry' },
-  { value: 'tool' as const, label: 'Tools' },
-  { value: 'language' as const, label: 'Languages' },
-  { value: 'framework' as const, label: 'Frameworks' },
-  { value: 'platform' as const, label: 'Platforms' },
-  { value: 'methodology' as const, label: 'Methodologies' },
-  { value: 'domain' as const, label: 'Domain Knowledge' },
-  { value: 'other' as const, label: 'Other' },
+  { value: 'technical', label: 'Technical' },
+  { value: 'soft', label: 'Soft Skills' },
+  { value: 'transferable', label: 'Transferable' },
+  { value: 'industry', label: 'Industry' },
+  { value: 'tool', label: 'Tools' },
+  { value: 'language', label: 'Languages' },
+  { value: 'framework', label: 'Frameworks' },
+  { value: 'platform', label: 'Platforms' },
+  { value: 'methodology', label: 'Methodologies' },
+  { value: 'domain', label: 'Domain Knowledge' },
+  { value: 'other', label: 'Other' },
 ];
 
 const initialFormData: SkillFormData = {
   name: '',
-  level: SkillLevel.INTERMEDIATE,
-  category: SkillCategory.TECHNICAL,
+  level: 'intermediate',
+  category: 'technical',
   subcategory: '',
   years_experience: null,
   description: '',
@@ -156,24 +150,24 @@ export const SkillsSection: Component<SkillsSectionProps> = props => {
 
     setSaving(true);
     try {
-      const skillRequest: EnhancedSkillRequest = {
+      // Map form data to service interface
+      const skillData = {
         name: formData.name.trim(),
-        level: formData.level,
+        level: formData.level.toLowerCase(),
         category: formData.category,
-        subcategory: formData.subcategory.trim() || null,
-        years_experience: formData.years_experience,
-        description: formData.description.trim() || null,
+        subcategory: formData.subcategory.trim() || undefined,
+        years_experience: formData.years_experience || undefined,
+        description: formData.description.trim() || undefined,
         keywords: formData.keywords.filter(k => k.trim()),
         is_featured: formData.is_featured,
-        source: 'manual' as ContentSource,
       };
 
       if (editingSkill()) {
         // Update existing skill
-        await skillBankApi.updateSkill(props.skillBank.user_id, editingSkill()!.id, skillRequest);
+        await skillBankService.updateSkill(props.skillBank.user_id, editingSkill()!.id, skillData);
       } else {
         // Add new skill
-        await skillBankApi.addSkill(props.skillBank.user_id, skillRequest);
+        await skillBankService.addSkill(props.skillBank.user_id, skillData);
       }
 
       props.onUpdate();
@@ -191,7 +185,7 @@ export const SkillsSection: Component<SkillsSectionProps> = props => {
 
     setSaving(true);
     try {
-      await skillBankApi.deleteSkill(props.skillBank.user_id, skill.id);
+      await skillBankService.deleteSkill(props.skillBank.user_id, skill.id);
       props.onUpdate();
     } catch (error) {
       console.error('Error deleting skill:', error);

@@ -1,15 +1,10 @@
 import { Component, createSignal, createMemo, Show, For } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import { skillBankApiService } from '../../../../../services/skillBankApi';
-import type {
-  SkillBankResponse,
-  ExperienceEntry,
-  ExperienceEntryRequest,
-} from '../../../../../types/skillBank';
-import { ExperienceType } from '../../../../../types/skillBank';
+import { SkillBankService } from '../../../../../services/SkillBankService';
+import type * as SkillBankTypes from '../../../../../services/SkillBankService';
 
 interface ExperienceSectionProps {
-  skillBank: SkillBankResponse;
+  skillBank: Awaited<ReturnType<SkillBankService['getSkillBank']>>;
   onUpdate: () => void;
   loading: boolean;
 }
@@ -21,22 +16,22 @@ interface ExperienceFormData {
   start_date: string;
   end_date: string;
   is_current: boolean;
-  experience_type: ExperienceType;
+  experience_type: string;
   default_description: string;
   default_achievements: string[];
   skills_used: string[];
   technologies: string[];
 }
 
-const skillBankApi = skillBankApiService;
+const skillBankService = new SkillBankService();
 
 const experienceTypes = [
-  { value: 'full_time' as const, label: 'Full Time', color: 'badge-primary' },
-  { value: 'part_time' as const, label: 'Part Time', color: 'badge-secondary' },
-  { value: 'contract' as const, label: 'Contract', color: 'badge-info' },
-  { value: 'freelance' as const, label: 'Freelance', color: 'badge-warning' },
-  { value: 'internship' as const, label: 'Internship', color: 'badge-accent' },
-  { value: 'volunteer' as const, label: 'Volunteer', color: 'badge-success' },
+  { value: 'full_time', label: 'Full Time', color: 'badge-primary' },
+  { value: 'part_time', label: 'Part Time', color: 'badge-secondary' },
+  { value: 'contract', label: 'Contract', color: 'badge-info' },
+  { value: 'freelance', label: 'Freelance', color: 'badge-warning' },
+  { value: 'internship', label: 'Internship', color: 'badge-accent' },
+  { value: 'volunteer', label: 'Volunteer', color: 'badge-success' },
 ];
 
 const initialFormData: ExperienceFormData = {
@@ -46,7 +41,7 @@ const initialFormData: ExperienceFormData = {
   start_date: '',
   end_date: '',
   is_current: false,
-  experience_type: ExperienceType.FULL_TIME,
+  experience_type: 'full_time', // Changed from ExperienceType.FULL_TIME
   default_description: '',
   default_achievements: [],
   skills_used: [],
@@ -58,7 +53,7 @@ const initialFormData: ExperienceFormData = {
  */
 export const ExperienceSection: Component<ExperienceSectionProps> = props => {
   const [showAddForm, setShowAddForm] = createSignal(false);
-  const [editingExperience, setEditingExperience] = createSignal<ExperienceEntry | null>(null);
+  const [editingExperience, setEditingExperience] = createSignal<SkillBankTypes.ExperienceEntry | null>(null);
   const [formData, setFormData] = createStore<ExperienceFormData>(initialFormData);
   const [saving, setSaving] = createSignal(false);
   const [expandedExperience, setExpandedExperience] = createSignal<string | null>(null);
@@ -82,7 +77,7 @@ export const ExperienceSection: Component<ExperienceSectionProps> = props => {
     setShowAddForm(true);
   };
 
-  const handleEditExperience = (experience: ExperienceEntry) => {
+  const handleEditExperience = (experience: SkillBankTypes.ExperienceEntry) => {
     setFormData({
       company: experience.company,
       position: experience.position,
@@ -90,11 +85,11 @@ export const ExperienceSection: Component<ExperienceSectionProps> = props => {
       start_date: experience.start_date,
       end_date: experience.end_date || '',
       is_current: experience.is_current,
-      experience_type: experience.experience_type,
+      experience_type: experience.experience_type || 'full_time',
       default_description: experience.default_description || '',
-      default_achievements: [...experience.default_achievements],
-      skills_used: [...experience.skills_used],
-      technologies: [...experience.technologies],
+      default_achievements: [...(experience.default_achievements || [])],
+      skills_used: [...(experience.skills_used || [])],
+      technologies: [...(experience.technologies || [])],
     });
     setEditingExperience(experience);
     setShowAddForm(true);
@@ -112,28 +107,53 @@ export const ExperienceSection: Component<ExperienceSectionProps> = props => {
 
     setSaving(true);
     try {
-      const experienceRequest: ExperienceEntryRequest = {
+      const experienceData: SkillBankTypes.ExperienceCreate = {
         company: formData.company.trim(),
         position: formData.position.trim(),
-        location: formData.location.trim() || null,
+        location: formData.location.trim() || undefined,
         start_date: formData.start_date,
-        end_date: formData.is_current ? null : formData.end_date || null,
+        end_date: formData.is_current ? undefined : formData.end_date || undefined,
         is_current: formData.is_current,
         experience_type: formData.experience_type,
-        default_description: formData.default_description.trim() || null,
+        default_description: formData.default_description.trim() || undefined,
         default_achievements: formData.default_achievements.filter(a => a.trim()),
         skills_used: formData.skills_used.filter(s => s.trim()),
         technologies: formData.technologies.filter(t => t.trim()),
       };
 
       if (editingExperience()) {
-        await skillBankApi.updateExperience(
+        // Check if user_id is defined
+        if (!props.skillBank.user_id) {
+          throw new Error('User ID is not defined');
+        }
+        
+        // Convert to ExperienceUpdate for updates
+        const experienceUpdateData: SkillBankTypes.ExperienceUpdate = {
+          company: experienceData.company,
+          position: experienceData.position,
+          location: experienceData.location,
+          start_date: experienceData.start_date,
+          end_date: experienceData.end_date,
+          is_current: experienceData.is_current,
+          experience_type: experienceData.experience_type,
+          default_description: experienceData.default_description,
+          default_achievements: experienceData.default_achievements,
+          skills_used: experienceData.skills_used,
+          technologies: experienceData.technologies,
+        };
+        
+        await skillBankService.updateExperience(
           props.skillBank.user_id,
           editingExperience()!.id,
-          experienceRequest
+          experienceUpdateData
         );
       } else {
-        await skillBankApi.addExperience(props.skillBank.user_id, experienceRequest);
+        // Check if user_id is defined
+        if (!props.skillBank.user_id) {
+          throw new Error('User ID is not defined');
+        }
+        
+        await skillBankService.addExperience(props.skillBank.user_id, experienceData);
       }
 
       props.onUpdate();
@@ -153,7 +173,12 @@ export const ExperienceSection: Component<ExperienceSectionProps> = props => {
 
     setSaving(true);
     try {
-      await skillBankApi.deleteExperience(props.skillBank.user_id, experience.id);
+      // Check if user_id is defined
+      if (!props.skillBank.user_id) {
+        throw new Error('User ID is not defined');
+      }
+      
+      await skillBankService.deleteExperience(props.skillBank.user_id, experience.id);
       props.onUpdate();
     } catch (error) {
       console.error('Error deleting experience:', error);
@@ -238,7 +263,7 @@ export const ExperienceSection: Component<ExperienceSectionProps> = props => {
     }
   };
 
-  const getExperienceTypeBadge = (type: ExperienceType) => {
+  const getExperienceTypeBadge = (type: string) => {
     const typeConfig = experienceTypes.find(t => t.value === type);
     return { label: typeConfig?.label || type, color: typeConfig?.color || 'badge-neutral' };
   };
@@ -336,7 +361,7 @@ export const ExperienceSection: Component<ExperienceSectionProps> = props => {
                     class='select select-bordered'
                     value={formData.experience_type}
                     onChange={e =>
-                      setFormData('experience_type', e.currentTarget.value as ExperienceType)
+                      setFormData('experience_type', e.currentTarget.value)
                     }
                   >
                     <For each={experienceTypes}>
@@ -565,7 +590,7 @@ export const ExperienceSection: Component<ExperienceSectionProps> = props => {
             {experience => {
               const isExpanded = () => expandedExperience() === experience.id;
               const duration = () => calculateDuration(experience.start_date, experience.end_date);
-              const typeBadge = () => getExperienceTypeBadge(experience.experience_type);
+              const typeBadge = () => getExperienceTypeBadge(experience.experience_type || 'full_time');
 
               return (
                 <div class='card bg-base-100 shadow-lg border border-base-300'>
@@ -597,7 +622,7 @@ export const ExperienceSection: Component<ExperienceSectionProps> = props => {
                                 d='M8 7V3a1 1 0 011-1h6a1 1 0 011 1v4h3a1 1 0 110 2h-1v9a2 2 0 01-2 2H8a2 2 0 01-2-2V9H5a1 1 0 110-2h3z'
                               />
                             </svg>
-                            {formatDate(experience.start_date)} -{' '}
+                            {formatDate(experience.start_date || '')} -{' '}
                             {experience.is_current
                               ? 'Present'
                               : formatDate(experience.end_date || '')}
@@ -607,30 +632,30 @@ export const ExperienceSection: Component<ExperienceSectionProps> = props => {
                             <span>{duration()}</span>
                           </Show>
                           <Show when={experience.location}>
-                            <span>•</span>
-                            <div class='flex items-center gap-1'>
-                              <svg
-                                class='w-4 h-4'
-                                fill='none'
-                                stroke='currentColor'
-                                viewBox='0 0 24 24'
-                              >
-                                <path
-                                  stroke-linecap='round'
-                                  stroke-linejoin='round'
-                                  stroke-width='2'
-                                  d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z'
-                                />
-                                <path
-                                  stroke-linecap='round'
-                                  stroke-linejoin='round'
-                                  stroke-width='2'
-                                  d='M15 11a3 3 0 11-6 0 3 3 0 016 0z'
-                                />
-                              </svg>
-                              {experience.location}
-                            </div>
-                          </Show>
+                          <span>•</span>
+                          <div class='flex items-center gap-1'>
+                            <svg
+                              class='w-4 h-4'
+                              fill='none'
+                              stroke='currentColor'
+                              viewBox='0 0 24 24'
+                            >
+                              <path
+                                stroke-linecap='round'
+                                stroke-linejoin='round'
+                                stroke-width='2'
+                                d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z'
+                              />
+                              <path
+                                stroke-linecap='round'
+                                stroke-linejoin='round'
+                                stroke-width='2'
+                                d='M15 11a3 3 0 11-6 0 3 3 0 016 0z'
+                              />
+                            </svg>
+                            {experience.location}
+                          </div>
+                        </Show>
                         </div>
 
                         <Show when={experience.default_description}>
@@ -656,13 +681,13 @@ export const ExperienceSection: Component<ExperienceSectionProps> = props => {
                         </Show>
 
                         {/* Achievements (only when expanded) */}
-                        <Show when={isExpanded() && experience.default_achievements.length > 0}>
+                        <Show when={isExpanded() && (experience.default_achievements || []).length > 0}>
                           <div class='mt-4'>
                             <h4 class='text-sm font-medium text-base-content/70 mb-2'>
                               Key Achievements:
                             </h4>
                             <ul class='list-disc list-inside space-y-1 text-sm text-base-content/80'>
-                              <For each={experience.default_achievements}>
+                              <For each={experience.default_achievements || []}>
                                 {achievement => <li>{achievement}</li>}
                               </For>
                             </ul>
@@ -672,17 +697,17 @@ export const ExperienceSection: Component<ExperienceSectionProps> = props => {
                         {/* Skills and Technologies */}
                         <Show
                           when={
-                            experience.skills_used.length > 0 || experience.technologies.length > 0
+                            (experience.skills_used || []).length > 0 || (experience.technologies || []).length > 0
                           }
                         >
                           <div class='mt-3 space-y-2'>
-                            <Show when={experience.skills_used.length > 0}>
+                            <Show when={(experience.skills_used || []).length > 0}>
                               <div>
                                 <span class='text-sm font-medium text-base-content/70 mr-2'>
                                   Skills:
                                 </span>
                                 <For
-                                  each={experience.skills_used.slice(
+                                  each={(experience.skills_used || []).slice(
                                     0,
                                     isExpanded() ? undefined : 3
                                   )}
@@ -691,21 +716,21 @@ export const ExperienceSection: Component<ExperienceSectionProps> = props => {
                                     <span class='badge badge-info badge-sm mr-1'>{skill}</span>
                                   )}
                                 </For>
-                                <Show when={!isExpanded() && experience.skills_used.length > 3}>
+                                <Show when={!isExpanded() && (experience.skills_used || []).length > 3}>
                                   <span class='badge badge-ghost badge-sm'>
-                                    +{experience.skills_used.length - 3}
+                                    +{(experience.skills_used || []).length - 3}
                                   </span>
                                 </Show>
                               </div>
                             </Show>
 
-                            <Show when={experience.technologies.length > 0}>
+                            <Show when={(experience.technologies || []).length > 0}>
                               <div>
                                 <span class='text-sm font-medium text-base-content/70 mr-2'>
                                   Technologies:
                                 </span>
                                 <For
-                                  each={experience.technologies.slice(
+                                  each={(experience.technologies || []).slice(
                                     0,
                                     isExpanded() ? undefined : 3
                                   )}
@@ -714,9 +739,9 @@ export const ExperienceSection: Component<ExperienceSectionProps> = props => {
                                     <span class='badge badge-success badge-sm mr-1'>{tech}</span>
                                   )}
                                 </For>
-                                <Show when={!isExpanded() && experience.technologies.length > 3}>
+                                <Show when={!isExpanded() && (experience.technologies || []).length > 3}>
                                   <span class='badge badge-ghost badge-sm'>
-                                    +{experience.technologies.length - 3}
+                                    +{(experience.technologies || []).length - 3}
                                   </span>
                                 </Show>
                               </div>
