@@ -8,8 +8,9 @@ A clean and maintainable career assistance platform focused on job searching and
 
 ## Running the Application
 
-To run both the frontend and backend servers, use the `run_all` scripts:
+To run both the frontend and backend servers, you can use any of the following methods:
 
+### Method 1: Using the original scripts
 ```bash
 # On Windows
 run_all.bat
@@ -29,6 +30,17 @@ run_all.bat --subprocess
 # On Linux/Mac
 ./run_all.sh --subprocess
 ```
+
+### Method 2: Using the new scripts (Recommended)
+```bash
+# On Windows - Start servers
+start_dev_servers.bat
+
+# On Windows - Stop servers
+stop_dev_servers.bat
+```
+
+The new scripts start each server in its own window and verify that both are running correctly.
 
 In subprocess mode, both servers run in the background, and you can continue using the terminal.
 
