@@ -48,7 +48,7 @@ body,
   }
 
   .progress-message {
-    @apply bg-warning/20 border-l-4 border-l-warning text-warning-content;
+    @apply bg-warning border-l-4 border-l-warning text-warning-content;
   }
 
   .activity-item {
@@ -60,7 +60,7 @@ body,
   }
 
   .activity-item.error {
-    @apply border-l-error bg-error/10;
+    @apply border-l-error bg-error;
   }
 
   .activity-item.browser {
