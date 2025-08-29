@@ -94,13 +94,11 @@ if %RUN_FRONTEND%==1 (
 REM Run frontend e2e tests if requested
 if %RUN_E2E%==1 (
     echo Running frontend e2e tests...
-    cd ..
-    call tests\frontend_e2e\run_e2e_tests.bat
+    call frontend_e2e\run_e2e_tests.bat
     if errorlevel 1 (
         echo ERROR: Frontend e2e tests failed
         exit /b 1
     )
-    cd tests
     echo Frontend e2e tests completed successfully!
     echo.
 )

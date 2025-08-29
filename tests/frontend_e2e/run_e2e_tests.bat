@@ -16,40 +16,9 @@ if not exist "frontend\package.json" (
 REM Navigate to frontend directory
 cd frontend
 
-REM Check if node_modules exists, if not install dependencies
-if not exist "node_modules" (
-    echo Installing frontend dependencies...
-    npm install
-    if errorlevel 1 (
-        echo ERROR: Failed to install frontend dependencies
-        cd ..
-        exit /b 1
-    )
-)
-
-REM Check if Playwright is installed
-if not exist "node_modules\@playwright\test" (
-    echo Installing Playwright...
-    npm install @playwright/test
-    if errorlevel 1 (
-        echo ERROR: Failed to install Playwright
-        cd ..
-        exit /b 1
-    )
-)
-
-REM Install browsers if not already installed
-echo Installing Playwright browsers...
-npx playwright install --with-deps
-if errorlevel 1 (
-    echo ERROR: Failed to install Playwright browsers
-    cd ..
-    exit /b 1
-)
-
-REM Run frontend e2e tests
+REM Run frontend e2e tests directly with Playwright
 echo Running frontend e2e tests...
-npm run test:e2e
+npx playwright test
 if errorlevel 1 (
     echo ERROR: Frontend e2e tests failed
     cd ..
