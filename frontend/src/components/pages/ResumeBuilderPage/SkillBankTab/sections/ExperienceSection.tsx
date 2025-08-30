@@ -110,12 +110,12 @@ export const ExperienceSection: Component<ExperienceSectionProps> = props => {
       const experienceData: SkillBankTypes.ExperienceCreate = {
         company: formData.company.trim(),
         position: formData.position.trim(),
-        location: formData.location.trim() || undefined,
+        ...(formData.location.trim() && { location: formData.location.trim() }),
         start_date: formData.start_date,
-        end_date: formData.is_current ? undefined : formData.end_date || undefined,
+        ...(formData.end_date && { end_date: formData.end_date }),
         is_current: formData.is_current,
-        experience_type: formData.experience_type,
-        default_description: formData.default_description.trim() || undefined,
+        ...(formData.experience_type && { experience_type: formData.experience_type }),
+        ...(formData.default_description.trim() && { default_description: formData.default_description.trim() }),
         default_achievements: formData.default_achievements.filter(a => a.trim()),
         skills_used: formData.skills_used.filter(s => s.trim()),
         technologies: formData.technologies.filter(t => t.trim()),
@@ -165,7 +165,7 @@ export const ExperienceSection: Component<ExperienceSectionProps> = props => {
     }
   };
 
-  const handleDeleteExperience = async (experience: ExperienceEntry) => {
+  const handleDeleteExperience = async (experience: SkillBankTypes.ExperienceEntry) => {
     if (
       !confirm(`Are you sure you want to delete "${experience.position} at ${experience.company}"?`)
     )

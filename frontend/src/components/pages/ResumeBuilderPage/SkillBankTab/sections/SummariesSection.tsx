@@ -1,6 +1,7 @@
 import { Component, createSignal, Show, For } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import { SkillBankService, type SummaryVariation } from '../../../../../services/SkillBankService';
+import { SkillBankService } from '../../../../../services/SkillBankService';
+import type * as SkillBankTypes from '../../../../../services/SkillBankService';
 import { ContentFocusType } from '../../../../../types/skillBank';
 
 interface SummariesSectionProps {
@@ -63,7 +64,7 @@ const initialFormData: SummaryFormData = {
  */
 export const SummariesSection: Component<SummariesSectionProps> = props => {
   const [showAddForm, setShowAddForm] = createSignal(false);
-  const [editingSummary, setEditingSummary] = createSignal<SummaryVariation | null>(null);
+  const [editingSummary, setEditingSummary] = createSignal<SkillBankTypes.SummaryVariation | null>(null);
   const [formData, setFormData] = createStore<SummaryFormData>(initialFormData);
   const [saving, setSaving] = createSignal(false);
   const [expandedSummary, setExpandedSummary] = createSignal<string | null>(null);
@@ -80,16 +81,16 @@ export const SummariesSection: Component<SummariesSectionProps> = props => {
     setShowAddForm(true);
   };
 
-  const handleEditSummary = (summary: SummaryVariation) => {
+  const handleEditSummary = (summary: SkillBankTypes.SummaryVariation) => {
     setFormData({
       title: summary.title,
       content: summary.content,
-      tone: summary.tone,
-      length: summary.length,
-      focus: summary.focus,
-      target_industries: [...summary.target_industries],
-      target_roles: [...summary.target_roles],
-      keywords_emphasized: [...summary.keywords_emphasized],
+      tone: summary.tone || '',
+      length: summary.length || '',
+      focus: summary.focus || '',
+      target_industries: [...(summary.target_industries || [])],
+      target_roles: [...(summary.target_roles || [])],
+      keywords_emphasized: [...(summary.keywords_emphasized || [])],
     });
     setEditingSummary(summary);
     setShowAddForm(true);
@@ -107,12 +108,12 @@ export const SummariesSection: Component<SummariesSectionProps> = props => {
 
     setSaving(true);
     try {
-      const summaryData = {
+      const summaryData: SkillBankTypes.SummaryVariationCreate = {
         title: formData.title.trim(),
         content: formData.content.trim(),
-        tone: formData.tone,
-        length: formData.length,
-        focus: formData.focus,
+        ...(formData.tone && { tone: formData.tone }),
+        ...(formData.length && { length: formData.length }),
+        ...(formData.focus && { focus: formData.focus }),
         target_industries: formData.target_industries.filter(i => i.trim()),
         target_roles: formData.target_roles.filter(r => r.trim()),
         keywords_emphasized: formData.keywords_emphasized.filter(k => k.trim()),
@@ -137,7 +138,7 @@ export const SummariesSection: Component<SummariesSectionProps> = props => {
     }
   };
 
-  const handleDeleteSummary = async (summary: SummaryVariation) => {
+  const handleDeleteSummary = async (summary: SkillBankTypes.SummaryVariation) => {
     if (!confirm(`Are you sure you want to delete "${summary.title}"?`)) return;
 
     setSaving(true);
@@ -500,10 +501,10 @@ export const SummariesSection: Component<SummariesSectionProps> = props => {
                           <div>{summary.length}</div>
                           <span>•</span>
                           <div>{wordCount()} words</div>
-                          <Show when={summary.usage_count > 0}>
+                          <Show when={summary.usage_count && summary.usage_count > 0}>
                             <span>•</span>
                             <div>
-                              Used {summary.usage_count} time{summary.usage_count !== 1 ? 's' : ''}
+                              Used {summary.usage_count || 0} time{(summary.usage_count || 0) !== 1 ? 's' : ''}
                             </div>
                           </Show>
                         </div>
@@ -529,23 +530,23 @@ export const SummariesSection: Component<SummariesSectionProps> = props => {
                         <Show
                           when={
                             isExpanded() &&
-                            (summary.target_industries.length > 0 ||
-                              summary.target_roles.length > 0 ||
-                              summary.keywords_emphasized.length > 0)
+                            ((summary.target_industries && summary.target_industries.length > 0) ||
+                              (summary.target_roles && summary.target_roles.length > 0) ||
+                              (summary.keywords_emphasized && summary.keywords_emphasized.length > 0))
                           }
                         >
                           <div class='mt-4 space-y-2'>
-                            <Show when={summary.target_industries.length > 0}>
+                            <Show when={summary.target_industries && summary.target_industries.length > 0}>
                               <div>
                                 <span class='text-sm font-medium text-base-content/70 mr-2'>
                                   Industries:
                                 </span>
-                                <For each={summary.target_industries.slice(0, 3)}>
+                                <For each={summary.target_industries && summary.target_industries.slice(0, 3)}>
                                   {industry => (
                                     <span class='badge badge-info badge-sm mr-1'>{industry}</span>
                                   )}
                                 </For>
-                                <Show when={summary.target_industries.length > 3}>
+                                <Show when={summary.target_industries && summary.target_industries.length > 3}>
                                   <span class='badge badge-ghost badge-sm'>
                                     +{summary.target_industries.length - 3}
                                   </span>
@@ -553,17 +554,17 @@ export const SummariesSection: Component<SummariesSectionProps> = props => {
                               </div>
                             </Show>
 
-                            <Show when={summary.target_roles.length > 0}>
+                            <Show when={summary.target_roles && summary.target_roles.length > 0}>
                               <div>
                                 <span class='text-sm font-medium text-base-content/70 mr-2'>
                                   Roles:
                                 </span>
-                                <For each={summary.target_roles.slice(0, 3)}>
+                                <For each={summary.target_roles && summary.target_roles.slice(0, 3)}>
                                   {role => (
                                     <span class='badge badge-warning badge-sm mr-1'>{role}</span>
                                   )}
                                 </For>
-                                <Show when={summary.target_roles.length > 3}>
+                                <Show when={summary.target_roles && summary.target_roles.length > 3}>
                                   <span class='badge badge-ghost badge-sm'>
                                     +{summary.target_roles.length - 3}
                                   </span>
@@ -571,17 +572,17 @@ export const SummariesSection: Component<SummariesSectionProps> = props => {
                               </div>
                             </Show>
 
-                            <Show when={summary.keywords_emphasized.length > 0}>
+                            <Show when={summary.keywords_emphasized && summary.keywords_emphasized.length > 0}>
                               <div>
                                 <span class='text-sm font-medium text-base-content/70 mr-2'>
                                   Keywords:
                                 </span>
-                                <For each={summary.keywords_emphasized.slice(0, 5)}>
+                                <For each={summary.keywords_emphasized && summary.keywords_emphasized.slice(0, 5)}>
                                   {keyword => (
                                     <span class='badge badge-accent badge-sm mr-1'>{keyword}</span>
                                   )}
                                 </For>
-                                <Show when={summary.keywords_emphasized.length > 5}>
+                                <Show when={summary.keywords_emphasized && summary.keywords_emphasized.length > 5}>
                                   <span class='badge badge-ghost badge-sm'>
                                     +{summary.keywords_emphasized.length - 5}
                                   </span>

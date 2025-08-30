@@ -1,6 +1,7 @@
 import { Component, createSignal, createMemo, Show, For } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import { SkillBankService, type EducationEntry } from '../../../../../services/SkillBankService';
+import { SkillBankService } from '../../../../../services/SkillBankService';
+import type * as SkillBankTypes from '../../../../../services/SkillBankService';
 
 interface EducationSectionProps {
   skillBank: Awaited<ReturnType<SkillBankService['getSkillBank']>>;
@@ -41,7 +42,7 @@ const initialFormData: EducationFormData = {
  */
 export const EducationSection: Component<EducationSectionProps> = props => {
   const [showAddForm, setShowAddForm] = createSignal(false);
-  const [editingEducation, setEditingEducation] = createSignal<EducationEntry | null>(null);
+  const [editingEducation, setEditingEducation] = createSignal<SkillBankTypes.EducationEntry | null>(null);
   const [formData, setFormData] = createStore<EducationFormData>(initialFormData);
   const [saving, setSaving] = createSignal(false);
   // const [expandedEducation, setExpandedEducation] = createSignal<string | null>(null);
@@ -62,7 +63,7 @@ export const EducationSection: Component<EducationSectionProps> = props => {
     setShowAddForm(true);
   };
 
-  const handleEditEducation = (education: EducationEntry) => {
+  const handleEditEducation = (education: SkillBankTypes.EducationEntry) => {
     setFormData({
       institution: education.institution,
       degree: education.degree,
@@ -71,8 +72,8 @@ export const EducationSection: Component<EducationSectionProps> = props => {
       start_date: education.start_date || '',
       end_date: education.end_date || '',
       gpa: education.gpa,
-      honors: [...education.honors],
-      relevant_coursework: [...education.relevant_coursework],
+      honors: [...(education.honors || [])],
+      relevant_coursework: [...(education.relevant_coursework || [])],
       default_description: education.default_description || '',
     });
     setEditingEducation(education);
@@ -91,17 +92,17 @@ export const EducationSection: Component<EducationSectionProps> = props => {
 
     setSaving(true);
     try {
-      const educationData = {
+      const educationData: SkillBankTypes.EducationCreate = {
         institution: formData.institution.trim(),
         degree: formData.degree.trim(),
-        field_of_study: formData.field_of_study.trim() || undefined,
-        location: formData.location.trim() || undefined,
-        start_date: formData.start_date,
-        end_date: formData.end_date || undefined,
-        gpa: formData.gpa || undefined,
+        ...(formData.field_of_study.trim() && { field_of_study: formData.field_of_study.trim() }),
+        ...(formData.location.trim() && { location: formData.location.trim() }),
+        ...(formData.start_date && { start_date: formData.start_date }),
+        ...(formData.end_date && { end_date: formData.end_date }),
+        ...(formData.gpa && { gpa: formData.gpa }),
         honors: formData.honors.filter(h => h.trim()),
         relevant_coursework: formData.relevant_coursework.filter(c => c.trim()),
-        default_description: formData.default_description.trim() || undefined,
+        ...(formData.default_description.trim() && { default_description: formData.default_description.trim() }),
       };
 
       if (editingEducation()) {
@@ -123,7 +124,7 @@ export const EducationSection: Component<EducationSectionProps> = props => {
     }
   };
 
-  const handleDeleteEducation = async (education: EducationEntry) => {
+  const handleDeleteEducation = async (education: SkillBankTypes.EducationEntry) => {
     if (
       !confirm(`Are you sure you want to delete "${education.degree} at ${education.institution}"?`)
     )

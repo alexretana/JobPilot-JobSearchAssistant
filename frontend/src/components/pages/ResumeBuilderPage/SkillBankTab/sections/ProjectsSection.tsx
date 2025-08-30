@@ -1,6 +1,7 @@
 import { Component, createSignal, createMemo, Show, For } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import { SkillBankService, type ProjectEntry } from '../../../../../services/SkillBankService';
+import { SkillBankService } from '../../../../../services/SkillBankService';
+import type * as SkillBankTypes from '../../../../../services/SkillBankService';
 
 interface ProjectsSectionProps {
   skillBank: Awaited<ReturnType<SkillBankService['getSkillBank']>>;
@@ -41,7 +42,7 @@ const initialFormData: ProjectFormData = {
  */
 export const ProjectsSection: Component<ProjectsSectionProps> = props => {
   const [showAddForm, setShowAddForm] = createSignal(false);
-  const [editingProject, setEditingProject] = createSignal<ProjectEntry | null>(null);
+  const [editingProject, setEditingProject] = createSignal<SkillBankTypes.ProjectEntry | null>(null);
   const [formData, setFormData] = createStore<ProjectFormData>(initialFormData);
   const [saving, setSaving] = createSignal(false);
   // const [expandedProject, setExpandedProject] = createSignal<string | null>(null);
@@ -62,7 +63,7 @@ export const ProjectsSection: Component<ProjectsSectionProps> = props => {
     setShowAddForm(true);
   };
 
-  const handleEditProject = (project: ProjectEntry) => {
+  const handleEditProject = (project: SkillBankTypes.ProjectEntry) => {
     setFormData({
       name: project.name,
       url: project.url || '',
@@ -70,8 +71,8 @@ export const ProjectsSection: Component<ProjectsSectionProps> = props => {
       start_date: project.start_date || '',
       end_date: project.end_date || '',
       default_description: project.default_description || '',
-      default_achievements: [...project.default_achievements],
-      technologies: [...project.technologies],
+      default_achievements: [...(project.default_achievements || [])],
+      technologies: [...(project.technologies || [])],
     });
     setEditingProject(project);
     setShowAddForm(true);
@@ -89,13 +90,13 @@ export const ProjectsSection: Component<ProjectsSectionProps> = props => {
 
     setSaving(true);
     try {
-      const projectData = {
+      const projectData: SkillBankTypes.ProjectCreate = {
         name: formData.name.trim(),
-        url: formData.url.trim() || undefined,
-        github_url: formData.github_url.trim() || undefined,
-        start_date: formData.start_date,
-        end_date: formData.end_date || undefined,
-        default_description: formData.default_description.trim() || undefined,
+        ...(formData.url.trim() && { url: formData.url.trim() }),
+        ...(formData.github_url.trim() && { github_url: formData.github_url.trim() }),
+        ...(formData.start_date && { start_date: formData.start_date }),
+        ...(formData.end_date && { end_date: formData.end_date }),
+        ...(formData.default_description.trim() && { default_description: formData.default_description.trim() }),
         default_achievements: formData.default_achievements.filter(a => a.trim()),
         technologies: formData.technologies.filter(t => t.trim()),
       };
@@ -119,7 +120,7 @@ export const ProjectsSection: Component<ProjectsSectionProps> = props => {
     }
   };
 
-  const handleDeleteProject = async (project: ProjectEntry) => {
+  const handleDeleteProject = async (project: SkillBankTypes.ProjectEntry) => {
     if (!confirm(`Are you sure you want to delete "${project.name}"?`)) return;
 
     setSaving(true);

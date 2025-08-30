@@ -1,6 +1,7 @@
 import { Component, createSignal, createMemo, Show, For } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import { SkillBankService, type EnhancedSkill } from '../../../../../services/SkillBankService';
+import { SkillBankService } from '../../../../../services/SkillBankService';
+import type * as SkillBankTypes from '../../../../../services/SkillBankService';
 
 // Filter types for skills
 
@@ -60,7 +61,7 @@ const initialFormData: SkillFormData = {
  */
 export const SkillsSection: Component<SkillsSectionProps> = props => {
   const [showAddForm, setShowAddForm] = createSignal(false);
-  const [editingSkill, setEditingSkill] = createSignal<EnhancedSkill | null>(null);
+  const [editingSkill, setEditingSkill] = createSignal<SkillBankTypes.EnhancedSkill | null>(null);
   const [formData, setFormData] = createStore<SkillFormData>(initialFormData);
   const [saving, setSaving] = createSignal(false);
   const [searchTerm, setSearchTerm] = createSignal('');
@@ -69,8 +70,7 @@ export const SkillsSection: Component<SkillsSectionProps> = props => {
 
   // Get all skills flattened from categories
   const allSkills = createMemo(() => {
-    const skillsMap = props.skillBank?.skills || {};
-    return Object.values(skillsMap).flat();
+    return props.skillBank?.skills || [];
   });
 
   // Filtered and searched skills
@@ -83,8 +83,8 @@ export const SkillsSection: Component<SkillsSectionProps> = props => {
       skills = skills.filter(
         skill =>
           skill.name.toLowerCase().includes(term) ||
-          skill.description?.toLowerCase().includes(term) ||
-          skill.keywords.some(keyword => keyword.toLowerCase().includes(term))
+          (skill.description && skill.description.toLowerCase().includes(term)) ||
+          (skill.keywords && skill.keywords.some(keyword => keyword.toLowerCase().includes(term)))
       );
     }
 
@@ -93,28 +93,16 @@ export const SkillsSection: Component<SkillsSectionProps> = props => {
       skills = skills.filter(skill => skill.category === selectedCategory());
     }
 
+    // Sort skills
     return skills.sort((a, b) => {
       // Featured skills first
       if (a.is_featured && !b.is_featured) return -1;
       if (!a.is_featured && b.is_featured) return 1;
-      // Then by display order
-      return a.display_order - b.display_order;
+      // Then by display order (handle undefined)
+      const aOrder = a.display_order || 0;
+      const bOrder = b.display_order || 0;
+      return aOrder - bOrder;
     });
-  });
-
-  // Group skills by category for display
-  const groupedSkills = createMemo(() => {
-    const skills = filteredSkills();
-    const groups: Record<string, EnhancedSkill[]> = {};
-
-    skills.forEach(skill => {
-      if (!groups[skill.category]) {
-        groups[skill.category] = [];
-      }
-      groups[skill.category].push(skill);
-    });
-
-    return groups;
   });
 
   const handleAddSkill = () => {
@@ -123,16 +111,16 @@ export const SkillsSection: Component<SkillsSectionProps> = props => {
     setShowAddForm(true);
   };
 
-  const handleEditSkill = (skill: EnhancedSkill) => {
+  const handleEditSkill = (skill: SkillBankTypes.EnhancedSkill) => {
     setFormData({
       name: skill.name,
-      level: skill.level,
-      category: skill.category,
+      level: skill.level || 'intermediate',
+      category: skill.category || 'technical',
       subcategory: skill.subcategory || '',
-      years_experience: skill.years_experience,
+      years_experience: skill.years_experience || null,
       description: skill.description || '',
-      keywords: [...skill.keywords],
-      is_featured: skill.is_featured,
+      keywords: [...(skill.keywords || [])],
+      is_featured: skill.is_featured || false,
     });
     setEditingSkill(skill);
     setShowAddForm(true);
@@ -151,20 +139,24 @@ export const SkillsSection: Component<SkillsSectionProps> = props => {
     setSaving(true);
     try {
       // Map form data to service interface
-      const skillData = {
+      const skillData: SkillBankTypes.SkillCreate = {
         name: formData.name.trim(),
         level: formData.level.toLowerCase(),
         category: formData.category,
-        subcategory: formData.subcategory.trim() || undefined,
-        years_experience: formData.years_experience || undefined,
-        description: formData.description.trim() || undefined,
+        ...(formData.subcategory.trim() && { subcategory: formData.subcategory.trim() }),
+        ...(formData.years_experience && { years_experience: formData.years_experience }),
+        ...(formData.description.trim() && { description: formData.description.trim() }),
         keywords: formData.keywords.filter(k => k.trim()),
         is_featured: formData.is_featured,
       };
 
       if (editingSkill()) {
         // Update existing skill
-        await skillBankService.updateSkill(props.skillBank.user_id, editingSkill()!.id, skillData);
+        await skillBankService.updateSkill(
+          props.skillBank.user_id,
+          editingSkill()!.id,
+          skillData
+        );
       } else {
         // Add new skill
         await skillBankService.addSkill(props.skillBank.user_id, skillData);
@@ -180,7 +172,7 @@ export const SkillsSection: Component<SkillsSectionProps> = props => {
     }
   };
 
-  const handleDeleteSkill = async (skill: EnhancedSkill) => {
+  const handleDeleteSkill = async (skill: SkillBankTypes.EnhancedSkill) => {
     if (!confirm(`Are you sure you want to delete "${skill.name}"?`)) return;
 
     setSaving(true);
@@ -203,10 +195,7 @@ export const SkillsSection: Component<SkillsSectionProps> = props => {
   };
 
   const handleRemoveKeyword = (keyword: string) => {
-    setFormData(
-      'keywords',
-      formData.keywords.filter(k => k !== keyword)
-    );
+    setFormData('keywords', formData.keywords.filter(k => k !== keyword));
   };
 
   const handleKeywordKeyPress = (e: KeyboardEvent) => {
@@ -216,12 +205,8 @@ export const SkillsSection: Component<SkillsSectionProps> = props => {
     }
   };
 
-  const getLevelBadgeClass = (level: SkillLevel) => {
+  const getLevelBadgeClass = (level: string) => {
     return skillLevels.find(l => l.value === level)?.color || 'badge-neutral';
-  };
-
-  const getCategoryLabel = (category: SkillCategory) => {
-    return skillCategories.find(c => c.value === category)?.label || category;
   };
 
   return (
@@ -322,7 +307,7 @@ export const SkillsSection: Component<SkillsSectionProps> = props => {
                   <select
                     class='select select-bordered'
                     value={formData.category}
-                    onChange={e => setFormData('category', e.currentTarget.value as SkillCategory)}
+                    onChange={e => setFormData('category', e.currentTarget.value)}
                   >
                     <For each={skillCategories}>
                       {category => <option value={category.value}>{category.label}</option>}
@@ -337,7 +322,7 @@ export const SkillsSection: Component<SkillsSectionProps> = props => {
                   <select
                     class='select select-bordered'
                     value={formData.level}
-                    onChange={e => setFormData('level', e.currentTarget.value as SkillLevel)}
+                    onChange={e => setFormData('level', e.currentTarget.value)}
                   >
                     <For each={skillLevels}>
                       {level => <option value={level.value}>{level.label}</option>}
@@ -483,146 +468,126 @@ export const SkillsSection: Component<SkillsSectionProps> = props => {
           </div>
         }
       >
-        <Show when={Object.keys(groupedSkills()).length === 0 && allSkills().length > 0}>
+        <Show when={filteredSkills().length === 0 && allSkills().length > 0}>
           <div class='text-center py-8'>
             <div class='text-4xl mb-2'>🔍</div>
             <p class='text-base-content/70'>No skills match your current search and filters</p>
           </div>
         </Show>
 
-        <For each={Object.entries(groupedSkills())}>
-          {([category, skills]) => (
-            <div class='card bg-base-100 shadow-lg'>
-              <div class='card-body'>
-                <h3 class='card-title text-lg mb-4 flex items-center gap-2'>
-                  <div class='w-3 h-3 rounded-full bg-primary'></div>
-                  {getCategoryLabel(category as SkillCategory)} ({skills.length})
-                </h3>
+        <div class='space-y-4'>
+          <For each={filteredSkills()}>
+            {skill => (
+              <div class='card bg-base-200 shadow-sm border border-base-300'>
+                <div class='card-body p-4'>
+                  <div class='flex items-start justify-between'>
+                    <div class='flex-1 min-w-0'>
+                      <h4 class='font-semibold text-base truncate flex items-center gap-2'>
+                        {skill.name}
+                        <Show when={skill.is_featured}>
+                          <div class='badge badge-warning badge-xs'>★</div>
+                        </Show>
+                      </h4>
 
-                <div class='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'>
-                  <For each={skills}>
-                    {skill => (
-                      <div class='card bg-base-200 shadow-sm border border-base-300'>
-                        <div class='card-body p-4'>
-                          <div class='flex items-start justify-between'>
-                            <div class='flex-1 min-w-0'>
-                              <h4 class='font-semibold text-base truncate flex items-center gap-2'>
-                                {skill.name}
-                                <Show when={skill.is_featured}>
-                                  <div class='badge badge-warning badge-xs'>★</div>
-                                </Show>
-                              </h4>
-
-                              <div class='flex items-center gap-2 mt-1'>
-                                <div class={`badge badge-xs ${getLevelBadgeClass(skill.level)}`}>
-                                  {skillLevels.find(l => l.value === skill.level)?.label}
-                                </div>
-                                <Show when={skill.years_experience}>
-                                  <span class='text-xs text-base-content/60'>
-                                    {skill.years_experience}y
-                                  </span>
-                                </Show>
-                              </div>
-
-                              <Show when={skill.subcategory}>
-                                <div class='text-sm text-base-content/70 mt-1'>
-                                  {skill.subcategory}
-                                </div>
-                              </Show>
-
-                              <Show when={skill.description}>
-                                <p class='text-sm text-base-content/80 mt-2 line-clamp-2'>
-                                  {skill.description}
-                                </p>
-                              </Show>
-
-                              <Show when={skill.keywords.length > 0}>
-                                <div class='flex flex-wrap gap-1 mt-2'>
-                                  <For each={skill.keywords.slice(0, 3)}>
-                                    {keyword => (
-                                      <div class='badge badge-outline badge-xs'>{keyword}</div>
-                                    )}
-                                  </For>
-                                  <Show when={skill.keywords.length > 3}>
-                                    <div class='badge badge-ghost badge-xs'>
-                                      +{skill.keywords.length - 3}
-                                    </div>
-                                  </Show>
-                                </div>
-                              </Show>
-                            </div>
-
-                            <div class='dropdown dropdown-end'>
-                              <label tabindex='0' class='btn btn-ghost btn-xs'>
-                                <svg
-                                  class='w-4 h-4'
-                                  fill='none'
-                                  stroke='currentColor'
-                                  viewBox='0 0 24 24'
-                                >
-                                  <path
-                                    stroke-linecap='round'
-                                    stroke-linejoin='round'
-                                    stroke-width='2'
-                                    d='M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z'
-                                  />
-                                </svg>
-                              </label>
-                              <ul
-                                tabindex='0'
-                                class='dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 z-10'
-                              >
-                                <li>
-                                  <button onClick={() => handleEditSkill(skill)}>
-                                    <svg
-                                      class='w-4 h-4'
-                                      fill='none'
-                                      stroke='currentColor'
-                                      viewBox='0 0 24 24'
-                                    >
-                                      <path
-                                        stroke-linecap='round'
-                                        stroke-linejoin='round'
-                                        stroke-width='2'
-                                        d='M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z'
-                                      />
-                                    </svg>
-                                    Edit
-                                  </button>
-                                </li>
-                                <li>
-                                  <button
-                                    class='text-error'
-                                    onClick={() => handleDeleteSkill(skill)}
-                                  >
-                                    <svg
-                                      class='w-4 h-4'
-                                      fill='none'
-                                      stroke='currentColor'
-                                      viewBox='0 0 24 24'
-                                    >
-                                      <path
-                                        stroke-linecap='round'
-                                        stroke-linejoin='round'
-                                        stroke-width='2'
-                                        d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16'
-                                      />
-                                    </svg>
-                                    Delete
-                                  </button>
-                                </li>
-                              </ul>
-                            </div>
-                          </div>
+                      <div class='flex items-center gap-2 mt-1'>
+                        <div class={`badge badge-xs ${getLevelBadgeClass(skill.level || '')}`}>
+                          {skillLevels.find(l => l.value === skill.level)?.label || skill.level}
                         </div>
+                        <Show when={skill.years_experience}>
+                          <span class='text-xs text-base-content/60'>
+                            {skill.years_experience}y
+                          </span>
+                        </Show>
                       </div>
-                    )}
-                  </For>
+
+                      <Show when={skill.subcategory}>
+                        <div class='text-sm text-base-content/70 mt-1'>{skill.subcategory}</div>
+                      </Show>
+
+                      <Show when={skill.description}>
+                        <p class='text-sm text-base-content/80 mt-2 line-clamp-2'>
+                          {skill.description}
+                        </p>
+                      </Show>
+
+                      <Show when={skill.keywords && skill.keywords.length > 0}>
+                        <div class='flex flex-wrap gap-1 mt-2'>
+                          <For each={skill.keywords.slice(0, 3)}>
+                            {keyword => <div class='badge badge-outline badge-xs'>{keyword}</div>}
+                          </For>
+                          <Show when={skill.keywords && skill.keywords.length > 3}>
+                            <div class='badge badge-ghost badge-xs'>
+                              +{(skill.keywords?.length || 0) - 3}
+                            </div>
+                          </Show>
+                        </div>
+                      </Show>
+                    </div>
+
+                    <div class='dropdown dropdown-end'>
+                      <label tabindex='0' class='btn btn-ghost btn-xs'>
+                        <svg
+                          class='w-4 h-4'
+                          fill='none'
+                          stroke='currentColor'
+                          viewBox='0 0 24 24'
+                        >
+                          <path
+                            stroke-linecap='round'
+                            stroke-linejoin='round'
+                            stroke-width='2'
+                            d='M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z'
+                          />
+                        </svg>
+                      </label>
+                      <ul
+                        tabindex='0'
+                        class='dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 z-10'
+                      >
+                        <li>
+                          <button onClick={() => handleEditSkill(skill)}>
+                            <svg
+                              class='w-4 h-4'
+                              fill='none'
+                              stroke='currentColor'
+                              viewBox='0 0 24 24'
+                            >
+                              <path
+                                stroke-linecap='round'
+                                stroke-linejoin='round'
+                                stroke-width='2'
+                                d='M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z'
+                              />
+                            </svg>
+                            Edit
+                          </button>
+                        </li>
+                        <li>
+                          <button class='text-error' onClick={() => handleDeleteSkill(skill)}>
+                            <svg
+                              class='w-4 h-4'
+                              fill='none'
+                              stroke='currentColor'
+                              viewBox='0 0 24 24'
+                            >
+                              <path
+                                stroke-linecap='round'
+                                stroke-linejoin='round'
+                                stroke-width='2'
+                                d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16'
+                              />
+                            </svg>
+                            Delete
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-        </For>
+            )}
+          </For>
+        </div>
       </Show>
     </div>
   );
