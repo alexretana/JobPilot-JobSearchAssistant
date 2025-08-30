@@ -119,10 +119,11 @@ export const SummariesSection: Component<SummariesSectionProps> = props => {
         keywords_emphasized: formData.keywords_emphasized.filter(k => k.trim()),
       };
 
-      if (editingSummary()) {
+      const summary = editingSummary();
+      if (summary && summary.id) {
         await skillBankService.updateSummaryVariation(
           props.skillBank.user_id,
-          editingSummary()!.id,
+          summary.id,
           summaryData
         );
       } else {
@@ -140,6 +141,12 @@ export const SummariesSection: Component<SummariesSectionProps> = props => {
 
   const handleDeleteSummary = async (summary: SkillBankTypes.SummaryVariation) => {
     if (!confirm(`Are you sure you want to delete "${summary.title}"?`)) return;
+
+    // Check if summary.id is defined
+    if (!summary.id) {
+      console.error('Summary ID is not defined');
+      return;
+    }
 
     setSaving(true);
     try {
@@ -475,8 +482,8 @@ export const SummariesSection: Component<SummariesSectionProps> = props => {
                       <div class='flex-1 min-w-0'>
                         <div class='flex items-center gap-3 mb-2'>
                           <h3 class='card-title text-lg'>{summary.title}</h3>
-                          <div class={`badge ${getFocusBadgeClass(summary.focus)}`}>
-                            {getFocusLabel(summary.focus)}
+                          <div class={`badge ${getFocusBadgeClass((summary.focus || 'general') as ContentFocusType)}`}>
+                            {getFocusLabel((summary.focus || 'general') as ContentFocusType)}
                           </div>
                         </div>
 
@@ -501,10 +508,10 @@ export const SummariesSection: Component<SummariesSectionProps> = props => {
                           <div>{summary.length}</div>
                           <span>•</span>
                           <div>{wordCount()} words</div>
-                          <Show when={summary.usage_count && summary.usage_count > 0}>
+                          <Show when={summary.target_industries && summary.target_industries.length > 0}>
                             <span>•</span>
                             <div>
-                              Used {summary.usage_count || 0} time{(summary.usage_count || 0) !== 1 ? 's' : ''}
+                              Used {summary.target_industries?.length || 0} time{(summary.target_industries?.length || 0) !== 1 ? 's' : ''}
                             </div>
                           </Show>
                         </div>
@@ -520,7 +527,7 @@ export const SummariesSection: Component<SummariesSectionProps> = props => {
                         <Show when={summary.content.length > 300}>
                           <button
                             class='btn btn-ghost btn-xs mt-2'
-                            onClick={() => toggleSummaryExpansion(summary.id)}
+                            onClick={() => summary.id && toggleSummaryExpansion(summary.id)}
                           >
                             {isExpanded() ? 'Show less' : 'Show more'}
                           </button>
@@ -548,7 +555,7 @@ export const SummariesSection: Component<SummariesSectionProps> = props => {
                                 </For>
                                 <Show when={summary.target_industries && summary.target_industries.length > 3}>
                                   <span class='badge badge-ghost badge-sm'>
-                                    +{summary.target_industries.length - 3}
+                                    +{(summary.target_industries?.length || 0) - 3}
                                   </span>
                                 </Show>
                               </div>
@@ -564,9 +571,9 @@ export const SummariesSection: Component<SummariesSectionProps> = props => {
                                     <span class='badge badge-warning badge-sm mr-1'>{role}</span>
                                   )}
                                 </For>
-                                <Show when={summary.target_roles && summary.target_roles.length > 3}>
+                                <Show when={summary.target_roles && (summary.target_roles.length || 0) > 3}>
                                   <span class='badge badge-ghost badge-sm'>
-                                    +{summary.target_roles.length - 3}
+                                    +{(summary.target_roles?.length || 0) - 3}
                                   </span>
                                 </Show>
                               </div>
@@ -582,9 +589,9 @@ export const SummariesSection: Component<SummariesSectionProps> = props => {
                                     <span class='badge badge-accent badge-sm mr-1'>{keyword}</span>
                                   )}
                                 </For>
-                                <Show when={summary.keywords_emphasized && summary.keywords_emphasized.length > 5}>
+                                <Show when={summary.keywords_emphasized && (summary.keywords_emphasized.length || 0) > 5}>
                                   <span class='badge badge-ghost badge-sm'>
-                                    +{summary.keywords_emphasized.length - 5}
+                                    +{(summary.keywords_emphasized?.length || 0) - 5}
                                   </span>
                                 </Show>
                               </div>

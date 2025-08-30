@@ -121,30 +121,26 @@ export const ExperienceSection: Component<ExperienceSectionProps> = props => {
         technologies: formData.technologies.filter(t => t.trim()),
       };
 
-      if (editingExperience()) {
-        // Check if user_id is defined
-        if (!props.skillBank.user_id) {
-          throw new Error('User ID is not defined');
-        }
-        
+      const experience = editingExperience();
+      if (experience && experience.id) {
         // Convert to ExperienceUpdate for updates
         const experienceUpdateData: SkillBankTypes.ExperienceUpdate = {
-          company: experienceData.company,
-          position: experienceData.position,
-          location: experienceData.location,
-          start_date: experienceData.start_date,
-          end_date: experienceData.end_date,
-          is_current: experienceData.is_current,
-          experience_type: experienceData.experience_type,
-          default_description: experienceData.default_description,
-          default_achievements: experienceData.default_achievements,
-          skills_used: experienceData.skills_used,
-          technologies: experienceData.technologies,
+          ...(experienceData.company && { company: experienceData.company }),
+          ...(experienceData.position && { position: experienceData.position }),
+          ...(experienceData.location && { location: experienceData.location }),
+          ...(experienceData.start_date && { start_date: experienceData.start_date }),
+          ...(experienceData.end_date && { end_date: experienceData.end_date }),
+          ...(typeof experienceData.is_current !== 'undefined' && { is_current: experienceData.is_current }),
+          ...(experienceData.experience_type && { experience_type: experienceData.experience_type }),
+          ...(experienceData.default_description && { default_description: experienceData.default_description }),
+          ...(experienceData.default_achievements && { default_achievements: experienceData.default_achievements }),
+          ...(experienceData.skills_used && { skills_used: experienceData.skills_used }),
+          ...(experienceData.technologies && { technologies: experienceData.technologies }),
         };
         
         await skillBankService.updateExperience(
           props.skillBank.user_id,
-          editingExperience()!.id,
+          experience.id,
           experienceUpdateData
         );
       } else {
@@ -170,6 +166,12 @@ export const ExperienceSection: Component<ExperienceSectionProps> = props => {
       !confirm(`Are you sure you want to delete "${experience.position} at ${experience.company}"?`)
     )
       return;
+
+    // Check if experience.id is defined
+    if (!experience.id) {
+      console.error('Experience ID is not defined');
+      return;
+    }
 
     setSaving(true);
     try {
@@ -589,7 +591,7 @@ export const ExperienceSection: Component<ExperienceSectionProps> = props => {
           <For each={sortedExperiences()}>
             {experience => {
               const isExpanded = () => expandedExperience() === experience.id;
-              const duration = () => calculateDuration(experience.start_date, experience.end_date);
+              const duration = () => experience.start_date ? calculateDuration(experience.start_date, experience.end_date || null) : '';
               const typeBadge = () => getExperienceTypeBadge(experience.experience_type || 'full_time');
 
               return (
@@ -672,7 +674,7 @@ export const ExperienceSection: Component<ExperienceSectionProps> = props => {
                             <Show when={(experience.default_description?.length || 0) > 200}>
                               <button
                                 class='btn btn-ghost btn-xs mt-2'
-                                onClick={() => toggleExperienceExpansion(experience.id)}
+                                onClick={() => experience.id && toggleExperienceExpansion(experience.id)}
                               >
                                 {isExpanded() ? 'Show less' : 'Show more'}
                               </button>

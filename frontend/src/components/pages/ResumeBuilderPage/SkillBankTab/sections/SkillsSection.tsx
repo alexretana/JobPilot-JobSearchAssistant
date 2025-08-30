@@ -150,11 +150,12 @@ export const SkillsSection: Component<SkillsSectionProps> = props => {
         is_featured: formData.is_featured,
       };
 
-      if (editingSkill()) {
+      const skill = editingSkill();
+      if (skill && skill.id) {
         // Update existing skill
         await skillBankService.updateSkill(
           props.skillBank.user_id,
-          editingSkill()!.id,
+          skill.id,
           skillData
         );
       } else {
@@ -174,6 +175,12 @@ export const SkillsSection: Component<SkillsSectionProps> = props => {
 
   const handleDeleteSkill = async (skill: SkillBankTypes.EnhancedSkill) => {
     if (!confirm(`Are you sure you want to delete "${skill.name}"?`)) return;
+
+    // Check if skill.id is defined
+    if (!skill.id) {
+      console.error('Skill ID is not defined');
+      return;
+    }
 
     setSaving(true);
     try {
@@ -512,7 +519,7 @@ export const SkillsSection: Component<SkillsSectionProps> = props => {
 
                       <Show when={skill.keywords && skill.keywords.length > 0}>
                         <div class='flex flex-wrap gap-1 mt-2'>
-                          <For each={skill.keywords.slice(0, 3)}>
+                          <For each={(skill.keywords || []).slice(0, 3)}>
                             {keyword => <div class='badge badge-outline badge-xs'>{keyword}</div>}
                           </For>
                           <Show when={skill.keywords && skill.keywords.length > 3}>

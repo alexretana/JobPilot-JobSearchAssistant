@@ -101,10 +101,11 @@ export const ProjectsSection: Component<ProjectsSectionProps> = props => {
         technologies: formData.technologies.filter(t => t.trim()),
       };
 
-      if (editingProject()) {
+      const project = editingProject();
+      if (project && project.id) {
         await skillBankService.updateProject(
           props.skillBank.user_id,
-          editingProject()!.id,
+          project.id,
           projectData
         );
       } else {
@@ -122,6 +123,12 @@ export const ProjectsSection: Component<ProjectsSectionProps> = props => {
 
   const handleDeleteProject = async (project: SkillBankTypes.ProjectEntry) => {
     if (!confirm(`Are you sure you want to delete "${project.name}"?`)) return;
+
+    // Check if project.id is defined
+    if (!project.id) {
+      console.error('Project ID is not defined');
+      return;
+    }
 
     setSaving(true);
     try {

@@ -1,6 +1,7 @@
 import { Component, createSignal, createMemo, Show, For } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import { SkillBankService, type Certification } from '../../../../../services/SkillBankService';
+import { SkillBankService } from '../../../../../services/SkillBankService';
+import type * as SkillBankTypes from '../../../../../services/SkillBankService';
 
 interface CertificationsSectionProps {
   skillBank: Awaited<ReturnType<SkillBankService['getSkillBank']>>;
@@ -41,7 +42,7 @@ const initialFormData: CertificationFormData = {
  */
 export const CertificationsSection: Component<CertificationsSectionProps> = props => {
   const [showAddForm, setShowAddForm] = createSignal(false);
-  const [editingCertification, setEditingCertification] = createSignal<Certification | null>(null);
+  const [editingCertification, setEditingCertification] = createSignal<SkillBankTypes.Certification | null>(null);
   const [formData, setFormData] = createStore<CertificationFormData>(initialFormData);
   const [saving, setSaving] = createSignal(false);
 
@@ -61,7 +62,7 @@ export const CertificationsSection: Component<CertificationsSectionProps> = prop
     setShowAddForm(true);
   };
 
-  const handleEditCertification = (certification: Certification) => {
+  const handleEditCertification = (certification: SkillBankTypes.Certification) => {
     setFormData({
       name: certification.name,
       issuer: certification.issuer,
@@ -87,21 +88,33 @@ export const CertificationsSection: Component<CertificationsSectionProps> = prop
 
     setSaving(true);
     try {
-      const certificationData = {
+      const certificationData: SkillBankTypes.CertificationCreate = {
         name: formData.name.trim(),
         issuer: formData.issuer.trim(),
-        issue_date: formData.issue_date,
-        expiry_date: formData.expiry_date || undefined,
-        credential_id: formData.credential_id.trim() || undefined,
-        url: formData.url.trim() || undefined,
-        description: formData.description.trim() || undefined,
+        ...(formData.issue_date && { issue_date: formData.issue_date }),
+        ...(formData.expiry_date && { expiry_date: formData.expiry_date }),
+        ...(formData.credential_id.trim() && { credential_id: formData.credential_id.trim() }),
+        ...(formData.url.trim() && { url: formData.url.trim() }),
+        ...(formData.description.trim() && { description: formData.description.trim() }),
       };
 
-      if (editingCertification()) {
+      const certification = editingCertification();
+      if (certification && certification.id) {
+        // Convert to CertificationUpdate for updates
+        const certificationUpdateData: SkillBankTypes.CertificationUpdate = {
+          ...(formData.name.trim() && { name: formData.name.trim() }),
+          ...(formData.issuer.trim() && { issuer: formData.issuer.trim() }),
+          ...(formData.issue_date && { issue_date: formData.issue_date }),
+          ...(formData.expiry_date && { expiry_date: formData.expiry_date }),
+          ...(formData.credential_id.trim() && { credential_id: formData.credential_id.trim() }),
+          ...(formData.url.trim() && { url: formData.url.trim() }),
+          ...(formData.description.trim() && { description: formData.description.trim() }),
+        };
+        
         await skillBankService.updateCertification(
           props.skillBank.user_id,
-          editingCertification()!.id,
-          certificationData
+          certification.id,
+          certificationUpdateData
         );
       } else {
         await skillBankService.addCertification(props.skillBank.user_id, certificationData);
@@ -116,8 +129,13 @@ export const CertificationsSection: Component<CertificationsSectionProps> = prop
     }
   };
 
-  const handleDeleteCertification = async (certification: Certification) => {
+  const handleDeleteCertification = async (certification: SkillBankTypes.Certification) => {
     if (!confirm(`Are you sure you want to delete "${certification.name}"?`)) return;
+
+    if (!certification.id) {
+      console.error('Certification ID is missing');
+      return;
+    }
 
     setSaving(true);
     try {

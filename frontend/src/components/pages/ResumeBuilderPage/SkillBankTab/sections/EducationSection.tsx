@@ -105,10 +105,11 @@ export const EducationSection: Component<EducationSectionProps> = props => {
         ...(formData.default_description.trim() && { default_description: formData.default_description.trim() }),
       };
 
-      if (editingEducation()) {
+      const education = editingEducation();
+      if (education && education.id) {
         await skillBankService.updateEducation(
           props.skillBank.user_id,
-          editingEducation()!.id,
+          education.id,
           educationData
         );
       } else {
@@ -129,6 +130,11 @@ export const EducationSection: Component<EducationSectionProps> = props => {
       !confirm(`Are you sure you want to delete "${education.degree} at ${education.institution}"?`)
     )
       return;
+
+    if (!education.id) {
+      console.error('Education ID is missing');
+      return;
+    }
 
     setSaving(true);
     try {
