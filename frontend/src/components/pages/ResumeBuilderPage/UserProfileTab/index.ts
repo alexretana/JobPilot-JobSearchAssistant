@@ -11,4 +11,4 @@ export type {
   ProfileCompleteness as ProfileCompletenessType,
   JobType,
   RemoteType,
-} from '../../../../services/userProfileApi';
+} from '../../../../services/UserProfileService';
