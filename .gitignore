@@ -312,3 +312,4 @@ WARP.md
 .qwen/
 .bmad-core/
 web-bundles/
+.playwright-mcp/
