@@ -1,6 +1,6 @@
 import { Component, createSignal, onMount, For, Show } from 'solid-js';
 import { ResumeService, CreateResumeRequest } from '../../../../../services/resumeService';
-import { userProfileApi } from '../../../../../services/userProfileApi';
+import { UserProfileService } from '../../../../../services/UserProfileService';
 import { ResumeImportService } from '../../../../../services/resumeImportService';
 import { useSkillBankIntegration } from '../../../../../hooks/useSkillBankIntegration';
 import {
@@ -49,6 +49,9 @@ const ResumeBuilder: Component<ResumeBuilderProps> = props => {
   const [selectedExperienceIds, setSelectedExperienceIds] = createSignal<string[]>([]);
   const [selectedSkills, setSelectedSkills] = createSignal<string[]>([]);
 
+  // Initialize UserProfileService
+  const userProfileService = new UserProfileService();
+
   // Load existing resume if editing, or populate with profile data for new resume
   onMount(async () => {
     if (props.resumeId) {
@@ -63,7 +66,7 @@ const ResumeBuilder: Component<ResumeBuilderProps> = props => {
     } else {
       // Creating new resume - populate with profile data
       try {
-        const profile = await userProfileApi.getProfile(props.userId);
+        const profile = await userProfileService.getProfile(props.userId);
         const resumeData = ResumeImportService.mapProfileToResume(profile, {
           includeContactInfo: true,
           includeSummary: true,

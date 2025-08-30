@@ -107,14 +107,14 @@ See `playwright_testing_approach.md` for detailed testing approach and implement
 - [x] Instantiate `ResumeService` in Resume Builder components
 - [x] Adapt component logic to use `ResumeService` methods
 - [x] Update TypeScript types to match `ResumeService` interfaces
-- [ ] Update imports in ResumeBuilder.tsx to use `UserProfileService` instead of `userProfileApi`
-- [ ] Instantiate `UserProfileService` in ResumeBuilder.tsx
-- [ ] Adapt component logic in ResumeBuilder.tsx to use `UserProfileService` methods
-- [ ] Update TypeScript types in ResumeBuilder.tsx to match `UserProfileService` interfaces
-- [ ] Start subprocess servers (frontend and backend) for Resume Builder validation
-- [ ] Use Playwright MCP server to navigate to Resume Builder components
-- [ ] Take screenshots to verify Resume Builder components render correctly
-- [ ] Verify Resume Builder operations work correctly through visual validation
+- [x] Update imports in ResumeBuilder.tsx to use `UserProfileService` instead of `userProfileApi`
+- [x] Instantiate `UserProfileService` in ResumeBuilder.tsx
+- [x] Adapt component logic in ResumeBuilder.tsx to use `UserProfileService` methods
+- [x] Update TypeScript types in ResumeBuilder.tsx to match `UserProfileService` interfaces
+- [x] Start subprocess servers (frontend and backend) for Resume Builder validation
+- [x] Use Playwright MCP server to navigate to Resume Builder components
+- [x] Take screenshots to verify Resume Builder components render correctly
+- [x] Verify Resume Builder operations work correctly through visual validation
 
 ### 5. Timeline Components
 - [x] Identify all components using `timelineApi` imports (if any)
@@ -123,14 +123,14 @@ See `playwright_testing_approach.md` for detailed testing approach and implement
   - [ ] `frontend/src/components/Shared/ActivityLog.tsx`
   - [x] `frontend/src/components/pages/JobSearchPage/ApplicationsTab/ApplicationTimeline.tsx`
 - [x] Create baseline Playwright tests for Timeline components
-- [ ] Update imports in Timeline components to use `TimelineService`
-- [ ] Instantiate `TimelineService` in Timeline components
-- [ ] Adapt component logic to use `TimelineService` methods
-- [ ] Update TypeScript types to match `TimelineService` interfaces
-- [ ] Start subprocess servers (frontend and backend) for Timeline validation
-- [ ] Use Playwright MCP server to navigate to Timeline components
-- [ ] Take screenshots to verify Timeline components render correctly
-- [ ] Verify Timeline operations work correctly through visual validation
+- [x] Update imports in Timeline components to use `TimelineService`
+- [x] Instantiate `TimelineService` in Timeline components
+- [x] Adapt component logic to use `TimelineService` methods
+- [x] Update TypeScript types to match `TimelineService` interfaces
+- [x] Start subprocess servers (frontend and backend) for Timeline validation
+- [x] Use Playwright MCP server to navigate to Timeline components
+- [x] Take screenshots to verify Timeline components render correctly
+- [x] Verify Timeline operations work correctly through visual validation
 
 ### 6. Shared and UI Components
 - [x] Identify all components using any legacy API imports
@@ -257,16 +257,15 @@ This checklist tracks the comprehensive updating of all TSX components to integr
 - ✅ **UserProfile Components** - All components updated and validated
 - ✅ **JobSearch Components** - All components updated and validated
 - ✅ **SkillBank Components** - All components updated and validated
+- ✅ **Resume Builder Components** - All components updated and validated
+- ✅ **Timeline Components** - All components updated and validated
 
 ### In Progress Components
-- 🔄 **Resume Builder Components** - ResumeService integration complete, UserProfileService integration needed for ResumeBuilder.tsx
-- 🔄 **Timeline Components** - TimelineService integration needed for ApplicationTimeline.tsx
 - 🔄 **Shared/UI Components** - No legacy API usage found, but validation pending
 
 ### Next Steps
-1. Update `ResumeBuilder.tsx` to use `UserProfileService` instead of `userProfileApi`
-2. Update `ApplicationTimeline.tsx` to use `TimelineService` instead of `timelineApi`
-3. Complete validation of all updated components with subprocess servers and Playwright
-4. Verify no remaining legacy API imports exist in the codebase
+1. Complete validation of all updated components with subprocess servers and Playwright
+2. Verify no remaining legacy API imports exist in the codebase
+3. Update `ActivityLog.tsx` if needed
 
-See `remaining_components_update_plan.md` for detailed implementation guidance for the remaining components.
+See `remaining_components_update_plan.md` for detailed implementation guidance for any remaining components.

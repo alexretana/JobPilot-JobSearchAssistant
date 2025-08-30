@@ -1,7 +1,7 @@
 import { createSignal, createEffect, For, Show } from 'solid-js';
 import type { TimelineEvent } from '../../../../types';
 import { TimelineEventType } from '../../../../types';
-import { timelineApi } from '../../../../services/timelineApi';
+import { TimelineService } from '../../../../services/TimelineService';
 import { TimelineEventCard } from '../../../Timeline/TimelineEventCard';
 
 interface ApplicationTimelineProps {
@@ -17,13 +17,16 @@ export function ApplicationTimeline(props: ApplicationTimelineProps) {
   const [loading, setLoading] = createSignal(true);
   const [error, setError] = createSignal<string | null>(null);
 
+  // Initialize TimelineService
+  const timelineService = new TimelineService();
+
   // Load timeline events for this application
   const loadApplicationTimeline = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const appEvents = await timelineApi.getApplicationTimeline(props.applicationId, {
+      const appEvents = await timelineService.getApplicationTimeline(props.applicationId, {
         limit: 50,
       });
 
