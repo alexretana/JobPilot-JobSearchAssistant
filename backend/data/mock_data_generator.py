@@ -446,7 +446,7 @@ class MockDataGenerator:
                 skills_added += 1
             except ValueError as e:
                 # Skill already exists, skip it
-                print(f"   ⚠️  {str(e)}")
+                print(f"   >>>  {str(e)}")
                 continue
 
         print(f"   ✅ Added {skills_added} new skills to skill bank")
@@ -1225,7 +1225,7 @@ class MockDataGenerator:
                 session.refresh(company)
                 company_ids.append(company.id)
 
-        print(f"   🏢 Created/found {len(company_ids)} companies")
+        print(f"   >>> Created/found {len(company_ids)} companies")
         return company_ids
 
     def create_job_sources(self) -> List[str]:
@@ -1283,7 +1283,7 @@ class MockDataGenerator:
                 session.refresh(source)
                 source_ids.append(source.id)
 
-        print(f"   🔗 Created/found {len(source_ids)} job sources")
+        print(f"   >>> Created/found {len(source_ids)} job sources")
         return source_ids
 
     def create_job_embeddings(self, job_ids: List[str]) -> List[str]:
@@ -1351,14 +1351,14 @@ class MockDataGenerator:
                 session.refresh(embedding)
                 embedding_ids.append(embedding.id)
 
-        print(f"   🧠 Created/found {len(embedding_ids)} job embeddings")
+        print(f"   >>> Created/found {len(embedding_ids)} job embeddings")
         return embedding_ids
 
     def create_job_duplications(self, job_ids: List[str]) -> List[str]:
         """Create job duplication records with realistic confidence scores."""
         if len(job_ids) < 2:
             print(
-                f"   ⚠️  Need at least 2 jobs to create duplications, only have {len(job_ids)}"
+                f"   >>>  Need at least 2 jobs to create duplications, only have {len(job_ids)}"
             )
             return []
 
@@ -1455,10 +1455,10 @@ class MockDataGenerator:
                 duplication_ids.append(duplication.id)
 
                 print(
-                    f"   🔗 Created duplication: {canonical_job.title} <-> {duplicate_job.title} (confidence: {confidence_score})"
+                    f"   >>> Created duplication: {canonical_job.title} <-> {duplicate_job.title} (confidence: {confidence_score})"
                 )
 
-        print(f"   🎯 Created/found {len(duplication_ids)} job duplications")
+        print(f"   >>> Created/found {len(duplication_ids)} job duplications")
         return duplication_ids
 
     def create_job_source_listings(
@@ -1466,7 +1466,7 @@ class MockDataGenerator:
     ) -> List[str]:
         """Create job source listings to show jobs appearing on multiple platforms."""
         if not job_ids or not source_ids:
-            print("   ⚠️  Need jobs and sources to create source listings")
+            print("   >>>  Need jobs and sources to create source listings")
             return []
 
         source_listing_ids = []
@@ -1525,7 +1525,7 @@ class MockDataGenerator:
                     session.refresh(source_listing)
                     source_listing_ids.append(source_listing.id)
 
-        print(f"   🔗 Created/found {len(source_listing_ids)} job source listings")
+        print(f"   >>> Created/found {len(source_listing_ids)} job source listings")
         return source_listing_ids
 
     def _generate_source_listing_data(
@@ -1938,7 +1938,7 @@ class MockDataGenerator:
                 session.refresh(job)
                 job_ids.append(job.id)
 
-        print(f"   💼 Created/found {len(job_ids)} job listings")
+        print(f"   >>> Created/found {len(job_ids)} job listings")
         return job_ids
 
     def _get_company_size_category(self, size_string: str) -> CompanySizeCategory:
@@ -2078,13 +2078,13 @@ class MockDataGenerator:
                 session.refresh(template)
                 template_ids.append(template.id)
 
-        print(f"   📄 Created/found {len(template_ids)} resume templates")
+        print(f"   >>> Created/found {len(template_ids)} resume templates")
         return template_ids
 
     def create_resume_generations(self, resume_ids: List[str]) -> List[str]:
         """Create resume generations with mock file paths and metadata."""
         if not resume_ids:
-            print("   ⚠️  No resume IDs provided for generation creation")
+            print("   >>>  No resume IDs provided for generation creation")
             return []
 
         # Import required models
@@ -2234,7 +2234,7 @@ class MockDataGenerator:
                     session.refresh(generation)
                     generation_ids.append(generation.id)
 
-        print(f"   📄 Created/found {len(generation_ids)} resume generations")
+        print(f"   >>> Created/found {len(generation_ids)} resume generations")
         return generation_ids
 
     def create_resume_optimizations(
@@ -2242,7 +2242,7 @@ class MockDataGenerator:
     ) -> List[str]:
         """Create resume optimizations with realistic match scores and recommendations."""
         if not resume_ids or not job_ids:
-            print("   ⚠️  Need both resume IDs and job IDs for optimization creation")
+            print("   >>>  Need both resume IDs and job IDs for optimization creation")
             return []
 
         # Import required model
@@ -2388,7 +2388,7 @@ class MockDataGenerator:
                     session.refresh(optimization)
                     optimization_ids.append(optimization.id)
 
-        print(f"   🎯 Created/found {len(optimization_ids)} resume optimizations")
+        print(f"   >>> Created/found {len(optimization_ids)} resume optimizations")
         return optimization_ids
 
     def _get_resume_skills_for_role(self, resume_title: str) -> List[str]:
@@ -2528,7 +2528,7 @@ class MockDataGenerator:
     def create_resume_versions(self, resume_ids: List[str]) -> List[str]:
         """Create version history for each resume showing progression of improvements."""
         if not resume_ids:
-            print("   ⚠️  No resume IDs provided for version creation")
+            print("   >>>  No resume IDs provided for version creation")
             return []
 
         # Import required model
@@ -3140,7 +3140,7 @@ class MockDataGenerator:
         results = {"leads": 0, "companies_leads": 0, "contacts_leads": 0}
 
         if not LEAD_MANAGEMENT_AVAILABLE:
-            print("   ⚠️  Lead management not available, skipping lead data creation")
+            print("   >>>  Lead management not available, skipping lead data creation")
             return results
 
         # Comprehensive lead data covering all statuses and types
@@ -3338,11 +3338,11 @@ class MockDataGenerator:
             results.pop("contacts", None)
 
         except Exception as e:
-            print(f"   ⚠️  Error creating lead management data: {str(e)}")
+            print(f"   >>>  Error creating lead management data: {str(e)}")
             results["error"] = str(e)
 
         print(
-            f"   📊 Created {results['leads']} leads across {results['companies_leads']} companies"
+            f"   >>> Created {results['leads']} leads across {results['companies_leads']} companies"
         )
         return results
 
@@ -3538,7 +3538,7 @@ class MockDataGenerator:
                         results["timeline_events"] += 1
 
         print(
-            f"   🔗 Created {results['interactions']} job interactions, {results['timeline_events']} timeline events"
+            f"   >>> Created {results['interactions']} job interactions, {results['timeline_events']} timeline events"
         )
         return results
 
@@ -3581,41 +3581,41 @@ class MockDataGenerator:
             "errors": [],
         }
 
-        print("🌟 Creating comprehensive mock data...")
+        print(">>> Creating comprehensive mock data...")
 
         try:
             # 1. Create companies
-            print("\n🏢 Creating companies...")
+            print("\n>>> Creating companies...")
             company_ids = self.create_companies()
             results["created_companies"] = len(company_ids)
 
             # 2. Create job sources
-            print("\n🔗 Creating job sources...")
+            print(">>> Creating job sources...")
             source_ids = self.create_job_sources()
             results["created_job_sources"] = len(source_ids)
 
             # 3. Create job listings
-            print("\n💼 Creating job listings...")
+            print("\n>>> Creating job listings...")
             job_ids = self.create_job_listings(company_ids)
             results["created_jobs"] = len(job_ids)
 
             # 3.5. Create job embeddings
-            print("\n🧠 Creating job embeddings...")
+            print("\n>>> Creating job embeddings...")
             embedding_ids = self.create_job_embeddings(job_ids)
             results["created_embeddings"] = len(embedding_ids)
 
             # 3.6. Create job duplications
-            print("\n🎯 Creating job duplications...")
+            print("\n>>> Creating job duplications...")
             duplication_ids = self.create_job_duplications(job_ids)
             results["created_duplications"] = len(duplication_ids)
 
             # 3.7. Create job source listings
-            print("\n🔗 Creating job source listings...")
+            print("\n>>> Creating job source listings...")
             source_listing_ids = self.create_job_source_listings(job_ids, source_ids)
             results["created_source_listings"] = len(source_listing_ids)
 
             # 4. Create resume templates
-            print("\n📄 Creating resume templates...")
+            print("\n>>> Creating resume templates...")
             template_ids = self.create_resume_templates()
             results["created_resume_templates"] = len(template_ids)
 
@@ -3663,12 +3663,12 @@ class MockDataGenerator:
             results["created_resumes"] = len(resume_ids)
 
             # 6.5. Create resume generations
-            print("\n📄 Creating resume generations...")
+            print("\n>>> Creating resume generations...")
             generation_ids = self.create_resume_generations(resume_ids)
             results["created_resume_generations"] = len(generation_ids)
 
             # 6.6. Create resume optimizations
-            print("\n🎯 Creating resume optimizations...")
+            print("\n>>> Creating resume optimizations...")
             optimization_ids = self.create_resume_optimizations(resume_ids, job_ids)
             results["created_resume_optimizations"] = len(optimization_ids)
 
@@ -3689,7 +3689,7 @@ class MockDataGenerator:
             )
 
             # 8. Create lead management data
-            print("\n📊 Creating lead management data...")
+            print("\n>>> Creating lead management data...")
             lead_results = self.create_lead_management_data()
             results["created_leads"] = lead_results["leads"]
             results["created_lead_companies"] = lead_results["companies_leads"]
@@ -3825,20 +3825,20 @@ if __name__ == "__main__":
         # Create mock data generator
         generator = MockDataGenerator(db_manager)
 
-        print("🚀 Starting comprehensive database initialization...")
+        print(">>> Starting comprehensive database initialization...")
 
         # Run full database initialization
         result = await generator.full_database_initialization()
 
         print("\n" + "=" * 80)
-        print("🎉 DATABASE INITIALIZATION COMPLETE")
+        print(">>> DATABASE INITIALIZATION COMPLETE")
         print("=" * 80)
 
         # Print summary
         if "mock_data_creation" in result:
             summary = result["mock_data_creation"]["summary"]
             mock_data = result["mock_data_creation"]
-            print("📊 SUMMARY:")
+            print(">>> SUMMARY:")
             print(f"   Users created: {summary['total_users_created']}")
             print(f"   Skill banks created: {summary['total_skill_banks_created']}")
             print(f"   Companies created: {summary['total_companies_created']}")
@@ -3863,7 +3863,7 @@ if __name__ == "__main__":
             print(f"   Errors: {summary['total_errors']}")
 
             if summary["total_errors"] > 0:
-                print("\n⚠️  ERRORS:")
+                print("\n>>> ERRORS:")
                 for error in result["mock_data_creation"]["errors"]:
                     print(f"   {error}")
 
@@ -3872,7 +3872,7 @@ if __name__ == "__main__":
         # Save detailed results to file
         with open("mock_data_results.json", "w") as f:
             json.dump(result, f, indent=2, default=str)
-        print("\n💾 Detailed results saved to mock_data_results.json")
+        print(">>> Detailed results saved to mock_data_results.json")
 
         return result
 

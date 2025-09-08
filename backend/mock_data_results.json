@@ -1,0 +1,74 @@
+{
+  "database_reset": {
+    "status": "success",
+    "message": "Database reset successfully",
+    "timestamp": "2025-09-07T23:56:14.406945"
+  },
+  "mock_data_creation": {
+    "timestamp": "2025-09-07T23:56:14.407013",
+    "created_users": [],
+    "created_skill_banks": [],
+    "created_companies": 5,
+    "created_job_sources": 3,
+    "created_jobs": 8,
+    "created_resume_templates": 3,
+    "created_resumes": 0,
+    "created_applications": 0,
+    "created_saved_jobs": 0,
+    "created_timeline_events": 0,
+    "created_leads": 0,
+    "created_lead_companies": 0,
+    "created_lead_contacts": 0,
+    "errors": [
+      {
+        "operation": "comprehensive_data_creation",
+        "error": "'charmap' codec can't encode character '\\U0001f465' in position 2: character maps to <undefined>"
+      }
+    ],
+    "created_embeddings": 8,
+    "created_duplications": 3,
+    "created_source_listings": 15,
+    "summary": {
+      "total_users_created": 0,
+      "total_skill_banks_created": 0,
+      "total_companies_created": 5,
+      "total_job_sources_created": 3,
+      "total_jobs_created": 8,
+      "total_embeddings_created": 8,
+      "total_duplications_created": 3,
+      "total_source_listings_created": 15,
+      "total_resume_templates_created": 3,
+      "total_resumes_created": 0,
+      "total_resume_generations_created": 0,
+      "total_resume_optimizations_created": 0,
+      "total_resume_versions_created": 0,
+      "total_interactions_created": 0,
+      "total_timeline_events_created": 0,
+      "total_applications_created": 0,
+      "total_leads_created": 0,
+      "total_lead_companies_created": 0,
+      "total_lead_contacts_created": 0,
+      "total_errors": 1,
+      "success_rate": 0.0,
+      "tables_populated": {
+        "user_profiles": false,
+        "skill_banks": false,
+        "companies": true,
+        "job_sources": true,
+        "job_listings": true,
+        "job_embeddings": true,
+        "job_duplications": true,
+        "job_source_listings": true,
+        "resume_templates": true,
+        "resumes": false,
+        "resume_generations": false,
+        "resume_optimizations": false,
+        "resume_versions": false,
+        "job_interactions": false,
+        "timeline_events": false,
+        "leads": false
+      }
+    }
+  },
+  "overall_status": "partial_success"
+}

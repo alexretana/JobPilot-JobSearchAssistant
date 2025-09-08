@@ -1,16 +1,18 @@
-// Simple WebSocket service mock
+// Simple WebSocket service mock with SolidJS reactivity
+import { createSignal } from 'solid-js';
+
 export const webSocketService = (() => {
-  let isConnected = false;
+  const [isConnected, setIsConnected] = createSignal(false);
   let messageHandlers: Array<(message: any) => void> = [];
   
   return {
     connect: () => {
       console.log('WebSocket connected');
-      isConnected = true;
+      setIsConnected(true);
     },
     disconnect: () => {
       console.log('WebSocket disconnected');
-      isConnected = false;
+      setIsConnected(false);
     },
     sendMessage: (message: any) => {
       console.log('WebSocket message sent:', message);
@@ -19,7 +21,7 @@ export const webSocketService = (() => {
       console.log('WebSocket message handler registered');
     },
     getIsConnected: () => {
-      return () => isConnected;
+      return isConnected;
     },
     addMessageHandler: (handler: (message: any) => void) => {
       messageHandlers.push(handler);
