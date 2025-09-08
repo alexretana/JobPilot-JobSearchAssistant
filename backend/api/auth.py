@@ -63,7 +63,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 def validate_token(token: str) -> str:
     """Validate a token and return the user ID"""
     # Check if authentication is required
-    if not getattr(settings, 'REQUIRE_AUTHENTICATION', True):
+    if not getattr(settings, "REQUIRE_AUTHENTICATION", True):
         # For local development, return a default user ID
         return "local-dev-user"
 
@@ -109,9 +109,9 @@ def get_current_user(
 ) -> str:
     """Get current user from token (for use as FastAPI dependency)"""
     # Check if authentication is required
-    if not getattr(settings, 'REQUIRE_AUTHENTICATION', True):
+    if not getattr(settings, "REQUIRE_AUTHENTICATION", True):
         # For local development, return a default user ID
         return "local-dev-user"
-        
+
     token = credentials.credentials
     return validate_token(token)

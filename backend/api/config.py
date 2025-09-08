@@ -25,7 +25,7 @@ class APISettings(BaseSettings):
     # Security settings
     SECRET_KEY: str = "your-secret-key-here"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    
+
     # Authentication settings
     REQUIRE_AUTHENTICATION: bool = True  # Set to False for local development
 
