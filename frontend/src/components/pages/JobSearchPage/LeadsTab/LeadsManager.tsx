@@ -81,7 +81,7 @@ const LeadsManager = () => {
       if (filters.type !== 'all') {
         params.set('lead_type', filters.type);
       }
-      const response = await fetch(`/api/leads/?${params.toString()}`);
+      const response = await fetch(`/leads/?${params.toString()}`);
       const data = await response.json();
       return data.leads as Lead[];
     }
@@ -89,7 +89,7 @@ const LeadsManager = () => {
 
   // Fetch lead statistics
   const [stats, { refetch: refetchStats }] = createResource(async () => {
-    const response = await fetch('/api/leads/stats/summary');
+    const response = await fetch('/leads/stats/summary');
     const data = await response.json();
     return data as LeadStats;
   });
@@ -186,7 +186,7 @@ const LeadsManager = () => {
         follow_up_date: leadForm.follow_up_date || undefined,
       };
 
-      const response = await fetch('/api/leads/', {
+      const response = await fetch('/leads/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -214,7 +214,7 @@ const LeadsManager = () => {
 
   const handleUpdateLead = async (leadId: string, updates: Partial<Lead>) => {
     try {
-      const response = await fetch(`/api/leads/${leadId}`, {
+      const response = await fetch(`/leads/${leadId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -243,7 +243,7 @@ const LeadsManager = () => {
     }
 
     try {
-      const response = await fetch(`/api/leads/${leadId}`, {
+      const response = await fetch(`/leads/${leadId}`, {
         method: 'DELETE',
       });
 

@@ -6,10 +6,12 @@ from typing import Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
+from backend.api.config import settings
+
 # Secret key for JWT token signing (in production, this should be stored securely)
-SECRET_KEY = "your-secret-key-here-change-in-production"
+SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 
 # Security scheme for Swagger UI
 security = HTTPBearer()
@@ -60,6 +62,11 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 
 def validate_token(token: str) -> str:
     """Validate a token and return the user ID"""
+    # Check if authentication is required
+    if not getattr(settings, 'REQUIRE_AUTHENTICATION', True):
+        # For local development, return a default user ID
+        return "local-dev-user"
+
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -101,5 +108,10 @@ def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
 ) -> str:
     """Get current user from token (for use as FastAPI dependency)"""
+    # Check if authentication is required
+    if not getattr(settings, 'REQUIRE_AUTHENTICATION', True):
+        # For local development, return a default user ID
+        return "local-dev-user"
+        
     token = credentials.credentials
     return validate_token(token)

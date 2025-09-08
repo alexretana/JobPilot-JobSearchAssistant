@@ -6,7 +6,11 @@
 import { Component, createSignal, createEffect, For, Show } from 'solid-js';
 import { JobCard } from './JobCard';
 import { JobService } from '../../../../services/JobService';
+import { createLogger } from '../../../../utils/logger';
 import type { Job } from '../../../../services/JobService';
+
+// Create logger for this component
+const logger = createLogger('SavedJobList');
 
 // Define SavedJob interface since it's not in the JobService
 interface SavedJob extends Job {
@@ -49,7 +53,7 @@ export const SavedJobList: Component<SavedJobListProps> = props => {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load saved jobs';
       setError(errorMessage);
-      console.error('Error loading saved jobs:', err);
+      logger.error(`Error loading saved jobs: ${errorMessage}`, err);
     } finally {
       setLoading(false);
     }
@@ -66,11 +70,11 @@ export const SavedJobList: Component<SavedJobListProps> = props => {
   const handleUnsaveJob = async (jobId: string) => {
     try {
       // TODO: Implement proper unsave job functionality
-      console.log('Unsaving job:', jobId);
+      logger.info(`Unsaving job: ${jobId}`);
       // Refresh the list to reflect the change
       loadSavedJobs();
     } catch (err) {
-      console.error('Failed to unsave job:', err);
+      logger.error('Failed to unsave job:', err);
       // TODO: Show error toast
     }
   };

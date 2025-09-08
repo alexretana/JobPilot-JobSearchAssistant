@@ -8,6 +8,8 @@ import StatusPanel from './components/UI/StatusPanel';
 import JobSearchManager from './components/pages/JobSearchPage';
 import ResumeBuilderPage from './components/pages/ResumeBuilderPage';
 import { webSocketService } from './services/websocket';
+import { createLogger, exportFrontendLogs } from './utils/logger';
+import { initializeDevAuth } from './services/AuthUtils';
 import type {
   ChatMessage,
   ActivityLogEntry,
@@ -15,6 +17,9 @@ import type {
   BrowserState,
   WebSocketMessage,
 } from './types';
+
+// Create logger for this component
+const logger = createLogger('App');
 
 const App: Component = () => {
   // State management
@@ -164,12 +169,18 @@ const App: Component = () => {
 
   const handleJobSave = (jobId: string) => {
     // TODO: Implement job saving functionality
-    console.log('Saved job:', jobId);
+    logger.info(`Saved job: ${jobId}`);
     addActivity('info', `💾 Saved job: ${jobId}`);
   };
 
   // Initialize WebSocket connection and handle cleanup
   onMount(() => {
+    // Initialize authentication for development
+    if (import.meta.env.DEV) {
+      initializeDevAuth();
+      logger.info('Authentication initialized for development');
+    }
+    
     webSocketService.connect();
     const removeHandler = webSocketService.addMessageHandler(handleWebSocketMessage);
 
@@ -227,7 +238,7 @@ const App: Component = () => {
               shouldCreateNewResume={shouldCreateNewResume()}
               onCreateNewHandled={() => setShouldCreateNewResume(false)}
               onProfileChange={profile => {
-                console.log('Profile updated in main app:', profile);
+                logger.info(`Profile updated in main app: ${JSON.stringify(profile)}`);
                 addActivity(
                   'info',
                   `👤 Profile updated: ${profile.first_name} ${profile.last_name}`
@@ -263,6 +274,29 @@ const App: Component = () => {
 
       {/* Mobile responsive adjustments */}
       <div class='lg:hidden'>{/* On mobile, stack vertically with better spacing */}</div>
+      
+      {/* Debug Panel - Only shown in development mode */}
+      <Show when={import.meta.env.DEV}>
+        <div class='fixed bottom-4 right-4 z-50'>
+          <div class='dropdown dropdown-top dropdown-end'>
+            <label tabindex="0" class='btn btn-sm btn-secondary btn-outline'>
+              Debug
+            </label>
+            <ul tabindex="0" class='dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52'>
+              <li>
+                <button onClick={exportFrontendLogs}>
+                  Export Frontend Logs
+                </button>
+              </li>
+              <li>
+                <button onClick={() => logger.info('Debug panel opened')}>
+                  Test Logging
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </Show>
     </div>
   );
 };

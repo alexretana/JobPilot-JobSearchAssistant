@@ -1,9 +1,12 @@
 import logging
+import os
+from datetime import datetime
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.api.config import settings
+from backend.api.auth import get_current_user
 
 # Import routers
 from backend.api.routers import (
@@ -21,9 +24,34 @@ from backend.api.routers import (
     users,
 )
 
-# Setup logging
-logging.basicConfig(level=logging.INFO)
+# Setup logging with both file and console handlers
+# Create logs directory if it doesn't exist
+logs_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs")
+os.makedirs(logs_dir, exist_ok=True)
+
+# Create formatter
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+# Create file handler for all levels
+file_handler = logging.FileHandler(os.path.join(logs_dir, f"{datetime.now().strftime('%Y%m%d')}-backend.log"))
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(formatter)
+
+# Create console handler for INFO and above
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+console_handler.setFormatter(formatter)
+
+# Configure root logger
+logging.basicConfig(
+    level=logging.DEBUG,
+    handlers=[file_handler, console_handler]
+)
+
 logger = logging.getLogger(__name__)
+
+# Log authentication setting for debugging
+logger.info(f"REQUIRE_AUTHENTICATION setting: {getattr(settings, 'REQUIRE_AUTHENTICATION', 'Not found')}")
 
 app = FastAPI(
     title=settings.API_TITLE,
@@ -74,6 +102,25 @@ async def root():
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
+
+
+# Test endpoint to check authentication setting
+@app.get("/test-auth-setting")
+async def test_auth_setting():
+    from backend.api.config import settings
+    return {
+        "REQUIRE_AUTHENTICATION": getattr(settings, 'REQUIRE_AUTHENTICATION', 'Not found'),
+        "all_settings": settings.dict()
+    }
+
+
+# Test endpoint to validate a token
+@app.get("/test-token")
+async def test_token(current_user=Depends(get_current_user)):
+    return {
+        "message": "Token is valid",
+        "user_id": current_user
+    }
 
 
 if __name__ == "__main__":

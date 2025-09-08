@@ -1,5 +1,5 @@
 // frontend/src/services/SearchService.ts
-import { ApiService } from './ApiService';
+import { apiService } from './ApiService';
 
 // Define types for search results
 export interface SemanticSearchResult {
@@ -31,11 +31,7 @@ export interface HybridSearchResponse {
 }
 
 export class SearchService {
-  private apiService: ApiService;
-
-  constructor() {
-    this.apiService = new ApiService();
-  }
+  private apiService = apiService;
 
   async semanticSearch(query: string, limit: number = 20): Promise<SemanticSearchResponse> {
     return this.apiService.get<SemanticSearchResponse>(`/search/semantic?query=${query}&limit=${limit}`);

@@ -49,7 +49,7 @@ const ApplicationsManager = () => {
       if (status !== 'all') {
         params.set('status', status);
       }
-      const response = await fetch(`/api/applications/?${params.toString()}`);
+      const response = await fetch(`/applications/?${params.toString()}`);
       const data = await response.json();
       return data.applications as Application[];
     }
@@ -57,7 +57,7 @@ const ApplicationsManager = () => {
 
   // Get available jobs for creating applications
   const [availableJobs] = createResource(async () => {
-    const response = await fetch('/api/jobs/recent?limit=50');
+    const response = await fetch('/jobs/recent?limit=50');
     const data = await response.json();
     return data.jobs;
   });
@@ -103,7 +103,7 @@ const ApplicationsManager = () => {
 
   const handleCreateApplication = async () => {
     try {
-      const response = await fetch('/api/applications/', {
+      const response = await fetch('/applications/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -138,7 +138,7 @@ const ApplicationsManager = () => {
       if (updates.status) params.set('status', updates.status);
       if (updates.notes) params.set('notes', updates.notes);
 
-      const response = await fetch(`/api/applications/${applicationId}?${params.toString()}`, {
+      const response = await fetch(`/applications/${applicationId}?${params.toString()}`, {
         method: 'PUT',
       });
 
@@ -162,7 +162,7 @@ const ApplicationsManager = () => {
     }
 
     try {
-      const response = await fetch(`/api/applications/${applicationId}`, {
+      const response = await fetch(`/applications/${applicationId}`, {
         method: 'DELETE',
       });
 

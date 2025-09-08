@@ -1,5 +1,5 @@
 // frontend/src/services/ResumeService.ts
-import { ApiService } from './ApiService';
+import { apiService } from './ApiService';
 
 // Define types for resumes
 export interface ResumeContactInfo {
@@ -122,11 +122,7 @@ export interface ResumeListResponse {
 export interface ResumeResponse extends Resume {}
 
 export class ResumeService {
-  private apiService: ApiService;
-
-  constructor() {
-    this.apiService = new ApiService();
-  }
+  private apiService = apiService;
 
   async listResumes(
     status?: string,

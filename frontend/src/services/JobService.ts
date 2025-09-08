@@ -1,5 +1,5 @@
 // frontend/src/services/JobService.ts
-import { ApiService } from './ApiService';
+import { apiService } from './ApiService';
 
 // Define types for jobs
 export interface Job {
@@ -53,11 +53,7 @@ export interface JobStatisticsResponse {
 }
 
 export class JobService {
-  private apiService: ApiService;
-
-  constructor() {
-    this.apiService = new ApiService();
-  }
+  private apiService = apiService;
 
   async searchJobs(filters: JobSearchFilters): Promise<JobSearchResponse> {
     const params = new URLSearchParams();

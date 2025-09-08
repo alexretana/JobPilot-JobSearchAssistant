@@ -1,5 +1,5 @@
 // frontend/src/services/CompanyService.ts
-import { ApiService } from './ApiService';
+import { apiService } from './ApiService';
 
 // Define types for companies
 export interface Company {
@@ -56,11 +56,7 @@ export interface CompanyJobsResponse {
 }
 
 export class CompanyService {
-  private apiService: ApiService;
-
-  constructor() {
-    this.apiService = new ApiService();
-  }
+  private apiService = apiService;
 
   async listCompanies(limit: number = 20, offset: number = 0): Promise<CompanyListResponse> {
     return this.apiService.get<CompanyListResponse>(`/companies?limit=${limit}&offset=${offset}`);

@@ -29,7 +29,7 @@ def main():
     # Start backend server
     print("Starting backend server...")
     backend_process = subprocess.Popen(
-        ["python", "-m", "api.main"],
+        ["uv", "run", "python", "-m", "api.main"],
         cwd=os.path.join(os.getcwd(), "backend"),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE

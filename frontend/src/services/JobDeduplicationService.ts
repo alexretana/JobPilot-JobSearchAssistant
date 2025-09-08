@@ -1,5 +1,5 @@
 // frontend/src/services/JobDeduplicationService.ts
-import { ApiService } from './ApiService';
+import { apiService } from './ApiService';
 
 // Define types for job deduplication
 export interface JobForDeduplication {
@@ -26,11 +26,7 @@ export interface BatchDeduplicationResult {
 }
 
 export class JobDeduplicationService {
-  private apiService: ApiService;
-
-  constructor() {
-    this.apiService = new ApiService();
-  }
+  private apiService = apiService;
 
   async deduplicateJob(jobData: JobForDeduplication): Promise<DeduplicationResult> {
     return this.apiService.post<DeduplicationResult>('/job-deduplication/deduplicate', jobData);

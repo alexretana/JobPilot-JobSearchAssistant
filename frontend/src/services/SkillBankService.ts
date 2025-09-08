@@ -1,5 +1,5 @@
 // frontend/src/services/SkillBankService.ts
-import { ApiService } from './ApiService';
+import { apiService } from './ApiService';
 
 // Define types for skill banks
 export interface EnhancedSkill {
@@ -424,13 +424,9 @@ export interface SummaryVariationUpdate {
 export interface SkillBankResponse extends SkillBank {}
 
 export class SkillBankService {
-  private apiService: ApiService;
+  private apiService = apiService;
 
-  constructor() {
-    this.apiService = new ApiService();
-  }
-
-  async createSkillBank(skillBankData: SkillBankCreate): Promise<SkillBankResponse> {
+  async createSkillBank(skillBankData: any): Promise<SkillBankResponse> {
     return this.apiService.post<SkillBankResponse>('/skill-banks', skillBankData);
   }
 

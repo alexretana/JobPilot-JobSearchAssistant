@@ -1,5 +1,5 @@
 // frontend/src/services/AnalyticsService.ts
-import { ApiService } from './ApiService';
+import { apiService } from './ApiService';
 
 // Define types for analytics data
 export interface GeneralStatsResponse {
@@ -46,11 +46,7 @@ export interface JobSourceStatsResponse {
 }
 
 export class AnalyticsService {
-  private apiService: ApiService;
-
-  constructor() {
-    this.apiService = new ApiService();
-  }
+  private apiService = apiService;
 
   async getGeneralStats(): Promise<GeneralStatsResponse> {
     return this.apiService.get<GeneralStatsResponse>('/stats/general');

@@ -1,5 +1,5 @@
 // frontend/src/services/JobSourceService.ts
-import { ApiService } from './ApiService';
+import { apiService } from './ApiService';
 
 // Define types for job sources
 export interface JobSource {
@@ -35,11 +35,7 @@ export interface JobSourceListResponse {
 export interface JobSourceResponse extends JobSource {}
 
 export class JobSourceService {
-  private apiService: ApiService;
-
-  constructor() {
-    this.apiService = new ApiService();
-  }
+  private apiService = apiService;
 
   async listJobSources(): Promise<JobSourceListResponse> {
     return this.apiService.get<JobSourceListResponse>('/job-sources');

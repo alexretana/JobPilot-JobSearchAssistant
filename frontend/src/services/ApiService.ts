@@ -1,16 +1,35 @@
 // frontend/src/services/ApiService.ts
 
-export class ApiService {
-  private baseUrl = '/api';
+class ApiService {
+  private baseUrl = ''; // No /api prefix needed
+  private authToken: string | null = null;
+
+  // Set the authentication token
+  setAuthToken(token: string | null) {
+    this.authToken = token;
+  }
+
+  // Get the current authentication token
+  getAuthToken(): string | null {
+    return this.authToken;
+  }
 
   private async fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
     
+    // Prepare headers
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    };
+
+    // Add authentication header if token exists
+    if (this.authToken) {
+      headers['Authorization'] = `Bearer ${this.authToken}`;
+    }
+
     const config: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
+      headers,
       ...options,
     };
 
@@ -49,3 +68,9 @@ export class ApiService {
     });
   }
 }
+
+// Export a singleton instance
+export const apiService = new ApiService();
+
+// Export the class for those who need to create instances
+export default ApiService;

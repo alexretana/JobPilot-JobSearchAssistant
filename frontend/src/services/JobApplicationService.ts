@@ -1,5 +1,5 @@
 // frontend/src/services/JobApplicationService.ts
-import { ApiService } from './ApiService';
+import { apiService } from './ApiService';
 
 // Define types for job applications
 export interface JobApplication {
@@ -46,17 +46,9 @@ export interface JobApplicationListResponse {
 export interface JobApplicationResponse extends JobApplication {}
 
 export class JobApplicationService {
-  private apiService: ApiService;
+  private apiService = apiService;
 
-  constructor() {
-    this.apiService = new ApiService();
-  }
-
-  async listApplications(
-    status?: string,
-    limit: number = 50,
-    offset: number = 0
-  ): Promise<JobApplicationListResponse> {
+  async listApplications(filters: JobApplicationFilters): Promise<JobApplicationListResponse> {
     const params = new URLSearchParams();
     
     if (status) {

@@ -1,5 +1,5 @@
 // frontend/src/services/AuthService.ts
-import { ApiService } from './ApiService';
+import { apiService } from './ApiService';
 
 // Define types for authentication
 export interface LoginCredentials {
@@ -40,14 +40,15 @@ export interface RefreshTokenResponse {
 }
 
 export class AuthService {
-  private apiService: ApiService;
-
-  constructor() {
-    this.apiService = new ApiService();
-  }
+  private apiService = apiService;
 
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
-    return this.apiService.post<LoginResponse>('/auth/login', credentials);
+    const response = await this.apiService.post<LoginResponse>('/auth/login', credentials);
+    
+    // Store the token in the ApiService for future requests
+    this.apiService.setAuthToken(response.access_token);
+    
+    return response;
   }
 
   async register(userData: RegisterData): Promise<RegisterResponse> {
@@ -55,10 +56,30 @@ export class AuthService {
   }
 
   async logout(): Promise<{ message: string }> {
-    return this.apiService.post<{ message: string }>('/auth/logout', {});
+    const response = await this.apiService.post<{ message: string }>('/auth/logout', {});
+    
+    // Clear the token from the ApiService
+    this.apiService.setAuthToken(null);
+    
+    return response;
   }
 
   async refreshToken(): Promise<RefreshTokenResponse> {
-    return this.apiService.post<RefreshTokenResponse>('/auth/refresh', {});
+    const response = await this.apiService.post<RefreshTokenResponse>('/auth/refresh', {});
+    
+    // Update the token in the ApiService
+    this.apiService.setAuthToken(response.access_token);
+    
+    return response;
+  }
+  
+  // Method to set a token manually (useful for development)
+  setAuthToken(token: string) {
+    this.apiService.setAuthToken(token);
+  }
+  
+  // Method to get the current token
+  getAuthToken(): string | null {
+    return this.apiService.getAuthToken();
   }
 }

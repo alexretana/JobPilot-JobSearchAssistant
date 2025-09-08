@@ -1,5 +1,5 @@
 // frontend/src/services/UserProfileService.ts
-import { ApiService } from './ApiService';
+import { apiService } from './ApiService';
 
 // Define types for user profiles
 export interface UserProfile {
@@ -79,11 +79,7 @@ export interface UserProfileUpdate {
 }
 
 export class UserProfileService {
-  private apiService: ApiService;
-
-  constructor() {
-    this.apiService = new ApiService();
-  }
+  private apiService = apiService;
 
   async createProfile(profileData: UserProfileCreate): Promise<UserProfile> {
     return this.apiService.post<UserProfile>('/users', profileData);

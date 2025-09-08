@@ -6,7 +6,11 @@
 import { Component, createSignal, createEffect, For, Show } from 'solid-js';
 import { JobCard } from './JobCard';
 import { JobService } from '../../../../services/JobService';
+import { createLogger } from '../../../../utils/logger';
 import type { Job, JobSearchFilters } from '../../../../services/JobService';
+
+// Create logger for this component
+const logger = createLogger('JobList');
 
 interface JobListProps {
   filters?: JobSearchFilters;
@@ -48,7 +52,7 @@ export const JobList: Component<JobListProps> = props => {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load jobs';
       setError(errorMessage);
-      console.error('Error loading jobs:', err);
+      logger.error(`Error loading jobs: ${errorMessage}`, err);
     } finally {
       setLoading(false);
     }

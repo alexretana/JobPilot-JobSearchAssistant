@@ -5,8 +5,12 @@
 
 import { Component, createSignal, createEffect, Show, For } from 'solid-js';
 import { JobService } from '../../../../services/JobService';
+import { createLogger } from '../../../../utils/logger';
 import type { Job } from '../../../../services/JobService';
 import { ApplicationTimeline } from '../ApplicationsTab/ApplicationTimeline';
+
+// Create logger for this component
+const logger = createLogger('JobDetailsModal');
 
 // Define JobDetails interface since it's not in the JobService
 interface JobDetails extends Job {
@@ -63,7 +67,7 @@ export const JobDetailsModal: Component<JobDetailsModalProps> = props => {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load job details';
       setError(errorMessage);
-      console.error('Error loading job details:', err);
+      logger.error(`Error loading job details: ${errorMessage}`, err);
     } finally {
       setLoading(false);
     }
@@ -74,7 +78,7 @@ export const JobDetailsModal: Component<JobDetailsModalProps> = props => {
       // TODO: Implement proper saved job checking
       return false;
     } catch (err) {
-      console.error('Error checking if job is saved:', err);
+      logger.error('Error checking if job is saved:', err);
       return false;
     }
   };
@@ -89,19 +93,19 @@ export const JobDetailsModal: Component<JobDetailsModalProps> = props => {
       if (isSaved()) {
         // Unsave the job
         // TODO: Implement proper unsave job functionality
-        console.log('Unsaving job:', currentJob.job_id);
+        logger.info(`Unsaving job: ${currentJob.job_id}`);
         setIsSaved(false);
-        console.log('Job unsaved successfully');
+        logger.info('Job unsaved successfully');
       } else {
         // Save the job
         // TODO: Implement proper save job functionality
-        console.log('Saving job:', currentJob.job_id);
+        logger.info(`Saving job: ${currentJob.job_id}`);
         setIsSaved(true);
-        console.log('Job saved successfully');
+        logger.info('Job saved successfully');
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to save job';
-      console.error('Error saving job:', err);
+      logger.error(`Error saving job: ${errorMessage}`, err);
       // You could show a toast notification here
       alert(errorMessage);
     } finally {

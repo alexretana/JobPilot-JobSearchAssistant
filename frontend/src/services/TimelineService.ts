@@ -1,5 +1,5 @@
 // frontend/src/services/TimelineService.ts
-import { ApiService } from './ApiService';
+import { apiService } from './ApiService';
 
 // Define types for timeline events
 export type TimelineEventType =
@@ -49,11 +49,7 @@ export interface UpdateTimelineEventRequest {
 }
 
 export class TimelineService {
-  private apiService: ApiService;
-
-  constructor() {
-    this.apiService = new ApiService();
-  }
+  private apiService = apiService;
 
   async getUserTimeline(
     userProfileId: string,

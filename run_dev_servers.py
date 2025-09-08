@@ -39,13 +39,14 @@ def signal_handler(sig, frame):
 def start_backend() -> subprocess.Popen:
     """Start the backend server"""
     print("Starting backend server...")
-    # Run the API directly with Python
+    # Run the API with uv
     backend_process = subprocess.Popen(
-        [sys.executable, "-m", "api.main"],
+        ["uv", "run", "python", "-m", "api.main"],
         cwd=os.path.join(os.getcwd(), "backend"),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        text=True
+        text=True,
+        shell=True
     )
     processes.append(backend_process)
     return backend_process
@@ -60,7 +61,8 @@ def start_frontend() -> subprocess.Popen:
         cwd=os.path.join(os.getcwd(), "frontend"),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        text=True
+        text=True,
+        shell=True
     )
     processes.append(frontend_process)
     return frontend_process
