@@ -1,5 +1,7 @@
 import { createSignal, createResource, For, Show } from 'solid-js';
 import { createStore } from 'solid-js/store';
+import { JobApplicationService } from '../../../../services/JobApplicationService';
+import { JobService } from '../../../../services/JobService';
 
 interface Application {
   id: string;
@@ -45,21 +47,22 @@ const ApplicationsManager = () => {
   const [applications, { refetch: refetchApplications }] = createResource(
     () => selectedStatus(),
     async status => {
-      const params = new URLSearchParams();
+      const filters: any = {};
       if (status !== 'all') {
-        params.set('status', status);
+        filters.status = status;
       }
-      const response = await fetch(`/applications/?${params.toString()}`);
-      const data = await response.json();
-      return data.applications as Application[];
+      filters.limit = 50;
+      filters.offset = 0;
+      
+      const response = await jobApplicationService.listApplications(filters);
+      return response.applications as Application[];
     }
   );
 
   // Get available jobs for creating applications
   const [availableJobs] = createResource(async () => {
-    const response = await fetch('/jobs/recent?limit=50');
-    const data = await response.json();
-    return data.jobs;
+    const response = await jobService.searchJobs({ limit: 50 });
+    return response.results;
   });
 
   const statusOptions: Array<{ value: Application['status'] | 'all'; label: string }> = [
@@ -103,19 +106,14 @@ const ApplicationsManager = () => {
 
   const handleCreateApplication = async () => {
     try {
-      const response = await fetch('/applications/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(applicationForm),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        alert(`Error: ${error.detail}`);
-        return;
-      }
+      const applicationData = {
+        user_profile_id: 'local-dev-user', // TODO: Get actual user ID
+        job_id: applicationForm.job_id,
+        status: applicationForm.status,
+        notes: applicationForm.notes,
+      };
+      
+      await jobApplicationService.createApplication(applicationData);
 
       // Reset form and close modal
       setApplicationForm({
@@ -128,54 +126,34 @@ const ApplicationsManager = () => {
       // Refresh applications
       refetchApplications();
     } catch (error) {
-      alert(`Error creating application: ${error}`);
+      alert(`Error creating application: ${error.message || 'Unknown error'}`);
     }
   };
 
   const handleUpdateApplication = async (applicationId: string, updates: Partial<Application>) => {
     try {
-      const params = new URLSearchParams();
-      if (updates.status) params.set('status', updates.status);
-      if (updates.notes) params.set('notes', updates.notes);
-
-      const response = await fetch(`/applications/${applicationId}?${params.toString()}`, {
-        method: 'PUT',
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        alert(`Error: ${error.detail}`);
-        return;
-      }
+      const updateData: any = {};
+      if (updates.status) updateData.status = updates.status;
+      if (updates.notes) updateData.notes = updates.notes;
+      
+      await jobApplicationService.updateApplication(applicationId, updateData);
 
       // Refresh applications
       refetchApplications();
       setEditingApplication(null);
     } catch (error) {
-      alert(`Error updating application: ${error}`);
+      alert(`Error updating application: ${error.message || 'Unknown error'}`);
     }
   };
 
   const handleDeleteApplication = async (applicationId: string) => {
-    if (!confirm('Are you sure you want to delete this application?')) {
-      return;
-    }
-
     try {
-      const response = await fetch(`/applications/${applicationId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        alert(`Error: ${error.detail}`);
-        return;
-      }
+      await jobApplicationService.deleteApplication(applicationId);
 
       // Refresh applications
       refetchApplications();
     } catch (error) {
-      alert(`Error deleting application: ${error}`);
+      alert(`Error deleting application: ${error.message || 'Unknown error'}`);
     }
   };
 

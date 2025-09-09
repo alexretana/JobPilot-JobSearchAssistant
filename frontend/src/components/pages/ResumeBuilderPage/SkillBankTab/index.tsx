@@ -24,7 +24,7 @@ const SkillBankDashboard: Component<SkillBankProps> = props => {
   >('contact');
   const [refreshTrigger, setRefreshTrigger] = createSignal(0);
 
-  const userId = () => props.userId || 'demo-user-123';
+  const userId = () => props.userId || 'local-dev-user';
 
   // Create resource for skill bank data with refresh capability
   const [skillBank] = createResource(

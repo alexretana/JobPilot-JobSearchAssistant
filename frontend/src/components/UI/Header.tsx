@@ -1,4 +1,5 @@
-import { Component, createSignal, onMount } from 'solid-js';
+import { Component } from 'solid-js';
+import { useTheme } from '../../contexts';
 import type { ActivityLogEntry } from '../../types';
 
 interface HeaderProps {
@@ -11,29 +12,7 @@ interface HeaderProps {
 }
 
 const Header: Component<HeaderProps> = props => {
-  const [currentTheme, setCurrentTheme] = createSignal('business');
-  const themes = [
-    { name: 'business', label: 'Business' },
-    { name: 'dark', label: 'Dark' },
-    { name: 'dim', label: 'Dim' },
-    { name: 'emerald', label: 'Emerald' },
-    { name: 'lemonade', label: 'Lemonade' },
-    { name: 'nord', label: 'Nord' },
-  ];
-
-  const changeTheme = (theme: string) => {
-    setCurrentTheme(theme);
-    document.documentElement.setAttribute('data-theme', theme);
-    // Save to localStorage to persist between sessions
-    localStorage.setItem('jobpilot-theme', theme);
-  };
-
-  // Load saved theme on mount
-  onMount(() => {
-    const savedTheme = localStorage.getItem('jobpilot-theme') || 'business';
-    setCurrentTheme(savedTheme);
-    document.documentElement.setAttribute('data-theme', savedTheme);
-  });
+  const { currentTheme, changeTheme, themes } = useTheme();
 
   return (
     <div class='navbar bg-base-300 border-b border-base-content/10 px-4'>
@@ -86,16 +65,15 @@ const Header: Component<HeaderProps> = props => {
             class='dropdown-content bg-base-300 rounded-box z-[1] w-52 p-2 shadow-2xl'
           >
             {themes.map(theme => (
-              <li>
-                <input
-                  type='radio'
-                  name='theme-dropdown'
-                  class='theme-controller btn btn-sm btn-block btn-ghost justify-start'
+              <li key={theme.name}>
+                <button
+                  type='button'
+                  class={`theme-controller btn btn-sm btn-block justify-start ${currentTheme() === theme.name ? 'btn-primary' : 'btn-ghost'}`}
+                  onClick={() => changeTheme(theme.name)}
                   aria-label={theme.label}
-                  value={theme.name}
-                  checked={currentTheme() === theme.name}
-                  onChange={() => changeTheme(theme.name)}
-                />
+                >
+                  {theme.label}
+                </button>
               </li>
             ))}
           </ul>

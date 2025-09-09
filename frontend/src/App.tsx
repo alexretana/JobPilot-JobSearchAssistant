@@ -234,7 +234,7 @@ const App: Component = () => {
         <Show when={activeTab() === 'resume-builder'}>
           <div class='bg-base-200 rounded-lg p-2 h-full'>
             <ResumeBuilderPage
-              userId='demo-user-123'
+              userId='local-dev-user'
               shouldCreateNewResume={shouldCreateNewResume()}
               onCreateNewHandled={() => setShouldCreateNewResume(false)}
               onProfileChange={profile => {
@@ -261,7 +261,7 @@ const App: Component = () => {
         activities={activities}
         isOpen={showTimelineModal}
         onClose={() => setShowTimelineModal(false)}
-        userProfileId='demo-user-123' // TODO: Replace with actual user ID from auth
+        userProfileId='local-dev-user' // TODO: Replace with actual user ID from auth
       />
 
       {/* Status Panel Drawer */}

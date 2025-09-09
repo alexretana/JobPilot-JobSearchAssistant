@@ -23,8 +23,8 @@ export const generateDevToken = (userId: string = 'local-dev-user'): string => {
  */
 export const initializeDevAuth = (): void => {
   // Generate and set a development token
-  const devToken = generateDevToken('demo-user-123');
+  const devToken = generateDevToken('local-dev-user');
   apiService.setAuthToken(devToken);
   
-  console.log('Development authentication initialized with token for demo-user-123');
+  console.log('Development authentication initialized with token for local-dev-user');
 };

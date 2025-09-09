@@ -20,7 +20,7 @@ export const ResumeBuilderPage: Component<ResumeBuilderProps> = props => {
   // Session storage key for remembering the active tab
   const STORAGE_KEY = 'resumeBuilder_activeTab';
 
-  const userId = () => props.userId || 'demo-user-123';
+  const userId = () => props.userId || 'local-dev-user';
 
   // Load the last selected tab from session storage on mount
   onMount(() => {

@@ -7,12 +7,10 @@ export default {
   plugins: [require('daisyui')],
   daisyui: {
     themes: ['business', 'dark', 'dim', 'emerald', 'lemonade', 'nord'],
-    darkTheme: 'dark',
     base: true,
     styled: true,
     utils: true,
     prefix: '',
     logs: true,
-    themeRoot: ':root',
   },
 };

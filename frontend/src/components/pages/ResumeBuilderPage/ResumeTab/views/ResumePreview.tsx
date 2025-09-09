@@ -74,7 +74,7 @@ const ResumePreview: Component<ResumePreviewProps> = props => {
   });
 
   return (
-    <div class='h-full flex flex-col bg-white'>
+    <div class='h-full flex flex-col bg-base-100'>
       {/* Header */}
       <div class='bg-base-100 border-b px-6 py-4 flex justify-between items-center'>
         <div>

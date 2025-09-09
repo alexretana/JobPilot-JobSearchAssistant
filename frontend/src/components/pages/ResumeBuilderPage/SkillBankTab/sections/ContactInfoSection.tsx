@@ -57,7 +57,7 @@ export const ContactInfoSection: Component<ContactInfoSectionProps> = props => {
         console.warn('Could not load user profile, trying default:', error);
         try {
           // Fall back to demo user default if specific user not found
-          return await userProfileService.getProfile('demo-user-123');
+          return await userProfileService.getProfile('local-dev-user');
         } catch (fallbackError) {
           console.error('Could not load any user profile:', fallbackError);
           return null;
@@ -151,7 +151,7 @@ export const ContactInfoSection: Component<ContactInfoSectionProps> = props => {
       };
 
       // Use the user ID from skill bank or fall back to demo user
-      const userId = props.skillBank.user_id || 'demo-user-123';
+      const userId = props.skillBank.user_id || 'local-dev-user';
       await userProfileService.updateProfile(userId, updateData);
 
       console.log('Contact info updated successfully:', updateData);
