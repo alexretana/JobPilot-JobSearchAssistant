@@ -1,9 +1,0 @@
-{
-  "entryPoints": ["src/main.tsx"],
-  "out": "../docs/frontend",
-  "name": "JobPilot Frontend Documentation",
-  "theme": "default",
-  "excludePrivate": true,
-  "excludeProtected": true,
-  "includeVersion": true
-}
