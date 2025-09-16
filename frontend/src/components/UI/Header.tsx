@@ -1,5 +1,4 @@
 import { Component } from 'solid-js';
-import { useTheme } from '../../contexts';
 import type { ActivityLogEntry } from '../../types';
 
 interface HeaderProps {
@@ -12,8 +11,6 @@ interface HeaderProps {
 }
 
 const Header: Component<HeaderProps> = props => {
-  const { currentTheme, changeTheme, themes } = useTheme();
-
   return (
     <div class='navbar bg-base-300 border-b border-base-content/10 px-4'>
       <div class='navbar-start flex items-center gap-3'>
@@ -64,18 +61,6 @@ const Header: Component<HeaderProps> = props => {
             tabindex='0'
             class='dropdown-content bg-base-300 rounded-box z-[1] w-52 p-2 shadow-2xl'
           >
-            {themes.map(theme => (
-              <li key={theme.name}>
-                <button
-                  type='button'
-                  class={`theme-controller btn btn-sm btn-block justify-start ${currentTheme() === theme.name ? 'btn-primary' : 'btn-ghost'}`}
-                  onClick={() => changeTheme(theme.name)}
-                  aria-label={theme.label}
-                >
-                  {theme.label}
-                </button>
-              </li>
-            ))}
           </ul>
         </div>
       </div>

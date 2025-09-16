@@ -9,7 +9,7 @@ interface TimelineEventCardProps {
 
 export const TimelineEventCard: Component<TimelineEventCardProps> = props => {
   return (
-    <div class='card bg-base-100 shadow-sm border border-base-300 mb-2'>
+    <div class='card bg-base-100 shadow-xs border border-base-300 mb-2'>
       <div class='card-body p-4'>
         <div class='flex justify-between items-start'>
           <div>

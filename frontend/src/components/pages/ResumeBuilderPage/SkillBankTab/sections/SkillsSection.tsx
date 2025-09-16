@@ -485,7 +485,7 @@ export const SkillsSection: Component<SkillsSectionProps> = props => {
         <div class='space-y-4'>
           <For each={filteredSkills()}>
             {skill => (
-              <div class='card bg-base-200 shadow-sm border border-base-300'>
+              <div class='card bg-base-200 shadow-xs border border-base-300'>
                 <div class='card-body p-4'>
                   <div class='flex items-start justify-between'>
                     <div class='flex-1 min-w-0'>

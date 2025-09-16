@@ -23,7 +23,7 @@ const TimelineModal: Component<TimelineModalProps> = props => {
 
         <div class='space-y-2 max-h-96 overflow-y-auto'>
           {props.activities().map(activity => (
-            <div class='card bg-base-100 shadow-sm border'>
+            <div class='card bg-base-100 shadow-xs border'>
               <div class='card-body p-3'>
                 <div class='flex justify-between items-start'>
                   <div>

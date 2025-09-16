@@ -1,6 +1,5 @@
 /* @refresh reload */
 import { render } from 'solid-js/web';
-import { ThemeProvider } from './contexts';
 import './index.css';
 import App from './App';
 
@@ -13,7 +12,5 @@ if (!(root instanceof HTMLElement)) {
 }
 
 render(() => (
-  <ThemeProvider>
-    <App />
-  </ThemeProvider>
+  <App />
 ), root!);
