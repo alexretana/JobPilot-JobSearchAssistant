@@ -1,5 +1,6 @@
 import type { Component } from 'solid-js';
 import { A } from '@solidjs/router';
+import { createSignal } from 'solid-js';
 
 const Header: Component = () => {
   const themes = [
@@ -11,9 +12,15 @@ const Header: Component = () => {
     'aqua'
   ];
 
+  const [isStatusPanelOpen, setIsStatusPanelOpen] = createSignal(false);
+
   const handleThemeChange = (theme: string) => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
+  };
+
+  const toggleStatusPanel = () => {
+    setIsStatusPanelOpen(!isStatusPanelOpen());
   };
 
   return (
@@ -51,21 +58,92 @@ const Header: Component = () => {
             </A>
           </nav>
 
-          {/* Right side - Theme Selector */}
-          <div class="dropdown dropdown-end">
-            <div tabindex={0} role="button" class="btn btn-ghost btn-sm">
-              Theme
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          {/* Right side - Status Panel Toggle and Theme Selector */}
+          <div class="flex items-center space-x-2">
+            {/* Status Panel Toggle */}
+            <button 
+              class="btn btn-ghost btn-sm"
+              onClick={toggleStatusPanel}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
+            </button>
+
+            {/* Theme Selector */}
+            <div class="dropdown dropdown-end">
+              <div tabindex={0} role="button" class="btn btn-ghost btn-sm">
+                Theme
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+              <ul tabindex={0} class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 mt-1">
+                {themes.map((theme) => (
+                  <li>
+                    <a onClick={() => handleThemeChange(theme)}>{theme.charAt(0).toUpperCase() + theme.slice(1)}</a>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <ul tabindex={0} class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 mt-1">
-              {themes.map((theme) => (
-                <li>
-                  <a onClick={() => handleThemeChange(theme)}>{theme.charAt(0).toUpperCase() + theme.slice(1)}</a>
-                </li>
-              ))}
-            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* System Status Panel */}
+      <div class={`fixed top-16 right-0 h-full w-80 bg-base-100 shadow-xl transform transition-transform duration-300 ease-in-out z-40 ${isStatusPanelOpen() ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div class="p-4 border-b border-base-200">
+          <div class="flex justify-between items-center">
+            <h2 class="text-xl font-bold">System Status</h2>
+            <button 
+              class="btn btn-ghost btn-sm btn-circle"
+              onClick={toggleStatusPanel}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="p-4">
+          <div class="space-y-4">
+            <div class="alert alert-info">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>AI Assistant is ready to help with your career tasks</span>
+            </div>
+            
+            <div class="card bg-base-200">
+              <div class="card-body p-4">
+                <h3 class="font-bold">Quick Actions</h3>
+                <div class="flex flex-wrap gap-2 mt-2">
+                  <button class="btn btn-sm btn-outline">New Resume</button>
+                  <button class="btn btn-sm btn-outline">Job Search</button>
+                  <button class="btn btn-sm btn-outline">Career Advice</button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card bg-base-200">
+              <div class="card-body p-4">
+                <h3 class="font-bold">System Information</h3>
+                <div class="text-sm mt-2 space-y-1">
+                  <div class="flex justify-between">
+                    <span>Version</span>
+                    <span class="font-mono">1.0.0</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span>Status</span>
+                    <span class="badge badge-success">Online</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span>Last Update</span>
+                    <span>Just now</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
