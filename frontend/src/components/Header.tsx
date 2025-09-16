@@ -6,7 +6,7 @@ const Header: Component = () => {
   const [isStatusPanelOpen, setIsStatusPanelOpen] = createSignal(false);
 
   const toggleStatusPanel = () => {
-    setIsStatusPanelOpen(!isStatusPanelOpen());
+    setIsStatusPanelOpen(prev => !prev);
   };
 
   return (
