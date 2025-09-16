@@ -1,7 +1,7 @@
 // frontend/src/services/ApiService.ts
 
 class ApiService {
-  private baseUrl = ''; // No /api prefix needed
+  private baseUrl = ''; // With proxy config, we don't need a base URL
   private authToken: string | null = null;
 
   // Set the authentication token
@@ -15,7 +15,9 @@ class ApiService {
   }
 
   private async fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const url = `${this.baseUrl}${endpoint}`;
+    // Ensure endpoint starts with a slash
+    const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    const url = `${this.baseUrl}${normalizedEndpoint}`;
     
     // Prepare headers
     const headers: Record<string, string> = {
@@ -33,13 +35,25 @@ class ApiService {
       ...options,
     };
 
-    const response = await fetch(url, config);
+    try {
+      const response = await fetch(url, config);
 
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      // Check if response is JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        throw new Error(`Expected JSON response but got ${contentType}: ${text.substring(0, 100)}...`);
+      }
+
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error(`Error fetching ${url}:`, error);
+      throw error;
     }
-
-    return response.json();
   }
 
   async get<T>(endpoint: string): Promise<T> {

@@ -16,11 +16,11 @@ To do troubleshooting of issues, use the context7 mcp tool to look up relevant d
 ## 1. Job Search & Display
 
 ### Components
-- [ ] JobSearchView.tsx - Currently uses `sampleJobs` from `types/job.ts` instead of calling JobService
-- [ ] JobDetailsModal.tsx - Likely displays job details from mock data
+- [x] JobSearchView.tsx - Currently uses `sampleJobs` from `types/job.ts` instead of calling JobService
+- [x] JobDetailsModal.tsx - Likely displays job details from mock data
 
 ### Services
-- [ ] JobService.ts - API methods implemented but may not be used in components yet
+- [x] JobService.ts - API methods implemented but may not be used in components yet
   - `searchJobs()` - API call implemented but not connected in UI
   - `getJobStatistics()` - API call implemented but not connected in UI
   - `listJobs()` - API call implemented but not connected in UI

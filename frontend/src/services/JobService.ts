@@ -13,6 +13,9 @@ export interface Job {
   salary_min?: number;
   salary_max?: number;
   posted_date: string;
+  description?: string;
+  skills?: string[];
+  url?: string;
   [key: string]: any; // Allow additional properties
 }
 
@@ -52,6 +55,13 @@ export interface JobStatisticsResponse {
   recent_trend: { last_7_days: number; last_30_days: number; last_90_days: number };
 }
 
+export interface JobListResponse {
+  message: string;
+  user_id: string;
+  results?: Job[];
+  [key: string]: any;
+}
+
 export class JobService {
   private apiService = apiService;
 
@@ -65,31 +75,80 @@ export class JobService {
     });
     
     const queryString = params.toString() ? `?${params.toString()}` : '';
-    return this.apiService.get<JobSearchResponse>(`/jobs/search${queryString}`);
+    try {
+      const response = await this.apiService.get<JobSearchResponse>(`/jobs/search${queryString}`);
+      console.log('Search jobs response:', response);
+      return response;
+    } catch (error) {
+      console.error('Error in searchJobs:', error);
+      throw error;
+    }
   }
 
   async getJobStatistics(): Promise<JobStatisticsResponse> {
-    return this.apiService.get<JobStatisticsResponse>('/jobs/statistics');
+    try {
+      const response = await this.apiService.get<JobStatisticsResponse>('/jobs/statistics');
+      console.log('Job statistics response:', response);
+      return response;
+    } catch (error) {
+      console.error('Error in getJobStatistics:', error);
+      throw error;
+    }
   }
 
-  async listJobs(): Promise<any> {
-    return this.apiService.get<any>('/jobs');
+  async listJobs(): Promise<JobListResponse> {
+    try {
+      const response = await this.apiService.get<JobListResponse>('/jobs');
+      console.log('List jobs response:', response);
+      return response;
+    } catch (error) {
+      console.error('Error in listJobs:', error);
+      throw error;
+    }
   }
 
-  async getJob(jobId: string): Promise<any> {
-    return this.apiService.get<any>(`/jobs/${jobId}`);
+  async getJob(jobId: string): Promise<Job> {
+    try {
+      const response = await this.apiService.get<Job>(`/jobs/${jobId}`);
+      console.log('Get job response:', response);
+      return response;
+    } catch (error) {
+      console.error(`Error in getJob(${jobId}):`, error);
+      throw error;
+    }
   }
 
   async createJob(): Promise<any> {
-    return this.apiService.post<any>('/jobs');
+    try {
+      const response = await this.apiService.post<any>('/jobs');
+      console.log('Create job response:', response);
+      return response;
+    } catch (error) {
+      console.error('Error in createJob:', error);
+      throw error;
+    }
   }
 
   async updateJob(jobId: string): Promise<any> {
-    return this.apiService.put<any>(`/jobs/${jobId}`);
+    try {
+      const response = await this.apiService.put<any>(`/jobs/${jobId}`);
+      console.log('Update job response:', response);
+      return response;
+    } catch (error) {
+      console.error('Error in updateJob:', error);
+      throw error;
+    }
   }
 
   async deleteJob(jobId: string): Promise<any> {
-    return this.apiService.delete<any>(`/jobs/${jobId}`);
+    try {
+      const response = await this.apiService.delete<any>(`/jobs/${jobId}`);
+      console.log('Delete job response:', response);
+      return response;
+    } catch (error) {
+      console.error('Error in deleteJob:', error);
+      throw error;
+    }
   }
 
   /**
@@ -101,15 +160,15 @@ export class JobService {
     }
 
     if (salary_min && salary_max) {
-      return `$${salary_min.toLocaleString()} - $${salary_max.toLocaleString()}`;
+      return `${salary_min.toLocaleString()} - ${salary_max.toLocaleString()}`;
     }
 
     if (salary_min) {
-      return `$${salary_min.toLocaleString()}+`;
+      return `${salary_min.toLocaleString()}+`;
     }
 
     if (salary_max) {
-      return `Up to $${salary_max.toLocaleString()}`;
+      return `Up to ${salary_max.toLocaleString()}`;
     }
 
     return 'Salary not specified';
