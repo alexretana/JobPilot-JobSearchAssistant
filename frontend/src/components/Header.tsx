@@ -1,23 +1,9 @@
 import type { Component } from 'solid-js';
-import { A } from '@solidjs/router';
 import { createSignal } from 'solid-js';
+import { A } from '@solidjs/router';
 
 const Header: Component = () => {
-  const themes = [
-    'light',
-    'dark',
-    'retro',
-    'cyberpunk',
-    'valentine',
-    'aqua'
-  ];
-
   const [isStatusPanelOpen, setIsStatusPanelOpen] = createSignal(false);
-
-  const handleThemeChange = (theme: string) => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-  };
 
   const toggleStatusPanel = () => {
     setIsStatusPanelOpen(!isStatusPanelOpen());
@@ -58,8 +44,8 @@ const Header: Component = () => {
             </A>
           </nav>
 
-          {/* Right side - Status Panel Toggle and Theme Selector */}
-          <div class="flex items-center space-x-2">
+          {/* Right side - Status Panel Toggle */}
+          <div class="flex items-center">
             {/* Status Panel Toggle */}
             <button 
               class="btn btn-ghost btn-sm"
@@ -69,23 +55,6 @@ const Header: Component = () => {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </button>
-
-            {/* Theme Selector */}
-            <div class="dropdown dropdown-end">
-              <div tabindex={0} role="button" class="btn btn-ghost btn-sm">
-                Theme
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-              <ul tabindex={0} class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 mt-1">
-                {themes.map((theme) => (
-                  <li>
-                    <a onClick={() => handleThemeChange(theme)}>{theme.charAt(0).toUpperCase() + theme.slice(1)}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
           </div>
         </div>
       </div>

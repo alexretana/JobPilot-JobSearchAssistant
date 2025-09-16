@@ -3,15 +3,8 @@ import { render } from 'solid-js/web';
 import './index.css';
 import App from './App';
 
-// Initialize theme from localStorage
-try {
-  const savedTheme = localStorage.getItem('theme');
-  if (savedTheme) {
-    document.documentElement.setAttribute('data-theme', savedTheme);
-  }
-} catch (e) {
-  console.warn('Failed to initialize theme from localStorage', e);
-}
+// Set default theme to business
+document.documentElement.setAttribute('data-theme', 'business');
 
 const root = document.getElementById('root');
 

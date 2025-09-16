@@ -1,2 +1,7 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+/* Set the default theme to business */
+:root {
+  --theme: business;
+}
