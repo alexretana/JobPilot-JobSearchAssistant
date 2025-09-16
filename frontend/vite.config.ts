@@ -15,8 +15,7 @@ export default defineConfig({
         secure: false,
       },
       // Also proxy the root-level API endpoints
-      '^/(health|test-auth-setting|test-token)
-: {
+      '^/(health|test-auth-setting|test-token)': {
         target: 'http://localhost:8000',
         changeOrigin: true,
         secure: false,

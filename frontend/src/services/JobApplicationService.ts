@@ -43,6 +43,12 @@ export interface JobApplicationListResponse {
   page_size: number;
 }
 
+export interface JobApplicationFilters {
+  status?: string;
+  limit?: number;
+  offset?: number;
+}
+
 export interface JobApplicationResponse extends JobApplication {}
 
 export class JobApplicationService {
@@ -51,14 +57,20 @@ export class JobApplicationService {
   async listApplications(filters: JobApplicationFilters): Promise<JobApplicationListResponse> {
     const params = new URLSearchParams();
     
-    if (status) {
-      params.append('status', status);
+    if (filters.status) {
+      params.append('status', filters.status);
     }
     
-    params.append('limit', limit.toString());
-    params.append('offset', offset.toString());
+    if (filters.limit !== undefined) {
+      params.append('limit', filters.limit.toString());
+    }
     
-    return this.apiService.get<JobApplicationListResponse>(`/applications?${params.toString()}`);
+    if (filters.offset !== undefined) {
+      params.append('offset', filters.offset.toString());
+    }
+    
+    const queryString = params.toString() ? `?${params.toString()}` : '';
+    return this.apiService.get<JobApplicationListResponse>(`/applications${queryString}`);
   }
 
   async getApplication(applicationId: string): Promise<JobApplicationResponse> {
