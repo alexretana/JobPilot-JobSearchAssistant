@@ -2,13 +2,12 @@
 import { render } from 'solid-js/web';
 import './index.css';
 import App from './App';
-import { initializeDevAuth } from './services/AuthUtils';
 
 // Set default theme to business
 document.documentElement.setAttribute('data-theme', 'business');
 
-// Initialize development authentication
-initializeDevAuth();
+// Don't initialize development authentication - use real authentication flow
+console.log('Authentication will be handled through login flow');
 
 const root = document.getElementById('root');
 

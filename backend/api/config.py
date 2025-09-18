@@ -26,12 +26,13 @@ class APISettings(BaseSettings):
     SECRET_KEY: str = "your-secret-key-here"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
-    # Authentication settings
-    REQUIRE_AUTHENTICATION: bool = True  # Set to False for local development
+    # Authentication settings (always True now)
+    REQUIRE_AUTHENTICATION: bool = True
 
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
+        extra = "ignore"  # Ignore extra environment variables
 
 
 # Create a single instance of settings to be used throughout the application

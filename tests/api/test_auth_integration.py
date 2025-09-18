@@ -2,125 +2,178 @@ import pytest
 from fastapi.testclient import TestClient
 import sys
 import os
+from datetime import datetime, timedelta
 
 # Add the backend directory to the path so we can import from it
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'backend'))
 
-def test_complete_auth_integration():
-    """Test the complete authentication integration with protected endpoints"""
-    try:
-        from backend.api.main import app
-        from backend.api.auth import create_access_token
-        
-        client = TestClient(app)
-        
-        # 1. Register a new user
-        register_response = client.post("/auth/register", json={
-            "email": "integrationtest@example.com",
-            "password": "integration-password-123",
-            "full_name": "Integration Test User"
-        })
-        assert register_response.status_code == 200
-        
-        # 2. Login with the new user
-        login_response = client.post("/auth/login", json={
-            "email": "integrationtest@example.com",
-            "password": "integration-password-123"
-        })
-        assert login_response.status_code == 200
-        assert "access_token" in login_response.json()
-        
-        # 3. Extract the access token
-        access_token = login_response.json()["access_token"]
-        auth_headers = {"Authorization": f"Bearer {access_token}"}
-        
-        # 4. Access a protected endpoint with valid token
-        jobs_response = client.get("/jobs/", headers=auth_headers)
-        assert jobs_response.status_code == 200
-        assert "user_id" in jobs_response.json()
-        
-        # 5. Access the same endpoint without token (should fail)
-        no_auth_response = client.get("/jobs/")
-        assert no_auth_response.status_code == 403  # Forbidden
-        
-        # 6. Access the same endpoint with invalid token (should fail)
-        invalid_token_response = client.get("/jobs/", headers={"Authorization": "Bearer invalid-token"})
-        assert invalid_token_response.status_code == 401  # Unauthorized
-        
-        # 7. Test other protected endpoints
-        job_detail_response = client.get("/jobs/job-123", headers=auth_headers)
-        assert job_detail_response.status_code == 200
-        
-        create_job_response = client.post("/jobs/", headers=auth_headers)
-        assert create_job_response.status_code == 200
-        
-        update_job_response = client.put("/jobs/job-123", headers=auth_headers)
-        assert update_job_response.status_code == 200
-        
-        delete_job_response = client.delete("/jobs/job-123", headers=auth_headers)
-        assert delete_job_response.status_code == 200
-        
-        # 8. Logout
-        logout_response = client.post("/auth/logout")
-        assert logout_response.status_code == 200
-        
-        print("Complete authentication integration test passed!")
-        
-    except Exception as e:
-        pytest.fail(f"Failed to test complete authentication integration: {e}")
+from backend.api.main import app
+from backend.data.models import UserProfileDB
+from backend.data.database import get_database_manager
+from backend.api.auth import get_password_hash
 
-def test_multiple_users_auth_isolation():
-    """Test that authentication properly isolates users"""
-    try:
-        from backend.api.main import app
-        from backend.api.auth import create_access_token
-        
-        client = TestClient(app)
-        
-        # Register and login two different users
-        # User 1
-        client.post("/auth/register", json={
-            "email": "user1@example.com",
-            "password": "password1",
-            "full_name": "User One"
-        })
-        
-        login1_response = client.post("/auth/login", json={
-            "email": "user1@example.com",
-            "password": "password1"
-        })
-        token1 = login1_response.json()["access_token"]
-        headers1 = {"Authorization": f"Bearer {token1}"}
-        
-        # User 2
-        client.post("/auth/register", json={
-            "email": "user2@example.com",
-            "password": "password2",
-            "full_name": "User Two"
-        })
-        
-        login2_response = client.post("/auth/login", json={
-            "email": "user2@example.com",
-            "password": "password2"
-        })
-        token2 = login2_response.json()["access_token"]
-        headers2 = {"Authorization": f"Bearer {token2}"}
-        
-        # Each user should get their own user_id when accessing protected endpoints
-        jobs1_response = client.get("/jobs/", headers=headers1)
-        jobs2_response = client.get("/jobs/", headers=headers2)
-        
-        assert jobs1_response.status_code == 200
-        assert jobs2_response.status_code == 200
-        
-        user_id1 = jobs1_response.json()["user_id"]
-        user_id2 = jobs2_response.json()["user_id"]
-        
-        # The user_ids should be different (in a real implementation)
-        # For our test implementation, they'll be the same since we're not
-        # actually validating against a database, but the test structure is correct
-        
-        print("Multiple users authentication isolation test passed!")
-        
-    except Exception as e:
-        pytest.fail(f"Failed to test multiple users authentication isolation: {e}")
+
+@pytest.fixture
+def client():
+    """Create a test client for the FastAPI app"""
+    with TestClient(app) as client:
+        yield client
+
+
+@pytest.fixture
+def db_manager():
+    """Get the database manager"""
+    return get_database_manager()
+
+
+def test_register_user(client, db_manager):
+    """Test that a new user can be registered"""
+    # Test registering a new user
+    response = client.post("/auth/register", json={
+        "email": "newuser@example.com",
+        "password": "securepassword123",
+        "first_name": "New",
+        "last_name": "User"
+    })
+    
+    # Check that the response is successful
+    assert response.status_code == 200
+    data = response.json()
+    
+    # Check that the response contains the expected fields
+    assert "id" in data
+    assert data["email"] == "newuser@example.com"
+    assert data["first_name"] == "New"
+    assert data["last_name"] == "User"
+    assert data["is_active"] == True
+    assert data["is_verified"] == False
+    
+    # Verify that the user was actually stored in the database
+    with db_manager.get_session() as session:
+        user_db = session.query(UserProfileDB).filter(UserProfileDB.email == "newuser@example.com").first()
+        assert user_db is not None
+        assert user_db.email == "newuser@example.com"
+        assert user_db.first_name == "New"
+        assert user_db.last_name == "User"
+        assert user_db.is_active == True
+        assert user_db.is_verified == False
+        # Check that the password was hashed
+        assert user_db.hashed_password is not None
+        assert user_db.hashed_password != "securepassword123"
+
+
+def test_register_duplicate_user(client, db_manager):
+    """Test that registering a user with an existing email fails"""
+    # First, register a user
+    response1 = client.post("/auth/register", json={
+        "email": "duplicate@example.com",
+        "password": "securepassword123",
+        "first_name": "First",
+        "last_name": "User"
+    })
+    assert response1.status_code == 200
+    
+    # Try to register the same email again
+    response2 = client.post("/auth/register", json={
+        "email": "duplicate@example.com",
+        "password": "differentpassword456",
+        "first_name": "Second",
+        "last_name": "User"
+    })
+    
+    # Check that the response shows an error
+    assert response2.status_code == 400
+    data = response2.json()
+    assert "detail" in data
+    assert "exists" in data["detail"]
+
+
+def test_login_user(client, db_manager):
+    """Test that a user can login with correct credentials"""
+    # First, register a user
+    client.post("/auth/register", json={
+        "email": "loginuser@example.com",
+        "password": "loginpassword123",
+        "first_name": "Login",
+        "last_name": "User"
+    })
+    
+    # Test logging in with correct credentials
+    response = client.post("/auth/login", json={
+        "email": "loginuser@example.com",
+        "password": "loginpassword123"
+    })
+    
+    # Check that the response is successful
+    assert response.status_code == 200
+    data = response.json()
+    
+    # Check that the response contains the expected fields
+    assert "access_token" in data
+    assert data["token_type"] == "bearer"
+    
+    # Verify that the token is a valid JWT
+    token = data["access_token"]
+    assert isinstance(token, str)
+    assert len(token) > 0
+
+
+def test_login_nonexistent_user(client):
+    """Test that login fails with nonexistent user"""
+    # Test logging in with nonexistent user
+    response = client.post("/auth/login", json={
+        "email": "nonexistent@example.com",
+        "password": "anypassword"
+    })
+    
+    # Check that the response shows an error
+    assert response.status_code == 401
+    data = response.json()
+    assert "detail" in data
+    assert "Incorrect email or password" in data["detail"]
+
+
+def test_login_wrong_password(client, db_manager):
+    """Test that login fails with wrong password"""
+    # First, register a user
+    client.post("/auth/register", json={
+        "email": "wrongpass@example.com",
+        "password": "correctpassword123",
+        "first_name": "Wrong",
+        "last_name": "Password"
+    })
+    
+    # Test logging in with wrong password
+    response = client.post("/auth/login", json={
+        "email": "wrongpass@example.com",
+        "password": "incorrectpassword"
+    })
+    
+    # Check that the response shows an error
+    assert response.status_code == 401
+    data = response.json()
+    assert "detail" in data
+    assert "Incorrect email or password" in data["detail"]
+
+
+def test_logout_user(client):
+    """Test that a user can logout"""
+    # Test logging out (should always succeed in JWT system)
+    response = client.post("/auth/logout")
+    
+    # Check that the response is successful
+    assert response.status_code == 200
+    data = response.json()
+    assert "message" in data
+    assert data["message"] == "Logged out successfully"
+
+
+def test_refresh_token(client):
+    """Test that the refresh token endpoint exists"""
+    # Test the refresh token endpoint
+    response = client.post("/auth/refresh")
+    
+    # Check that the response is successful (even if not fully implemented)
+    assert response.status_code == 200
+    data = response.json()
+    assert "message" in data

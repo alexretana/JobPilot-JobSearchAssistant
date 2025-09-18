@@ -51,11 +51,7 @@ logging.basicConfig(level=logging.DEBUG, handlers=[file_handler, console_handler
 
 logger = logging.getLogger(__name__)
 
-# Log authentication setting for debugging
-logger.info(
-    f"REQUIRE_AUTHENTICATION setting: {getattr(settings, 'REQUIRE_AUTHENTICATION', 'Not found')}"
-)
-
+# Add a comment to force reload
 app = FastAPI(
     title=settings.API_TITLE,
     version=settings.API_VERSION,
@@ -105,19 +101,6 @@ async def root():
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
-
-
-# Test endpoint to check authentication setting
-@app.get("/test-auth-setting")
-async def test_auth_setting():
-    from backend.api.config import settings
-
-    return {
-        "REQUIRE_AUTHENTICATION": getattr(
-            settings, "REQUIRE_AUTHENTICATION", "Not found"
-        ),
-        "all_settings": settings.dict(),
-    }
 
 
 # Test endpoint to validate a token

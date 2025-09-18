@@ -15,23 +15,26 @@ export interface RegisterData {
 }
 
 export interface LoginResponse {
-  user: {
-    id: string;
-    email: string;
-    first_name: string;
-    last_name: string;
-  };
   access_token: string;
   token_type: string;
 }
 
+export interface User {
+  id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  is_active: boolean;
+  is_verified: boolean;
+}
+
 export interface RegisterResponse {
-  user: {
-    id: string;
-    email: string;
-    first_name: string;
-    last_name: string;
-  };
+  id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  is_active: boolean;
+  is_verified: boolean;
 }
 
 export interface RefreshTokenResponse {
@@ -42,11 +45,22 @@ export interface RefreshTokenResponse {
 export class AuthService {
   private apiService = apiService;
 
+  constructor() {
+    // Load token from localStorage on initialization
+    const token = localStorage.getItem('authToken');
+    console.log('AuthService constructor called, token from localStorage:', token);
+    if (token) {
+      this.apiService.setAuthToken(token);
+    }
+  }
+
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
     const response = await this.apiService.post<LoginResponse>('/auth/login', credentials);
     
     // Store the token in the ApiService for future requests
     this.apiService.setAuthToken(response.access_token);
+    // Also store in localStorage for persistence
+    localStorage.setItem('authToken', response.access_token);
     
     return response;
   }
@@ -60,6 +74,8 @@ export class AuthService {
     
     // Clear the token from the ApiService
     this.apiService.setAuthToken(null);
+    // Also remove from localStorage
+    localStorage.removeItem('authToken');
     
     return response;
   }
@@ -69,6 +85,8 @@ export class AuthService {
     
     // Update the token in the ApiService
     this.apiService.setAuthToken(response.access_token);
+    // Also store in localStorage for persistence
+    localStorage.setItem('authToken', response.access_token);
     
     return response;
   }
@@ -76,6 +94,11 @@ export class AuthService {
   // Method to set a token manually (useful for development)
   setAuthToken(token: string) {
     this.apiService.setAuthToken(token);
+    if (token) {
+      localStorage.setItem('authToken', token);
+    } else {
+      localStorage.removeItem('authToken');
+    }
   }
   
   // Method to get the current token

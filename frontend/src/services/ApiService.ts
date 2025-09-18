@@ -6,6 +6,7 @@ class ApiService {
 
   // Set the authentication token
   setAuthToken(token: string | null) {
+    console.log('ApiService.setAuthToken called with:', token);
     this.authToken = token;
   }
 
@@ -26,8 +27,10 @@ class ApiService {
     };
 
     // Add authentication header if token exists
+    console.log('ApiService.fetchApi called, authToken:', this.authToken);
     if (this.authToken) {
       headers['Authorization'] = `Bearer ${this.authToken}`;
+      console.log('Added Authorization header:', headers['Authorization']);
     }
 
     const config: RequestInit = {
@@ -36,6 +39,7 @@ class ApiService {
     };
 
     try {
+      console.log('Making request to:', url, 'with config:', config);
       const response = await fetch(url, config);
 
       // Check if response is JSON

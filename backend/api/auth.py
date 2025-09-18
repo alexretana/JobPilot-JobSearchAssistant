@@ -1,4 +1,5 @@
-import base64
+import bcrypt
+import jwt
 import json
 from datetime import datetime, timedelta
 from typing import Optional
@@ -7,8 +8,11 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from backend.api.config import settings
+from backend.data.database import get_user_repository
+from backend.data.models import UserProfile
 
 # Secret key for JWT token signing (in production, this should be stored securely)
+# Fixed JWT error handling
 SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
@@ -16,34 +20,32 @@ ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 # Security scheme for Swagger UI
 security = HTTPBearer()
 
-# TODO: Implement AWS Cognito integration
-# Future enhancement: Add configuration to switch between local auth and AWS Cognito
-# This would involve:
-# 1. Adding AWS Cognito client configuration
-# 2. Implementing OAuth 2.0 flows for Cognito
-# 3. Creating user mappings between Cognito and local user system
-# 4. Adding config file to choose between local auth or Cognito auth
-
 
 def get_password_hash(password: str) -> str:
-    """Hash a password (simplified for testing)"""
-    # In a real implementation, we would use bcrypt or similar
-    # For now, we'll just base64 encode it as a placeholder
-    return base64.b64encode(password.encode()).decode()
+    """Hash a password using bcrypt"""
+    # Generate a salt and hash the password
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed_password.decode('utf-8')
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify a plain password against a hashed password"""
-    # In a real implementation, we would use bcrypt or similar
-    # For now, we'll just compare with base64 encoded version
+    """Verify a plain password against a hashed password using bcrypt"""
     try:
-        return base64.b64encode(plain_password.encode()).decode() == hashed_password
-    except:
+        # Check if the provided password matches the hashed password
+        return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
+    except Exception:
         return False
 
 
+def get_user_by_email(email: str):
+    """Get user by email from the database"""
+    user_repo = get_user_repository()
+    return user_repo.get_user_by_email(email)
+
+
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
-    """Create a JWT-like access token (simplified for testing)"""
+    """Create a JWT access token"""
     to_encode = data.copy()
 
     if expires_delta:
@@ -51,22 +53,15 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     else:
         expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
-    to_encode.update({"exp": expire.timestamp()})
+    to_encode.update({"exp": expire})
 
-    # Simple base64 encoding for testing purposes
-    # In a real implementation, we would use proper JWT encoding
-    token_data = json.dumps(to_encode)
-    encoded_token = base64.b64encode(token_data.encode()).decode()
-    return encoded_token
+    # Create JWT token using PyJWT
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
 
 
 def validate_token(token: str) -> str:
-    """Validate a token and return the user ID"""
-    # Check if authentication is required
-    if not getattr(settings, "REQUIRE_AUTHENTICATION", True):
-        # For local development, return a default user ID
-        return "local-dev-user"
-
+    """Validate a JWT token and return the user ID"""
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -75,11 +70,10 @@ def validate_token(token: str) -> str:
         )
 
     try:
-        # Decode the base64 token
-        decoded_data = base64.b64decode(token.encode()).decode()
-        payload = json.loads(decoded_data)
-
-        # Check if token has expired
+        # Decode the JWT token
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        
+        # Check if token has expired (PyJWT does this automatically, but we'll keep the check)
         exp = payload.get("exp")
         if exp and datetime.utcnow().timestamp() > exp:
             raise HTTPException(
@@ -96,6 +90,18 @@ def validate_token(token: str) -> str:
                 headers={"WWW-Authenticate": "Bearer"},
             )
         return user_id
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token has expired",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except jwt.PyJWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -108,10 +114,5 @@ def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
 ) -> str:
     """Get current user from token (for use as FastAPI dependency)"""
-    # Check if authentication is required
-    if not getattr(settings, "REQUIRE_AUTHENTICATION", True):
-        # For local development, return a default user ID
-        return "local-dev-user"
-
     token = credentials.credentials
     return validate_token(token)

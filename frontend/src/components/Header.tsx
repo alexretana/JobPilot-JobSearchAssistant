@@ -1,12 +1,22 @@
 import type { Component } from 'solid-js';
 import { createSignal } from 'solid-js';
 import { A } from '@solidjs/router';
+import { useAuth } from '../contexts/AuthContext';
 
 const Header: Component = () => {
   const [isStatusPanelOpen, setIsStatusPanelOpen] = createSignal(false);
+  const auth = useAuth();
 
   const toggleStatusPanel = () => {
     setIsStatusPanelOpen(prev => !prev);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await auth.logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   return (
@@ -44,8 +54,16 @@ const Header: Component = () => {
             </A>
           </nav>
 
-          {/* Right side - Status Panel Toggle */}
-          <div class="flex items-center">
+          {/* Right side - Logout and Status Panel Toggle */}
+          <div class="flex items-center space-x-2">
+            {/* Logout Button */}
+            <button 
+              class="btn btn-ghost btn-sm"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+            
             {/* Status Panel Toggle */}
             <button 
               class="btn btn-ghost btn-sm"

@@ -705,6 +705,12 @@ class UserProfileDB(Base):
     email = Column(String, unique=True)
     phone = Column(String)
 
+    # Authentication fields
+    hashed_password = Column(String(128))
+    is_active = Column(Boolean, default=True)
+    is_verified = Column(Boolean, default=False)
+    last_login = Column(DateTime)
+
     # Location information
     city = Column(String)
     state = Column(String)

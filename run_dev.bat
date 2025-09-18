@@ -6,7 +6,7 @@ echo Starting JobPilot development servers...
 REM Start backend server
 echo Starting backend server...
 cd backend
-start "Backend Server" /min cmd /c "python -m api.main"
+start "Backend Server" /min cmd /c "uv run python -m api.main"
 cd ..
 
 REM Start frontend server
