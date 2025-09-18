@@ -1,15 +1,13 @@
-import bcrypt
-import jwt
-import json
 from datetime import datetime, timedelta
 from typing import Optional
 
+import bcrypt
+import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from backend.api.config import settings
 from backend.data.database import get_user_repository
-from backend.data.models import UserProfile
 
 # Secret key for JWT token signing (in production, this should be stored securely)
 # Fixed JWT error handling
@@ -25,15 +23,17 @@ def get_password_hash(password: str) -> str:
     """Hash a password using bcrypt"""
     # Generate a salt and hash the password
     salt = bcrypt.gensalt()
-    hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
-    return hashed_password.decode('utf-8')
+    hashed_password = bcrypt.hashpw(password.encode("utf-8"), salt)
+    return hashed_password.decode("utf-8")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a plain password against a hashed password using bcrypt"""
     try:
         # Check if the provided password matches the hashed password
-        return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
+        return bcrypt.checkpw(
+            plain_password.encode("utf-8"), hashed_password.encode("utf-8")
+        )
     except Exception:
         return False
 
@@ -72,7 +72,7 @@ def validate_token(token: str) -> str:
     try:
         # Decode the JWT token
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        
+
         # Check if token has expired (PyJWT does this automatically, but we'll keep the check)
         exp = payload.get("exp")
         if exp and datetime.utcnow().timestamp() > exp:
